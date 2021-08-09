@@ -13,7 +13,7 @@ def conn_thread_func(conn, addr):
                 obj, remaining = socket_common.recv_json(conn, remaining)
                 print(f"Message from {addr}")
                 print(obj)
-    except Exception as err:
+    except socket_common.ConnectionBrokenError as err:
         print(f"Connection from {addr} broken")
         print(err)
 

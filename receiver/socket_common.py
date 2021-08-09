@@ -1,6 +1,9 @@
 import socket, json
 from typing import Any
 
+class ConnectionBrokenError(Exception):
+    pass
+
 def send_json(sock : socket.socket, obj) -> None:
     """Sends a dict to the socket.
 
@@ -15,7 +18,7 @@ def send_json(sock : socket.socket, obj) -> None:
     while totalsent < msglen:
         sent = sock.send(msg[totalsent:])
         if sent == 0:
-            raise RuntimeError("Socket connection broken")
+            raise ConnectionBrokenError("Socket connection broken")
         totalsent += sent
 
 def recv_json(sock : socket.socket, prev_data : str = ""):
@@ -24,7 +27,7 @@ def recv_json(sock : socket.socket, prev_data : str = ""):
     while not '\n' in data:
         chunk = sock.recv(CHUNK_SIZE)
         if len(chunk) == 0:
-            raise RuntimeError("Socket connection broken")
+            raise ConnectionBrokenError("Socket connection broken")
         data += chunk.decode('utf-8')
     pos = data.find('\n')
     data_json = data[:pos]

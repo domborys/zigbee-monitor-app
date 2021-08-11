@@ -12,7 +12,7 @@ class Floor(Base):
     image = Column(LargeBinary)
     width = Column(Float)
     height = Column(Float)
-    nodes = relationship("Node", back_populates="floor")
+    nodes = relationship("Node", back_populates="floor", cascade="all, delete")
 
 class Node(Base):
     __tablename__ = "nodes"

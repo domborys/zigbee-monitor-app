@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, WebSocket, Depends, HTTPException
+from fastapi import FastAPI, WebSocket, Depends, HTTPException, status
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -51,6 +51,12 @@ def modify_floor(floor_id: int,floor: pydmodels.FloorCreate, db: Session = Depen
     if floor is None:
         raise HTTPException(status_code=404, detail="Floor not found")
     return floor
+
+@app.delete("/floors/{floor_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_floor(floor_id : int, db: Session = Depends(get_db)):
+    existed_before = dbsrv.delete_floor(db, floor_id)
+    if not existed_before:
+        raise HTTPException(status_code=404, detail="Floor not found")
 
 @app.get("/nodes/{node_id}", response_model=pydmodels.Node)
 def get_node_by_id(node_id: int, db: Session = Depends(get_db)):

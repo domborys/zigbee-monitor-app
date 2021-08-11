@@ -26,6 +26,14 @@ def modify_floor(db: Session, floor_id:int, floor: pydmodels.Floor):
     db.refresh(db_floor)
     return db_floor
 
+def delete_floor(db: Session, floor_id: int):
+    db_floor = db.query(dbmodels.Floor).get(floor_id)
+    if db_floor is None:
+        return False
+    db.delete(db_floor)
+    db.commit()
+    return True
+
 def get_node_by_id(db: Session, node_id: int):
     return db.query(dbmodels.Node).filter(dbmodels.Node.id == node_id).first()
 

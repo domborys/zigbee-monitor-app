@@ -4,7 +4,7 @@
       :min-zoom="minZoom"
       :crs="crs"
       style="height: 100%"
-      v-if="layer"
+      v-if="mapVisible"
     >
     <l-image-overlay
         :url="layer.imgurl"
@@ -60,9 +60,7 @@ export default {
     },
     data() {
         return {
-            url: require("@/assets/plan1.jpg"),
-            bounds: [[0, 0], [10, 10]],
-            minZoom: -2,
+            minZoom: -10,
             crs: CRS.Simple,
             stars: [
             { name: "Sol", lng: 1, lat: 1},
@@ -83,11 +81,34 @@ export default {
         },*/
         layerBounds(){
             return [[0, 0], [this.layer.height, this.layer.width]]
+        },
+        layerUrl(){
+            return this.layer ? this.layer.imgurl : null;
+        },
+        mapVisible(){
+            return this.layer && this.layer.imgurl;
         }
     },
+    watch:{
+        layerUrl(newUrl, oldUrl){
+            this.$nextTick(function () {
+                if(this.layerUrl && this.$refs.map){
+                    this.$refs.map.mapObject.fitBounds(this.layerBounds, {animate:false});
+                }
+            })
+            
+        },
+        /*
+        mapVisible(){
+            if(this.layerUrl && this.$refs.map){
+                this.$refs.map.mapObject.fitBounds(this.layerBounds, {animate:false});
+            }
+        }*/
+    },
     mounted() {
-        if(this.$refs.map)
-            this.$refs.map.mapObject.fitBounds(this.bounds);
+        
+        //if(this.$refs.map)
+        //    this.$refs.map.mapObject.fitBounds(this.layerBounds, {animated:false});
         //this.$refs.map.mapObject.setView([5, 5], 0);
     }
 };

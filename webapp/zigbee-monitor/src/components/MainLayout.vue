@@ -2,12 +2,18 @@
     <div class="main-container">
         <header class="header">
             <h1 class="page-title">Monitor sieci ZigBee</h1>
+            <button type="button" @click="setNewLayerMode">Dodaj piętro</button>
         </header>
         <div class="below-header">
             <section class="left-pane">
-                <layer-list :layers="layerNames" v-model="activeLayerName" />
-                <layer-details :layer="activeLayer" />
-                <node-list :nodes="activeLayerNodes" />
+                <template v-if="mode === 'view'">
+                    <layer-list :layers="layerNames" v-model="activeLayerName" />
+                    <layer-details :layer="activeLayer" />
+                    <node-list :nodes="activeLayerNodes" />
+                </template>
+                <template v-if="mode === 'newLayer'">
+                    <layer-edit />
+                </template>
             </section>
             <main class="main">
                 <map-display :layer="activeLayer" />
@@ -20,6 +26,7 @@ import LayerList from './LayerList.vue';
 import LayerDetails from './LayerDetails.vue';
 import NodeList from './NodeList.vue';
 import MapDisplay from './MapDisplay.vue';
+import LayerEdit from './LayerEdit.vue';
 
 export default {
     name:"MainLayout",
@@ -27,7 +34,8 @@ export default {
         LayerList,
         LayerDetails,
         NodeList,
-        MapDisplay
+        MapDisplay,
+        LayerEdit
     },
     data(){
         return{
@@ -37,20 +45,12 @@ export default {
                 {name:'Czujnik dymu', deviceId:'czujnik dymu', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'end', discovered:false},
                 {name:'Termometr', deviceId:'termo', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'end', discovered:true},
             ],
-            /*
-            layers:[
-                {name:'Parter', imgurl: require("@/assets/plan1.jpg"), width:10, height:10, active:false, nodes:[
-                    {name:'Lodówka', deviceId:'lodowka', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'router', discovered:true, x:1, y:1},
-                    {name:'Żarówka nr 8 w żyrandolu', deviceId:'zar8', address16:'BACA', address64:'0000111122223333', nodeType:'router', discovered:false, x:8, y:4},
-                ]},
-                {name:'Parter',  imgurl:require("@/assets/plan2.png"), width:7.8, height:5, active:true, nodes:[
-                    {name:'Czujnik dymu', deviceId:'czujnik dymu', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'end', discovered:false, x:1, y:4},
-                    {name:'Termometr', deviceId:'termo', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'end', discovered:true, x:5, y:2},
-                ]},
-            ]*/
         }
     },
     computed:{
+        mode(){
+            return this.$store.state.mode;
+        },
         layers(){
             return this.$store.state.layers;
         },
@@ -74,6 +74,15 @@ export default {
         },
         layerNames(){
             return this.$store.getters.layerNames;
+        }
+    },
+    methods:{
+        setNewLayerMode(){
+            this.$store.commit('prepareNewLayer');
+            this.$store.commit('setMode', 'newLayer');
+        },
+        setMode(mode){
+            this.$store.commit('setMode', mode);
         }
     },
     mounted(){

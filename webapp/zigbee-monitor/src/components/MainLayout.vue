@@ -2,7 +2,8 @@
     <div class="main-container">
         <header class="header">
             <h1 class="page-title">Monitor sieci ZigBee</h1>
-            <button type="button" @click="setNewLayerMode">Dodaj piętro</button>
+            <button type="button" @click="editNewLayer">Dodaj piętro</button>
+            <button type="button" @click="editActiveLayer">Edytuj piętro</button>
         </header>
         <div class="below-header">
             <section class="left-pane">
@@ -11,8 +12,11 @@
                     <layer-details :layer="activeLayer" />
                     <node-list :nodes="activeLayerNodes" />
                 </template>
-                <template v-if="mode === 'newLayer'">
+                <template v-if="mode === 'editLayer'">
                     <layer-edit />
+                </template>
+                <template v-if="mode === 'editNode'">
+                    <node-edit />
                 </template>
             </section>
             <main class="main">
@@ -27,6 +31,7 @@ import LayerDetails from './LayerDetails.vue';
 import NodeList from './NodeList.vue';
 import MapDisplay from './MapDisplay.vue';
 import LayerEdit from './LayerEdit.vue';
+import NodeEdit from './NodeEdit.vue';
 
 export default {
     name:"MainLayout",
@@ -35,7 +40,8 @@ export default {
         LayerDetails,
         NodeList,
         MapDisplay,
-        LayerEdit
+        LayerEdit,
+        NodeEdit
     },
     data(){
         return{
@@ -77,9 +83,13 @@ export default {
         }
     },
     methods:{
-        setNewLayerMode(){
+        editNewLayer(){
             this.$store.commit('prepareNewLayer');
-            this.$store.commit('setMode', 'newLayer');
+            this.$store.commit('setMode', 'editLayer');
+        },
+        editActiveLayer(){
+            this.$store.commit('prepareLayerForEdit', this.$store.getters.activeLayer);
+            this.$store.commit('setMode', 'editLayer');
         },
         setMode(mode){
             this.$store.commit('setMode', mode);

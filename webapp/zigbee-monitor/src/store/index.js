@@ -1,8 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import api from '../fakeapi';
+import idGenerator from '../idGenerator';
+import cloneDeep from 'lodash/cloneDeep';
 
 Vue.use(Vuex)
+
+const tempIdGenerator = idGenerator();
 
 export default new Vuex.Store({
     state: {
@@ -10,6 +14,8 @@ export default new Vuex.Store({
         layers:[],
         editedLayer:null,
         editedLayerImageFile:null,
+        editedNode:null,
+        //editedNodeCopy:null,
         activeLayerName:null,
         discoveryResults:null,
     },
@@ -55,6 +61,56 @@ export default new Vuex.Store({
         prepareNewLayer(state){
             state.editedLayer = {name:null, imgurl:null, floorNo:null, width:null, height:null, nodes:[]};
         },
+        prepareLayerForEdit(state, layer){
+            state.editedLayer = cloneDeep(layer);
+        },
+        /*
+        prepareNewNode(state){
+            state.editedNodeCopy = null;
+            const newNode = {id:null, name:null, address64:null,  x:null, y:null, edited:true};
+            state.editedLayer.nodes.push(newNode);
+        },
+        prepareNodeForEdit(state, node){
+            state.editedNodeCopy = cloneDeep(node);
+            node.edited = true;
+            state.editedLayer.nodes.push(newNode);
+        },*/
+        
+        prepareNewNode(state){
+            state.editedNode = {id:null, tempId:null, name:null, address64:null,  x:null, y:null};
+        },
+        prepareNodeForEdit(state, node){
+            state.editedNode = cloneDeep(node);
+        },
+        setEditedNodeParam(state, description){
+            state.editedNode[description.name] = description.value;
+        },
+        setCoordinatesOfEditedNode(state, coordinates){
+            state.editedNode.x = coordinates.x;
+            state.editedNode.y = coordinates.y;
+        },
+        saveEditedNode(state){
+            if(state.editedNode.id !== null){
+                const index = state.editedLayer.nodes.findIndex(n => n.id === state.editedNode.id);
+                if(index !== -1){
+                    state.editedLayer.nodes.splice(index, 1, state.editedNode);
+                }
+            }
+            else if(state.editedNode.tempId !== null){
+                const index = state.editedLayer.nodes.findIndex(n => n.tempId === state.editedNode.tempId);
+                if(index !== -1){
+                    state.editedLayer.nodes.splice(index, 1, state.editedNode);
+                }
+            }
+            else{
+                state.editedNode.tempId = tempIdGenerator.next();
+                state.editedLayer.nodes.push(state.editedNode);
+            }
+            state.editedNode = null;
+        },
+        discardEditedNode(state){
+            state.editedNode = null;
+        },
         writeDiscoveryStatusToNodes(state){
             if(state.discoveryResults === null)
                 return;
@@ -88,9 +144,14 @@ export default new Vuex.Store({
             context.commit('setDiscoveryResults', results);
             context.commit('writeDiscoveryStatusToNodes');
         },
-        async saveEditedLayer(context){
+        async saveEditedLayer(context, config){
             const layer = context.getters.activeLayer;
-            await api.sendLayer(layer, context.state.editedLayerImageFile);
+            if(config.isNewImage){
+                await api.sendLayer(layer, context.state.editedLayerImageFile);
+            }
+            else{
+                await api.sendLayer(layer);
+            }
             await context.dispatch('downloadLayers');
         }
     },

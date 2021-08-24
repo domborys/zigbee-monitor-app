@@ -31,6 +31,11 @@
                 </div>
             </fieldset>-->
             <div>
+                <h3>Węzły sieci</h3>
+                <button type="button" @click="addNode">Dodaj węzeł</button>
+                <node-item-edit-mode v-for="node in layer.nodes" :key="node.id" :node="node" />
+            </div>
+            <div>
                 <button type="button" @click="discardLayer">Anuluj</button>
                 <button type="submit">Zapisz</button>
             </div>
@@ -40,8 +45,13 @@
 
 <script>
 
+import NodeItemEditMode from './NodeItemEditMode.vue';
+
 export default {
     name:"LayerEdit",
+    components:{
+        NodeItemEditMode
+    },
     props:{
         
     },
@@ -49,6 +59,7 @@ export default {
         return{
             keepRatio:true,
             image:null,
+            isNewImage:false,
         }
     },
     computed:{
@@ -73,15 +84,20 @@ export default {
         },
     },
     methods:{
+        addNode(){
+            this.$store.commit('prepareNewNode');
+            this.$store.commit('setMode', 'editNode');
+        },
         loadFloorPlan(e){
             const file = e.target.files[0];
             if(file){
                 const imgurl = URL.createObjectURL(file);
                 this.$store.dispatch('loadLayerImage', file);
             }
+            this.isNewImage = true;
         },
         async saveLayer(){
-            await this.$store.dispatch('saveEditedLayer');
+            await this.$store.dispatch('saveEditedLayer', {isNewImage:this.isNewImage});
             this.$store.commit('setActiveLayer', this.layer.name);
             this.$store.commit('setMode', 'view');
             //URL.revokeObjectURL(this.layer.imgurl);
@@ -93,6 +109,9 @@ export default {
             this.$store.commit('setMode', 'view');
         },
     },
+    mounted(){
+        this.isNewImage = false;
+    }
     
 }
 </script>

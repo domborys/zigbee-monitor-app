@@ -5,17 +5,24 @@
       :crs="crs"
       style="height: 100%"
       v-if="mapVisible"
+      @click="mapClick"
     >
     <l-image-overlay
         :url="layer.imgurl"
         :bounds="layerBounds"
     />
     <l-marker
-        v-for="node in layer.nodes"
+        v-for="node in nodesToDisplay"
         :key="node.name"
         :lat-lng="{lng: node.x, lat: node.y}"
     >
         <l-popup :content="node.name" />
+    </l-marker>
+    <l-marker
+        v-if="editedNodeWasPlaced"
+        :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
+    >
+        <l-popup :content="editedNode.name" />
     </l-marker>
     <!--
         <l-image-overlay
@@ -87,6 +94,38 @@ export default {
         },
         mapVisible(){
             return this.layer && this.layer.imgurl;
+        },
+        nodesToDisplay(){
+            if(this.editedNode){
+                return this.layer.nodes.filter(l => !this.isNodeEdited(l));
+            }
+            else{
+                return this.layer.nodes;
+            }
+        },
+        editedNode(){
+            return this.$store.state.editedNode;
+        },
+        editedNodeWasPlaced(){
+            return this.editedNode && (typeof this.editedNode.x === 'number') && (typeof this.editedNode.y === 'number');
+        }
+    },
+    methods:{
+        isNodeEdited(node){
+            if(!this.editedNode)
+                return false;
+            else if(this.editedNode.id !== null && node.id === this.editedNode.id)
+                return true;
+            else if(this.editedNode.tempId !== null && node.tempId === this.editedNode.tempId)
+                return true;
+            else
+                return false;
+        },
+        mapClick(e){
+            if(this.editedNode){
+                const coordinates = {x:e.latlng.lng, y:e.latlng.lat};
+                this.$store.commit('setCoordinatesOfEditedNode', coordinates);
+            }
         }
     },
     watch:{

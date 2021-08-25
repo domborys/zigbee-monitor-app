@@ -1,6 +1,6 @@
 <template>
     <article class="node-item">
-        <div class="node-item-content">
+        <div class="node-item-content" @click="editClick">
             <h3 class="node-item-header">{{ node.name }}</h3>
             <div>
                 <b>Adres 64-bit: </b> {{ node.address64 }}
@@ -28,6 +28,9 @@ export default {
         
     },
     methods:{
+        editClick(){
+            this.$emit('edit-node');
+        },
         deleteClick(){
             this.$emit('delete-node');
         }
@@ -52,6 +55,7 @@ export default {
 
 .node-item-content{
     flex:auto;
+    cursor: pointer;
 }
 
 .close-button{

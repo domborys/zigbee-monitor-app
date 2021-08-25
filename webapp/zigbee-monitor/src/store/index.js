@@ -111,6 +111,20 @@ export default new Vuex.Store({
         discardEditedNode(state){
             state.editedNode = null;
         },
+        deleteNode(state, node){
+            if(node.id !== null){
+                const index = state.editedLayer.nodes.findIndex(n => n.id === node.id);
+                if(index !== -1){
+                    state.editedLayer.nodes.splice(index, 1);
+                }
+            }
+            else if(node.tempId !== null){
+                const index = state.editedLayer.nodes.findIndex(n => n.tempId === node.tempId);
+                if(index !== -1){
+                    state.editedLayer.nodes.splice(index, 1);
+                }
+            }
+        },
         writeDiscoveryStatusToNodes(state){
             if(state.discoveryResults === null)
                 return;

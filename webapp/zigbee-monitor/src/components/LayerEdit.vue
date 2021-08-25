@@ -33,7 +33,7 @@
             <div>
                 <h3>Węzły sieci</h3>
                 <button type="button" @click="addNode">Dodaj węzeł</button>
-                <node-item-edit-mode v-for="node in layer.nodes" :key="node.id" :node="node" />
+                <node-item-edit-mode v-for="node in layer.nodes" :key="makeNodeKey(node)" :node="node" @edit-node="editNode(node)" @delete-node="deleteNode(node)" />
             </div>
             <div>
                 <button type="button" @click="discardLayer">Anuluj</button>
@@ -84,9 +84,21 @@ export default {
         },
     },
     methods:{
+        makeNodeKey(node){
+            const idStr = typeof node.id === 'number' ? node.id.toString() : '';
+            const tempIdStr = typeof node.tempId === 'number' ? node.tempId.toString() : '';
+            return idStr + '_' + tempIdStr;
+        },
         addNode(){
             this.$store.commit('prepareNewNode');
             this.$store.commit('setMode', 'editNode');
+        },
+        editNode(node){
+            this.$store.commit('prepareNodeForEdit', node);
+            this.$store.commit('setMode', 'editNode');
+        },
+        deleteNode(node){
+            this.$store.commit('deleteNode', node);
         },
         loadFloorPlan(e){
             const file = e.target.files[0];

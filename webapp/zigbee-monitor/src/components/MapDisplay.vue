@@ -1,44 +1,49 @@
 <template>
-    <l-map
-      ref="map"
-      :min-zoom="minZoom"
-      :crs="crs"
-      style="height: 100%"
-      v-if="mapVisible"
-      @click="mapClick"
-    >
-    <l-image-overlay
-        :url="layer.imgurl"
-        :bounds="layerBounds"
-    />
-    <l-marker
-        v-for="node in nodesToDisplay"
-        :key="node.name"
-        :lat-lng="{lng: node.x, lat: node.y}"
-    >
-        <l-popup :content="node.name" />
-    </l-marker>
-    <l-marker
-        v-if="editedNodeWasPlaced"
-        :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
-    >
-        <l-popup :content="editedNode.name" />
-    </l-marker>
-    <!--
+    <div class="map-container" :class="{'edited-node-mode':!!editedNode}">
+        <l-map
+        ref="map"
+        :min-zoom="minZoom"
+        :crs="crs"
+        style="height: 100%; z-index:10"
+        v-if="mapVisible"
+        @click="mapClick"
+        >
         <l-image-overlay
-            :url="url"
-            :bounds="bounds"
+            :url="layer.imgurl"
+            :bounds="layerBounds"
         />
         <l-marker
-            v-for="star in stars"
-            :key="star.name"
-            :lat-lng="star"
+            v-for="node in nodesToDisplay"
+            :key="node.name"
+            :lat-lng="{lng: node.x, lat: node.y}"
         >
-        <l-popup :content="star.name" />
+            <l-popup :content="node.name" />
         </l-marker>
-        <l-polyline :lat-lngs="travel" />
-    -->
-    </l-map>
+        <l-marker
+            v-if="editedNodeWasPlaced"
+            :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
+        >
+            <l-popup :content="editedNode.name" />
+        </l-marker>
+        <!--
+            <l-image-overlay
+                :url="url"
+                :bounds="bounds"
+            />
+            <l-marker
+                v-for="star in stars"
+                :key="star.name"
+                :lat-lng="star"
+            >
+            <l-popup :content="star.name" />
+            </l-marker>
+            <l-polyline :lat-lngs="travel" />
+        -->
+        </l-map>
+        <div class="place-node-message" v-if="!!editedNode">
+            Kliknij na mapie, aby umieścić węzeł.
+        </div>
+    </div>
 </template>
 
 <script>
@@ -137,18 +142,29 @@ export default {
             })
             
         },
-        /*
-        mapVisible(){
-            if(this.layerUrl && this.$refs.map){
-                this.$refs.map.mapObject.fitBounds(this.layerBounds, {animate:false});
-            }
-        }*/
     },
-    mounted() {
-        
-        //if(this.$refs.map)
-        //    this.$refs.map.mapObject.fitBounds(this.layerBounds, {animated:false});
-        //this.$refs.map.mapObject.setView([5, 5], 0);
-    }
 };
 </script>
+
+<style scoped>
+.map-container{
+    height: 100%;
+    position:relative;
+}
+
+.place-node-message{
+    position:absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    top:0;
+    text-align:center;
+    padding:10px;
+    z-index:100;
+    font-size:20px;
+    background-color: #630094;
+    color:white;
+}
+.edited-node-mode .vue2leaflet-map{
+    cursor:crosshair;
+}
+</style>

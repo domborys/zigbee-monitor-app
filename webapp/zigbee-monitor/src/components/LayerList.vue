@@ -34,9 +34,9 @@ export default {
 
 <style scoped>
 .layer-list-header{
-    margin:0;
+    margin:0 0 10px 0;
     font-size:22px;
-    font-weight:bold;
+    font-weight:600;
 }
 
 .layer-list{
@@ -47,7 +47,7 @@ export default {
 }
 
 .layer-list > li{
-    padding:5px;
+    padding:8px;
     border-bottom: 1px solid #E6E6FA;
 }
 

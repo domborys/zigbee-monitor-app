@@ -131,18 +131,23 @@ export default {
                 const coordinates = {x:e.latlng.lng, y:e.latlng.lat};
                 this.$store.commit('setCoordinatesOfEditedNode', coordinates);
             }
-        }
-    },
-    watch:{
-        layerUrl(newUrl, oldUrl){
+        },
+        fitBounds(){
             this.$nextTick(function () {
                 if(this.layerUrl && this.$refs.map){
                     this.$refs.map.mapObject.fitBounds(this.layerBounds, {animate:false});
                 }
             })
-            
+        }
+    },
+    watch:{
+        layerUrl(newUrl, oldUrl){
+            this.fitBounds();
         },
     },
+    mounted(){
+        this.fitBounds();
+    }
 };
 </script>
 

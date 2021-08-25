@@ -4,11 +4,11 @@
         <form @submit.prevent="saveLayer"> 
             <div>
                 <label for="layerNameInput">Nazwa piętra</label>
-                <input type="text" v-model="layerName" id="layerNameInput" placeholder="Parter">
+                <input type="text" class="text-input" v-model="layerName" id="layerNameInput" placeholder="Parter">
             </div>
             <div>
                 <label for="floorNoInput">Poziom</label>
-                <input type="text" v-model="floorNo" id="floorNoInput" placeholder="0">
+                <input type="text" class="text-input" v-model="floorNo" id="floorNoInput" placeholder="0">
             </div>
             <div>
                 <label for="floorPlanInput">Plan piętra</label>
@@ -32,12 +32,12 @@
             </fieldset>-->
             <div>
                 <h3>Węzły sieci</h3>
-                <button type="button" @click="addNode">Dodaj węzeł</button>
+                <button type="button" class="button" @click="addNode">Dodaj węzeł</button>
                 <node-item-edit-mode v-for="node in layer.nodes" :key="makeNodeKey(node)" :node="node" @edit-node="editNode(node)" @delete-node="deleteNode(node)" />
             </div>
             <div>
-                <button type="button" @click="discardLayer">Anuluj</button>
-                <button type="submit">Zapisz</button>
+                <button type="button" class="button" @click="discardLayer">Anuluj</button>
+                <button type="submit" class="button">Zapisz</button>
             </div>
         </form>
     </section>
@@ -132,7 +132,7 @@ export default {
 <style scoped>
 .layer-details-header{
     font-size:22px;
-    font-weight:bold;
+    font-weight:600;
 }
 
 

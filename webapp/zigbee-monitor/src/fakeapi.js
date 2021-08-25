@@ -1,7 +1,8 @@
 export default {
     getLayers,
     getDiscoveryResults,
-    sendLayer
+    sendLayer,
+    makeMessageSocket
 };
 
 function idGenerator(){
@@ -10,6 +11,26 @@ function idGenerator(){
         return id++;
     }
     return {next:next};
+}
+
+function messageGenerator(layers){
+    let l = 0;
+    let n = 0;
+    let messageNo = 1;
+    function next(){
+        const address64 = layers[l].nodes[n].address64;
+        n++;
+        if(n === layers[l].nodes.length){
+            n = 0;
+            l++;
+            if(l === layers.length){
+                l = 0;
+            }
+        }
+        const message = btoa('Number ' + messageNo++);
+        return {type:'received', address64, message};
+    }
+    return {next};
 }
 
 const layerIdGen = idGenerator();
@@ -25,6 +46,8 @@ const layers = [
         {id:nodeIdGen.next(),name:'Termometr', deviceId:'termo', address16:'ABCD', address64:'BACABECE87654321', nodeType:'end', discovered:null, x:5, y:2, tempId:null},
     ]},
 ];
+
+const receivedMessagesGenerator = messageGenerator(layers);
 
 const discoveryResults = {
     devices:[
@@ -69,4 +92,20 @@ function addNewLayer(layer){
 function modifyLayer(layer){
     const index = layers.findIndex(l => l.id === layer.id);
     layers.splice(index, 1, layer);
+}
+
+function makeMessageSocket(){
+    const fakeSocket =  {
+        send(){
+
+        },
+
+    };
+    setInterval(() =>{
+        if(typeof fakeSocket.onmessage === 'function'){
+            const message = receivedMessagesGenerator.next();
+            fakeSocket.onmessage(message);
+        }
+    },5000)
+    return fakeSocket;
 }

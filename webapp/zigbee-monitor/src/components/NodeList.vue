@@ -1,7 +1,7 @@
 <template>
     <section>
         <h2 class="node-list-header">Węzły</h2>
-        <node-item v-for="node in nodes" :key="node.id" :node="node" />
+        <node-item v-for="node in nodes" :key="node.id" :node="node" @click.native="showMessages(node)" />
     </section>
 </template>
 
@@ -17,7 +17,11 @@ export default {
         nodes: Array,
     },
     methods:{
-        
+        showMessages(node){
+            console.log("node clicked");
+            this.$store.commit('setDisplayedMessagesNode', node);
+            this.$store.commit('setMainDisplayMode', 'messages');
+        }
     }
 }
 </script>
@@ -27,7 +31,7 @@ export default {
 .node-list-header{
     margin:0;
     font-size:22px;
-    font-weight:bold;
+    font-weight:600;
 }
 
 </style>

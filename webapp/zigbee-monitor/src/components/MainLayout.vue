@@ -2,8 +2,10 @@
     <div class="main-container">
         <header class="header">
             <h1 class="page-title">Monitor sieci ZigBee</h1>
-            <button type="button" @click="editNewLayer">Dodaj piętro</button>
-            <button type="button" @click="editActiveLayer">Edytuj piętro</button>
+            <div>
+                <button type="button" class="button" @click="editNewLayer">Dodaj piętro</button>
+                <button type="button" class="button" @click="editActiveLayer">Edytuj piętro</button>
+            </div>
         </header>
         <div class="below-header">
             <section class="left-pane">
@@ -20,7 +22,8 @@
                 </template>
             </section>
             <main class="main">
-                <map-display :layer="activeLayer" />
+                <map-display v-if="mainDisplayMode === 'map'" :layer="activeLayer" />
+                <message-display v-if="mainDisplayMode === 'messages'" :node="$store.state.displayedMessagesNode" />
             </main>
         </div>
     </div>
@@ -32,6 +35,7 @@ import NodeList from './NodeList.vue';
 import MapDisplay from './MapDisplay.vue';
 import LayerEdit from './LayerEdit.vue';
 import NodeEdit from './NodeEdit.vue';
+import MessageDisplay from './MessageDisplay.vue'
 
 export default {
     name:"MainLayout",
@@ -41,7 +45,8 @@ export default {
         NodeList,
         MapDisplay,
         LayerEdit,
-        NodeEdit
+        NodeEdit,
+        MessageDisplay
     },
     data(){
         return{
@@ -56,6 +61,9 @@ export default {
     computed:{
         mode(){
             return this.$store.state.mode;
+        },
+        mainDisplayMode(){
+            return this.$store.state.mainDisplayMode;
         },
         layers(){
             return this.$store.state.layers;
@@ -113,6 +121,7 @@ export default {
     flex:none;
     border-bottom:1px solid #E6E6FA;
     box-sizing:border-box;
+    display:flex;
 }
 
 .page-title{

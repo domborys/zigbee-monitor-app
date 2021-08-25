@@ -4,20 +4,20 @@
         <form @submit.prevent="saveNode"> 
             <div>
                 <label for="nodeNameInput">Nazwa węzła</label>
-                <input type="text" v-model="nodeName" id="nodeNameInput" placeholder="np. czujnik dymu">
+                <input type="text" class="text-input" v-model="nodeName" id="nodeNameInput" placeholder="np. czujnik dymu">
             </div>
             <div>
                 <label for="nodeAddressInput">64-bitowy adres węzła</label>
-                <input type="text" v-model="nodeAddress" id="nodeAddressInput" placeholder="np. 0123456789ABCDEF">
-                <button type="button" @click="searchDevice">Szukaj urządzenia</button>
+                <input type="text" class="text-input" v-model="nodeAddress" id="nodeAddressInput" placeholder="np. 0123456789ABCDEF">
+                <button type="button" class="button" @click="searchDevice">Szukaj urządzenia</button>
             </div>
             <div>
                 Kliknij na mapie aby wskazać pozycję węzła.
             </div>
             
             <div>
-                <button type="button" @click="discardNode">Anuluj</button>
-                <button type="submit">Dodaj</button>
+                <button type="button" class="button" @click="discardNode">Anuluj</button>
+                <button type="submit" class="button">Dodaj</button>
             </div>
         </form>
     </section>
@@ -84,7 +84,7 @@ export default {
 <style scoped>
 .layer-details-header{
     font-size:22px;
-    font-weight:bold;
+    font-weight:600;
 }
 
 

@@ -26,7 +26,7 @@ export default {
 <style scoped>
 .layer-details-header{
     font-size:22px;
-    font-weight:bold;
+    font-weight:600;
 }
 .details-list dt{
     width:30%;

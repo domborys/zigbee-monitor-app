@@ -7,10 +7,12 @@ import cloneDeep from 'lodash/cloneDeep';
 Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
+const tempMessageIdGenerator = idGenerator();
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
     state: {
         mode:'view',
+        mainDisplayMode:'map',
         layers:[],
         editedLayer:null,
         editedLayerImageFile:null,
@@ -18,6 +20,13 @@ export default new Vuex.Store({
         //editedNodeCopy:null,
         activeLayerName:null,
         discoveryResults:null,
+        displayedMessagesNode:null,
+        messages:[
+            {type:'sent', address64:'DEADBEEF12345678', message:btoa('ledon'), tempId:tempMessageIdGenerator.next()},
+            {type:'received', address64:'DEADBEEF12345678', message:btoa('temp 31'), tempId:tempMessageIdGenerator.next()},
+            {type:'received', address64:'DEADBEEF12345678', message:btoa('result 234'), tempId:tempMessageIdGenerator.next()},
+            {type:'sent', address64:'DEADBEEF12345678', message:btoa('freeze'), tempId:tempMessageIdGenerator.next()},
+        ],
     },
     getters:{
         activeLayer(state){
@@ -36,6 +45,9 @@ export default new Vuex.Store({
     mutations: {
         setMode(state, mode){
             state.mode = mode;
+        },
+        setMainDisplayMode(state, mode){
+            state.mainDisplayMode = mode;
         },
         setLayers(state, newLayers){
             state.layers = newLayers;
@@ -133,6 +145,13 @@ export default new Vuex.Store({
                     node.discovered = state.discoveryResults.devices.some(dev => dev.address64 === node.address64);
                 }
             }
+        },
+        addMessage(state, message){
+            message.tempId = tempMessageIdGenerator.next();
+            state.messages.push(message);
+        },
+        setDisplayedMessagesNode(state, node){
+            state.displayedMessagesNode = node;
         }
     },
     actions: {
@@ -167,8 +186,16 @@ export default new Vuex.Store({
                 await api.sendLayer(layer);
             }
             await context.dispatch('downloadLayers');
+        },
+        async sendMessage(context, message){
+            context.commit('addMessage', message)
         }
     },
     modules: {
     }
-})
+});
+
+const socket = api.makeMessageSocket();
+socket.onmessage = message => store.commit('addMessage', message);
+
+export default store;

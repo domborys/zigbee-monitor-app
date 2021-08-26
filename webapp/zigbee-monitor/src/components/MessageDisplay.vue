@@ -18,9 +18,9 @@
         </div>
         <div class="message-display-inputs">
             <div class="message-input-container">
-                <input type="text" class="text-input full-width-input" v-model="messageToSend">
+                <input type="text" class="text-input message-input" v-model="messageToSend">
             </div>
-            <div>
+            <div class="button-send-container">
                 <button type="button" class="button" @click="sendMessage">Wyślij</button>
             </div>
         </div>
@@ -105,6 +105,7 @@ export default {
     display:flex;
     justify-content: flex-end;
     padding:8px;
+    border-bottom:1px solid #E6E6FA;
 }
 
 .message-display-messages{
@@ -124,6 +125,14 @@ export default {
 
 .message-input-container{
     flex:auto;
+    display:flex;
+    padding-right:5px;
+}
+
+
+
+.message-input{
+    flex:1;
 }
 
 .mode-radio-item{

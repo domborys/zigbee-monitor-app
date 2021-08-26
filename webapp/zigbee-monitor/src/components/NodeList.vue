@@ -1,6 +1,6 @@
 <template>
     <section>
-        <h2 class="node-list-header">Węzły</h2>
+        <h2 class="side-panel-h2">Węzły</h2>
         <node-item v-for="node in nodes" :key="node.id" :node="node" @click.native="showMessages(node)" />
     </section>
 </template>
@@ -28,10 +28,5 @@ export default {
 
 
 <style scoped>
-.node-list-header{
-    margin:0;
-    font-size:22px;
-    font-weight:600;
-}
 
 </style>

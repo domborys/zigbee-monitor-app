@@ -1,23 +1,16 @@
 <template>
     <div class="main-container">
-        <header class="header">
-            <h1 class="page-title">Monitor sieci ZigBee</h1>
-            <div>
-                <button type="button" class="button" @click="editNewLayer">Dodaj piętro</button>
-                <button type="button" class="button" @click="editActiveLayer">Edytuj piętro</button>
-            </div>
-        </header>
+        <app-header />
         <div class="below-header">
             <section class="left-pane">
                 <template v-if="mode === 'view'">
                     <layer-list :layers="layerNames" v-model="activeLayerName" />
-                    <layer-details :layer="activeLayer" />
                     <node-list :nodes="activeLayerNodes" />
                 </template>
-                <template v-if="mode === 'editLayer'">
+                <template v-if="mode === 'newLayer' || mode === 'editLayer'">
                     <layer-edit />
                 </template>
-                <template v-if="mode === 'editNode'">
+                <template v-if="mode === 'newNode' || mode === 'editNode'">
                     <node-edit />
                 </template>
             </section>
@@ -36,6 +29,7 @@ import MapDisplay from './MapDisplay.vue';
 import LayerEdit from './LayerEdit.vue';
 import NodeEdit from './NodeEdit.vue';
 import MessageDisplay from './MessageDisplay.vue'
+import AppHeader from './AppHeader.vue';
 
 export default {
     name:"MainLayout",
@@ -46,7 +40,8 @@ export default {
         MapDisplay,
         LayerEdit,
         NodeEdit,
-        MessageDisplay
+        MessageDisplay,
+        AppHeader 
     },
     data(){
         return{
@@ -60,7 +55,7 @@ export default {
     },
     computed:{
         mode(){
-            return this.$store.state.mode;
+            return this.$store.getters.mode;
         },
         mainDisplayMode(){
             return this.$store.state.mainDisplayMode;
@@ -91,17 +86,6 @@ export default {
         }
     },
     methods:{
-        editNewLayer(){
-            this.$store.commit('prepareNewLayer');
-            this.$store.commit('setMode', 'editLayer');
-        },
-        editActiveLayer(){
-            this.$store.commit('prepareLayerForEdit', this.$store.getters.activeLayer);
-            this.$store.commit('setMode', 'editLayer');
-        },
-        setMode(mode){
-            this.$store.commit('setMode', mode);
-        }
     },
     mounted(){
         this.$store.dispatch('downloadLayers')
@@ -117,18 +101,7 @@ export default {
     flex-direction: column;
 }
 
-.header{
-    flex:none;
-    border-bottom:1px solid #E6E6FA;
-    box-sizing:border-box;
-    display:flex;
-}
 
-.page-title{
-    font-size:25px;
-    font-weight:normal;
-    margin: 10px;
-}
 
 .below-header{
     display:flex;

@@ -8,6 +8,18 @@ body{
     font-size:15px;
 }
 
+.side-panel-h2{
+    font-size:24px;
+    font-weight:600;
+    margin:8px 0;
+}
+
+.side-panel-h3{
+    font-size:18px;
+    font-weight:600;
+    margin:8px 0;
+}
+
 .dl-inline dt, dd { 
     display: block;
     float: left;
@@ -35,17 +47,50 @@ body{
     border-style:none;
     padding:8px;
     margin:2px 2px 2px 0;
-    border-radius:2px;
-    cursor:pointer;
+    border-radius:4px;
 }
 
 .text-input{
     font-size:inherit;
     font-family: inherit;
-    padding:3px;
+    padding:8px;
+    border:1px solid gray;
+    border-radius:4px;
 }
 
-.full-width-input{
-    box-sizing: border-box;
+.input-label-group{
+    padding:0;
+    margin-top:12px;
+}
+
+.input-label-group > .text-label{
+    display:block;
+}
+
+.input-label-group > .text-input{
+    display:block;
     width:100%;
+    box-sizing: border-box;
+    margin-top:5px;
+}
+
+.file-input-button{
+    display:inline-block;
+    background-color: #630094;
+    color:white;
+    font-size:inherit;
+    font-family: inherit;
+    border-style:none;
+    padding:8px;
+    margin:2px 2px 2px 0;
+    border-radius:4px;
+}
+
+.file-input-hidden{
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
 }

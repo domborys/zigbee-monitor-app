@@ -1,46 +1,31 @@
 <template>
-    <section>
-        <h2 class="layer-details-header">Dodawanie piętra</h2>
-        <form @submit.prevent="saveLayer"> 
-            <div>
-                <label for="layerNameInput">Nazwa piętra</label>
+    <form class="layer-edit-container" @submit.prevent="saveLayer"> 
+        <div class="layer-edit-main">
+            <h2 class="side-panel-h2">{{ headerText }}</h2>
+            <div class="input-label-group">
+                <label for="layerNameInput" class="text-label">Nazwa piętra</label>
                 <input type="text" class="text-input" v-model="layerName" id="layerNameInput" placeholder="Parter">
             </div>
-            <div>
-                <label for="floorNoInput">Poziom</label>
+            <div class="input-label-group">
+                <label for="floorNoInput" class="text-label">Poziom</label>
                 <input type="text" class="text-input" v-model="floorNo" id="floorNoInput" placeholder="0">
             </div>
             <div>
-                <label for="floorPlanInput">Plan piętra</label>
-                <input type="file" ref="floorPlanFile" @change="loadFloorPlan" accept="image/*" id="floorPlanInput">
+                <h3 class="side-panel-h3">Plan piętra</h3>
+                <label for="floorPlanInput" class="file-input-button">{{ imageInputText }}</label>
+                <input type="file" ref="floorPlanFile" class="file-input-hidden" @change="loadFloorPlan" accept="image/*" id="floorPlanInput">
             </div>
-            <!--
-            <fieldset>
-                <legend>Rzeczywiste rozmiary planu</legend>
-                <div>
-                    <label for="imageWidthInput">Poziomo</label>
-                    <input type="text" :value="layer.width" @input="widthChange" id="floorWidthInput" placeholder="9.5">m
-                </div>
-                <div>
-                    <label for="imageHeightInput">Pionowo</label>
-                    <input type="text" :value="layer.height" @input="heightChange" id="floorHeightInput" placeholder="7">m
-                </div>
-                <div>
-                    <input type="checkbox" v-model="keepRatio" id="keepRatioInput">
-                    <label for="keepRatioInput">Zachowaj proporcje</label>
-                </div>
-            </fieldset>-->
-            <div>
-                <h3>Węzły sieci</h3>
+            <div v-if="isMapVisible">
+                <h3 class="side-panel-h3">Węzły sieci</h3>
                 <button type="button" class="button" @click="addNode">Dodaj węzeł</button>
                 <node-item-edit-mode v-for="node in layer.nodes" :key="makeNodeKey(node)" :node="node" @edit-node="editNode(node)" @delete-node="deleteNode(node)" />
             </div>
-            <div>
-                <button type="button" class="button" @click="discardLayer">Anuluj</button>
-                <button type="submit" class="button">Zapisz</button>
-            </div>
-        </form>
-    </section>
+        </div>
+        <div class="layer-edit-footer">
+            <button type="button" class="button footer-button" @click="discardLayer">Anuluj</button>
+            <button type="submit" class="button footer-button">Zapisz</button>
+        </div>
+    </form>
 </template>
 
 <script>
@@ -63,8 +48,23 @@ export default {
         }
     },
     computed:{
+        newLayerMode(){
+            return this.$store.getters.mode === 'newLayer';
+        },
+        editLayerMode(){
+            return this.$store.getters.mode === 'editLayer';
+        },
+        headerText(){
+            return this.newLayerMode ? 'Nowe piętro' : 'Edytuj piętro';
+        },
+        imageInputText(){
+            return this.newLayerMode ? 'Dodaj plik z planem' : 'Załaduj nowy plan';
+        },
         layer(){
             return this.$store.state.editedLayer;
+        },
+        isMapVisible(){
+            return this.layer && this.layer.imgurl;
         },
         layerName:{
             get(){
@@ -91,11 +91,11 @@ export default {
         },
         addNode(){
             this.$store.commit('prepareNewNode');
-            this.$store.commit('setMode', 'editNode');
+            this.$store.commit('pushMode', 'newNode');
         },
         editNode(node){
             this.$store.commit('prepareNodeForEdit', node);
-            this.$store.commit('setMode', 'editNode');
+            this.$store.commit('pushMode', 'editNode');
         },
         deleteNode(node){
             this.$store.commit('deleteNode', node);
@@ -111,14 +111,14 @@ export default {
         async saveLayer(){
             await this.$store.dispatch('saveEditedLayer', {isNewImage:this.isNewImage});
             this.$store.commit('setActiveLayer', this.layer.name);
-            this.$store.commit('setMode', 'view');
+            this.$store.commit('previousMode');
             //URL.revokeObjectURL(this.layer.imgurl);
             this.$store.commit('setEditedLayer', null);
             
         },
         discardLayer(){
+            this.$store.commit('previousMode');
             this.$store.commit('setEditedLayer', null);
-            this.$store.commit('setMode', 'view');
         },
     },
     mounted(){
@@ -130,10 +130,29 @@ export default {
 
 
 <style scoped>
-.layer-details-header{
-    font-size:22px;
-    font-weight:600;
+.layer-edit-container{
+    height:100%;
+    display: flex;
+    flex-direction: column;
 }
 
+.layer-edit-main{
+    flex:auto;
+    overflow:auto;
+    min-height:0;
+    border-bottom:1px solid #E6E6FA;
+}
+
+.layer-edit-footer{
+    flex:none;
+    box-sizing:border-box;
+    display:flex;
+    justify-content: flex-end;
+    padding-top:8px;
+}
+
+.footer-button{
+    flex:1;
+}
 
 </style>

@@ -2,6 +2,7 @@ export default {
     getLayers,
     getDiscoveryResults,
     sendLayer,
+    deleteLayer,
     makeMessageSocket
 };
 
@@ -15,22 +16,29 @@ function idGenerator(){
 
 function messageGenerator(layers){
     let l = 0;
-    let n = 0;
+    let n = -1;
     let messageNo = 1;
     function next(){
-        const address64 = layers[l].nodes[n].address64;
+        
         n++;
         if(n === layers[l].nodes.length){
             n = 0;
-            l++;
-            if(l === layers.length){
-                l = 0;
-            }
+            do{
+                l++;
+                if(l === layers.length){
+                    l = 0;
+                }
+            } while(layers[l].nodes.length === 0);
         }
-        const message = btoa('Number ' + messageNo++);
+        const address64 = layers[l].nodes[n].address64;
+        const message = btoa('Message number ' + messageNo++);
         return {type:'received', address64, message};
     }
-    return {next};
+    function reset(){
+        l = 0;
+        n = -1;
+    }
+    return {next, reset};
 }
 
 const layerIdGen = idGenerator();
@@ -79,6 +87,7 @@ async function sendLayer(layer, imageFile){
         modifyLayer(layer);
     }
     layers.sort((a, b) => b.floorNo - a.floorNo);
+    receivedMessagesGenerator.reset();
     if(imageFile)
         layer.imgurl = URL.createObjectURL(imageFile);
     return layer;
@@ -92,6 +101,13 @@ function addNewLayer(layer){
 function modifyLayer(layer){
     const index = layers.findIndex(l => l.id === layer.id);
     layers.splice(index, 1, layer);
+}
+
+async function deleteLayer(layer){
+    await sleep(300);
+    const index = layers.findIndex(l => l.id === layer.id);
+    layers.splice(index, 1);
+    receivedMessagesGenerator.reset();
 }
 
 function makeMessageSocket(){

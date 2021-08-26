@@ -8,10 +8,15 @@ Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
 const tempMessageIdGenerator = idGenerator();
+const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode'];
+function isValidMode(mode){
+    return modes.indexOf(mode) !== -1;
+}
 
 const store = new Vuex.Store({
     state: {
-        mode:'view',
+        //mode:'view',
+        modeStack:['view'],
         mainDisplayMode:'map',
         layers:[],
         editedLayer:null,
@@ -29,6 +34,9 @@ const store = new Vuex.Store({
         ],
     },
     getters:{
+        mode(state){
+            return state.modeStack[state.modeStack.length-1];
+        },
         activeLayer(state){
             if(state.editedLayer === null){
                 const found = state.layers.find(l => l.name === state.activeLayerName);
@@ -43,9 +51,30 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
+        /*
         setMode(state, mode){
+            
+            if(modes.indexOf(mode) === -1)
+                throw new Error("Invalid mode");
             state.mode = mode;
+        },*/
+        pushMode(state, mode){
+            if(!isValidMode(mode))
+                throw new Error("Invalid mode");
+            state.modeStack.push(mode);
         },
+        replaceMode(state, mode){
+            if(!isValidMode(mode))
+                throw new Error("Invalid mode");
+            if(state.modeStack.length > 0)
+                state.modeStack.pop();
+            state.modeStack.push(mode);
+        },
+        previousMode(state){
+            if(state.modeStack.length > 1)
+                state.modeStack.pop();
+        },
+
         setMainDisplayMode(state, mode){
             state.mainDisplayMode = mode;
         },
@@ -76,6 +105,7 @@ const store = new Vuex.Store({
         prepareLayerForEdit(state, layer){
             state.editedLayer = cloneDeep(layer);
         },
+        
         /*
         prepareNewNode(state){
             state.editedNodeCopy = null;
@@ -185,6 +215,10 @@ const store = new Vuex.Store({
             else{
                 await api.sendLayer(layer);
             }
+            await context.dispatch('downloadLayers');
+        },
+        async deleteLayer(context, layer){
+            await api.deleteLayer(layer);
             await context.dispatch('downloadLayers');
         },
         async sendMessage(context, message){

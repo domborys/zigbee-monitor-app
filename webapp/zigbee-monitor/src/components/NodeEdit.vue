@@ -1,26 +1,26 @@
 <template>
-    <section>
-        <h2 class="layer-details-header">Dodawanie węzła</h2>
-        <form @submit.prevent="saveNode"> 
-            <div>
-                <label for="nodeNameInput">Nazwa węzła</label>
+    <form class="node-edit-container" @submit.prevent="saveNode">
+        <div class="node-edit-main">
+            <h2 class="side-panel-h2">{{headerText}}</h2>
+            <div class="input-label-group">
+                <label for="nodeNameInput" class="text-label">Nazwa węzła</label>
                 <input type="text" class="text-input" v-model="nodeName" id="nodeNameInput" placeholder="np. czujnik dymu">
             </div>
-            <div>
-                <label for="nodeAddressInput">64-bitowy adres węzła</label>
+            <div class="input-label-group">
+                <label for="nodeAddressInput" class="text-label">64-bitowy adres węzła</label>
                 <input type="text" class="text-input" v-model="nodeAddress" id="nodeAddressInput" placeholder="np. 0123456789ABCDEF">
                 <button type="button" class="button" @click="searchDevice">Szukaj urządzenia</button>
             </div>
             <div>
-                Kliknij na mapie aby wskazać pozycję węzła.
+                <h3 class="side-panel-h3">Pozycja węzła na planie</h3>
+                Kliknij na planie aby wskazać pozycję węzła.
             </div>
-            
-            <div>
-                <button type="button" class="button" @click="discardNode">Anuluj</button>
-                <button type="submit" class="button">Dodaj</button>
-            </div>
-        </form>
-    </section>
+        </div>
+        <div class="node-edit-footer">
+            <button type="button" class="button footer-button" @click="discardNode">Anuluj</button>
+            <button type="submit" class="button footer-button">{{submitButtonText}}</button>
+        </div>
+    </form>
 </template>
 
 <script>
@@ -40,6 +40,15 @@ export default {
         }
     },
     computed:{
+        newNodeMode(){
+            return this.$store.getters.mode === 'newNode';
+        },
+        headerText(){
+            return this.newNodeMode ? 'Dodawanie węzła' : 'Edycja węzła';
+        },
+        submitButtonText(){
+            return this.newNodeMode ? 'Dodaj' : 'Zapisz';
+        },
         node(){
             return this.$store.state.editedNode;
         },
@@ -66,11 +75,11 @@ export default {
         },
         saveNode(){
             this.$store.commit('saveEditedNode');
-            this.$store.commit('setMode', 'editLayer');
+            this.$store.commit('previousMode');
         },
         discardNode(){
             this.$store.commit('discardEditedNode');
-            this.$store.commit('setMode', 'editLayer');
+            this.$store.commit('previousMode', 'editLayer');
         }
     },
     mounted(){
@@ -82,10 +91,29 @@ export default {
 
 
 <style scoped>
-.layer-details-header{
-    font-size:22px;
-    font-weight:600;
+
+.node-edit-container{
+    height:100%;
+    display: flex;
+    flex-direction: column;
 }
 
+.node-edit-main{
+    flex:auto;
+    overflow:auto;
+    min-height:0;
+    border-bottom:1px solid #E6E6FA;
+}
 
+.node-edit-footer{
+    flex:none;
+    box-sizing:border-box;
+    display:flex;
+    justify-content: flex-end;
+    padding-top:8px;
+}
+
+.footer-button{
+    flex:1;
+}
 </style>

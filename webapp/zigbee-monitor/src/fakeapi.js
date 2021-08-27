@@ -75,7 +75,16 @@ async function getLayers(){
 
 async function getDiscoveryResults(){
     await sleep(1000);
-    return discoveryResults;
+    const results = {devices:[]};
+    for(let layer of layers){
+        for(let node of layer.nodes){
+            if(Math.random() >= 0.5){
+                results.devices.push({address64:node.address64});
+            }
+        }
+    }
+    //return discoveryResults;
+    return results;
 }
 
 async function sendLayer(layer, imageFile){

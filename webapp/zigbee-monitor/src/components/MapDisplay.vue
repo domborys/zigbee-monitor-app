@@ -16,12 +16,14 @@
             v-for="node in nodesToDisplay"
             :key="node.name"
             :lat-lng="{lng: node.x, lat: node.y}"
+            :icon="getIcon(node)"
         >
             <l-popup :content="node.name" />
         </l-marker>
         <l-marker
             v-if="editedNodeWasPlaced"
             :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
+            :icon="editedNodeIcon"
         >
             <l-popup :content="editedNode.name" />
         </l-marker>
@@ -47,7 +49,7 @@
 </template>
 
 <script>
-import { CRS, Icon } from "leaflet";
+import { CRS, icon,Icon } from "leaflet";
 import { LMap, LImageOverlay, LMarker, LPopup, LPolyline } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';
 
@@ -57,6 +59,32 @@ Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
+
+const defaultIconSize = [25, 41];
+const defaultIconAnchor = [12, 41];
+
+const icons = {
+    red: icon({
+        iconUrl:require("@/assets/leaflet-icons/marker-icon-red.png"),
+        iconSize:defaultIconSize,
+        iconAnchor:defaultIconAnchor
+    }),
+    green: icon({
+        iconUrl:require("@/assets/leaflet-icons/marker-icon-green.png"),
+        iconSize:defaultIconSize,
+        iconAnchor:defaultIconAnchor
+    }),
+    purple: icon({
+        iconUrl:require("@/assets/leaflet-icons/marker-icon-purple.png"),
+        iconSize:defaultIconSize,
+        iconAnchor:defaultIconAnchor
+    }),
+    gray: icon({
+        iconUrl:require("@/assets/leaflet-icons/marker-icon-gray.png"),
+        iconSize:defaultIconSize,
+        iconAnchor:defaultIconAnchor
+    }),
+}
 
 
 export default {
@@ -74,6 +102,7 @@ export default {
         return {
             minZoom: -10,
             crs: CRS.Simple,
+            
             stars: [
             { name: "Sol", lng: 1, lat: 1},
             { name: "Mizar", lng: 2, lat: 1 },
@@ -91,6 +120,9 @@ export default {
         activeLayer(){
             return this.layers.find(l => l.active);
         },*/
+        mode(){
+            return this.$store.getters.mode;
+        },
         layerBounds(){
             return [[0, 0], [this.layer.height, this.layer.width]]
         },
@@ -113,6 +145,9 @@ export default {
         },
         editedNodeWasPlaced(){
             return this.editedNode && (typeof this.editedNode.x === 'number') && (typeof this.editedNode.y === 'number');
+        },
+        editedNodeIcon(){
+            return icons.purple;
         }
     },
     methods:{
@@ -125,6 +160,22 @@ export default {
                 return true;
             else
                 return false;
+        },
+        getIcon(node){
+            if(this.mode === 'view'){
+                if(node.discovered === true)
+                    return icons.green;
+                else if(node.discovered === false)
+                    return icons.red;
+                else
+                    return icons.gray;
+            }
+            else{
+                if(this.isNodeEdited(node))
+                    return icons.purple;
+                else
+                    return icons.gray;
+            }
         },
         mapClick(e){
             if(this.editedNode){

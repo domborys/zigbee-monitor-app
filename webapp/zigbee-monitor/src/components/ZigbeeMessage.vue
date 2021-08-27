@@ -69,12 +69,14 @@ export default {
 }
 
 .zigbee-message-received{
-    margin-right:20%;
+    /*margin-right:20%;*/
+    
     text-align:left;
 }
 
 .zigbee-message-sent{
-    margin-left:20%;
+    /*margin-left:20%;*/
+    align-self: flex-end;
     text-align:right;
 }
 

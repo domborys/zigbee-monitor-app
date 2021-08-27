@@ -114,6 +114,9 @@ export default {
     min-height:0;
     padding:15px;
     border-bottom:1px solid #E6E6FA;
+    display:flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .message-display-inputs{

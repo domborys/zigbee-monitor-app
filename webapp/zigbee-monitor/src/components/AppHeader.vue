@@ -2,6 +2,7 @@
     <header class="header">
         <h1 class="page-title">Monitor sieci ZigBee</h1>
         <nav v-if="isViewMode">
+            <button type="button" class="button" @click="refresh">Odśwież</button>
             <button type="button" class="button" @click="editNewLayer">Dodaj piętro</button>
             <button type="button" class="button" @click="editActiveLayer">Edytuj piętro</button>
             <button type="button" class="button" @click="deleteActiveLayer">Usuń piętro</button>
@@ -34,6 +35,15 @@ export default {
         },
         async deleteActiveLayer(){
             await this.$store.dispatch('deleteLayer', this.$store.getters.activeLayer);
+        },
+        async refresh(e){
+            try{
+                e.target.disabled = true;
+                await this.$store.dispatch('downloadDiscoveryResults');
+            }
+            finally{
+                e.target.disabled = false;
+            }
         }
     },
 }

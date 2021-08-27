@@ -7,7 +7,7 @@ class XBeeServerError(Exception):
 async def discover_network():
     request = {"type":"request", "name":"discover"}
     response = await request_response(request)
-    return response
+    return response["data"]
 
 async def send_text_data(address64 : str, text : str, output_encoding : str = 'utf-8'):
     message = base64.b64encode(text.encode(output_encoding)).decode()
@@ -27,6 +27,8 @@ async def request_response(request : dict) -> dict:
     await writer.drain()
     response_json = await reader.readline()
     response_dict = decode_command(response_json)
+    writer.close()
+    await writer.wait_closed()
     return response_dict
     
 def encode_command(command : dict) -> bytes:

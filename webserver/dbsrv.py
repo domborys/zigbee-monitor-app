@@ -8,7 +8,11 @@ def get_all_floors(db: Session):
     return db.query(dbmodels.Floor).order_by(dbmodels.Floor.number).all()
 
 def create_floor(db: Session, floor: pydmodels.FloorCreate):
-    db_floor = dbmodels.Floor(**floor.dict())
+    #db_floor = dbmodels.Floor(**floor.dict())
+    db_floor = dbmodels.Floor(name=floor.name, number=floor.number, width=floor.width, height=floor.height)
+    for node in floor.nodes:
+        db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+        db_floor.nodes.append(db_node)
     db.add(db_floor)
     db.commit()
     db.refresh(db_floor)
@@ -22,9 +26,30 @@ def modify_floor(db: Session, floor_id:int, floor: pydmodels.Floor):
     db_floor.number = floor.number
     db_floor.width = floor.width
     db_floor.height = floor.height
+    delete_nodes_in_floor(floor, db_floor)
+    update_nodes_in_floor(floor, db_floor)
+    add_nodes_in_floor(floor, db_floor)
     db.commit()
     db.refresh(db_floor)
     return db_floor
+
+def delete_nodes_in_floor(floor: pydmodels.Floor, db_floor: dbmodels.Floor):
+    floor_node_ids = [n.id for n in floor.nodes]
+    db_floor.nodes[:] = [n for n in db_floor.nodes if n.id in floor_node_ids]
+
+def update_nodes_in_floor(floor: pydmodels.Floor, db_floor: dbmodels.Floor):
+    for db_node in db_floor.nodes:
+        node = next(n for n in floor.nodes if n.id == db_node.id)
+        db_node.name = node.name
+        db_node.address64 = node.address64
+        db_node.x = node.x
+        db_node.y = node.y
+
+def add_nodes_in_floor(floor: pydmodels.Floor, db_floor: dbmodels.Floor):
+    for node in floor.nodes:
+        if node.id is None:
+            db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+            db_floor.nodes.append(db_node)
 
 def delete_floor(db: Session, floor_id: int):
     db_floor = db.query(dbmodels.Floor).get(floor_id)

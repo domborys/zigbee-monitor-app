@@ -69,8 +69,16 @@ class XBeeDeviceConnection:
         nodes = xnet.get_devices()
         devices = []
         for node in nodes:
-            devices.append({"address64": str(node.get_64bit_addr()), "id": node.get_node_id()})
+            devices.append(self.format_device_data(node))
         return {"devices": devices}
+
+    def format_device_data(self, device : XBeeDevice) -> dict:
+        return {
+            "address64": str(device.get_64bit_addr()),
+            "address16": str(device.get_16bit_addr()),
+            "id": device.get_node_id(),
+            "role": device.get_role().description
+        }
     
     def command_send(self, command : ServerCommand) -> dict:
         data = command.description["data"]

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 class NodeBase(BaseModel):
@@ -6,14 +6,20 @@ class NodeBase(BaseModel):
     address64: str
     x: float
     y: float
-    floor_id: int
+    
 
 class NodeCreate(NodeBase):
-    pass
+    floor_id: int
 
 class Node(NodeBase):
     id: int
+    floor_id: int
+    class Config:
+        orm_mode = True
 
+class NodeInFloor(NodeBase):
+    id: Optional[int]
+    floor_id: Optional[int]
     class Config:
         orm_mode = True
 
@@ -23,13 +29,13 @@ class FloorBase(BaseModel):
     number: int
     width: float
     height: float
+    nodes: List[NodeInFloor] = [] 
 
 class FloorCreate(FloorBase):
     pass
 
 class Floor(FloorBase):
     id: int
-#    nodes: List[Node] = [] 
     class Config:
         orm_mode = True
 

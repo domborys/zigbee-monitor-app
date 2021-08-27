@@ -14,6 +14,16 @@ function idGenerator(){
     return {next:next};
 }
 
+function randomAddress16(){
+    return Math.floor(Math.random()*(1<<16)).toString(16);
+}
+
+function randomRole(){
+    const roles = ['Router', 'End device'];
+    const roleIndex = Math.floor(Math.random()*roles.length);
+    return roles.roleIndex;
+}
+
 function messageGenerator(layers){
     let l = 0;
     let n = -1;
@@ -57,13 +67,6 @@ const layers = [
 
 const receivedMessagesGenerator = messageGenerator(layers);
 
-const discoveryResults = {
-    devices:[
-        {address64:'DEADBEEF12345678', deviceId:'lodowka'},
-        {address64:'BACABECE87654321', deviceId:'termo'}
-    ]
-};
-
 async function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -76,14 +79,19 @@ async function getLayers(){
 async function getDiscoveryResults(){
     await sleep(1000);
     const results = {devices:[]};
+    let deviceCounter = 1;
     for(let layer of layers){
         for(let node of layer.nodes){
             if(Math.random() >= 0.5){
-                results.devices.push({address64:node.address64});
+                results.devices.push({
+                    address64:node.address64,
+                    deviceId:`device ${deviceCounter++}`,
+                    address16:randomAddress16(),
+                    role:randomRole()
+                });
             }
         }
     }
-    //return discoveryResults;
     return results;
 }
 

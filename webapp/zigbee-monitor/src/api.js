@@ -45,3 +45,16 @@ function makeMessageSocket(){
     const socket = new WebSocket('ws://localhost:8000/message-socket');
     return socket;
 }
+
+function processLayersResponse(layers){
+    for(let layer of layers){
+        layer.imgurl = '/floors/'+layer.id+'/image';
+        for(node of layer.nodes){
+            node.address16 = null;
+            node.deviceId = null;
+            node.nodeType = null;
+            node.discovered = null;
+            node.tempId = null;
+        }
+    }
+}

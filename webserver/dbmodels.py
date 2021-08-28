@@ -10,6 +10,7 @@ class Floor(Base):
     name = Column(String(256))
     number = Column(Integer)
     image = Column(LargeBinary)
+    image_media_type = Column(String(256))
     width = Column(Float)
     height = Column(Float)
     nodes = relationship("Node", back_populates="floor", cascade="all, delete")

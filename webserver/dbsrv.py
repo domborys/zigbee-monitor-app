@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 import dbmodels, pydmodels
+from fastapi import File, UploadFile, HTTPException
 
 def get_floor_by_id(db: Session, floor_id: int):
     return db.query(dbmodels.Floor).filter(dbmodels.Floor.id == floor_id).first()
@@ -58,6 +59,18 @@ def delete_floor(db: Session, floor_id: int):
     db.delete(db_floor)
     db.commit()
     return True
+
+async def set_floor_image(db: Session, floor_id: int, file: UploadFile):
+    contents = await file.read()
+    db_floor = db.query(dbmodels.Floor).get(floor_id)
+    if db_floor is None:
+        raise HTTPException(status_code=404, detail="Floor not found")
+    print(contents[:100])
+    print(file.content_type)
+    db_floor.image = contents
+    db_floor.image_media_type = file.content_type
+    db.commit()
+    db.refresh(db_floor)
 
 def get_node_by_id(db: Session, node_id: int):
     return db.query(dbmodels.Node).filter(dbmodels.Node.id == node_id).first()

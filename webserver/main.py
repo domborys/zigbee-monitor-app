@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, WebSocket, Depends, HTTPException, status
+from fastapi import FastAPI, WebSocket, Depends, HTTPException, status, Response, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -57,6 +57,20 @@ def delete_floor(floor_id : int, db: Session = Depends(get_db)):
     existed_before = dbsrv.delete_floor(db, floor_id)
     if not existed_before:
         raise HTTPException(status_code=404, detail="Floor not found")
+
+@app.get("/floors/{floor_id}/image", response_class=Response)
+def get_floor_by_id(floor_id : int, db: Session = Depends(get_db)):
+    db_floor = dbsrv.get_floor_by_id(db, floor_id)
+    if db_floor is None:
+        raise HTTPException(status_code=404, detail="Floor not found")
+    if db_floor.image is None:
+        raise HTTPException(status_code=404, detail="Floor image not found")
+    return Response(content=db_floor.image, media_type=db_floor.image_media_type)
+
+@app.put("/floors/{floor_id}/image", response_class=Response, status_code=status.HTTP_204_NO_CONTENT)
+async def get_floor_by_id(floor_id : int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    await dbsrv.set_floor_image(db, floor_id, file)
+    
 
 @app.get("/nodes/{node_id}", response_model=pydmodels.Node)
 def get_node_by_id(node_id: int, db: Session = Depends(get_db)):

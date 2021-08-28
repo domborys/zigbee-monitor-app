@@ -49,10 +49,10 @@ function makeMessageSocket(){
 function processLayersResponse(layers){
     for(let layer of layers){
         layer.imgurl = '/floors/'+layer.id+'/image';
-        for(node of layer.nodes){
+        for(let node of layer.nodes){
             node.address16 = null;
             node.deviceId = null;
-            node.nodeType = null;
+            node.role = null;
             node.discovered = null;
             node.tempId = null;
         }

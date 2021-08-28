@@ -11,7 +11,7 @@
             <b>Adres 64-bit: </b> {{ node.address64 }}
         </div>
         <div>
-            <b>Typ węzła: </b>{{ node.nodeType}}
+            <b>Typ węzła: </b>{{ node.role}}
         </div>
         <div>
             <b>Status: </b> {{ status }}

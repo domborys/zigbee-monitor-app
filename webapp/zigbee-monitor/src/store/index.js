@@ -172,7 +172,20 @@ const store = new Vuex.Store({
                 return;
             for(let layer of state.layers){
                 for(let node of layer.nodes){
-                    node.discovered = state.discoveryResults.devices.some(dev => dev.address64 === node.address64);
+                    const result = state.discoveryResults.devices.find(dev => dev.address64 === node.address64);
+                    if(typeof result === 'undefined'){
+                        node.discovered = false;
+                        node.address16 = null;
+                        node.role = null;
+                        node.deviceId = null;
+                    }
+                    else{
+                        node.discovered = true;
+                        node.address16 = result.address16;
+                        node.role = result.role;
+                        node.deviceId = result.deviceId;
+                    }
+                    
                 }
             }
         },

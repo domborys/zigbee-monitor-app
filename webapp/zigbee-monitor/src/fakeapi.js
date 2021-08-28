@@ -6,6 +6,8 @@ export default {
     makeMessageSocket
 };
 
+import cloneDeep from 'lodash/cloneDeep';
+
 function idGenerator(){
     let id = 1;
     function next(){
@@ -21,7 +23,7 @@ function randomAddress16(){
 function randomRole(){
     const roles = ['Router', 'End device'];
     const roleIndex = Math.floor(Math.random()*roles.length);
-    return roles.roleIndex;
+    return roles[roleIndex];
 }
 
 function messageGenerator(layers){
@@ -56,12 +58,12 @@ const nodeIdGen = idGenerator();
 
 const layers = [
     {id:layerIdGen.next(),name:'1 Piętro', imgurl: require("@/assets/plan1.jpg"), floorNo:1, width:10, height:10, nodes:[
-        {id:nodeIdGen.next(),name:'Lodówka', deviceId:'lodowka', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'router', discovered:null, x:1, y:1, tempId:null},
-        {id:nodeIdGen.next(),name:'Żarówka nr 8 w żyrandolu', deviceId:'zar8', address16:'BACA', address64:'0000111122223333', nodeType:'router', discovered:null, x:8, y:4, tempId:null},
+        {id:nodeIdGen.next(),name:'Lodówka', address64:'DEADBEEF12345678', x:1, y:1},
+        {id:nodeIdGen.next(),name:'Żarówka nr 8 w żyrandolu', address64:'0000111122223333', x:8, y:4},
     ]},
     {id:layerIdGen.next(),name:'Parter',  imgurl:require("@/assets/plan2.png"), floorNo:0, width:7.8, height:5, nodes:[
-        {id:nodeIdGen.next(),name:'Czujnik dymu', deviceId:'czujnik dymu', address16:'ABCD', address64:'9999000099990000', nodeType:'end', discovered:null, x:1, y:4, tempId:null},
-        {id:nodeIdGen.next(),name:'Termometr', deviceId:'termo', address16:'ABCD', address64:'BACABECE87654321', nodeType:'end', discovered:null, x:5, y:2, tempId:null},
+        {id:nodeIdGen.next(),name:'Czujnik dymu', address64:'9999000099990000', x:1, y:4},
+        {id:nodeIdGen.next(),name:'Termometr', address64:'BACABECE87654321', x:5, y:2},
     ]},
 ];
 
@@ -73,7 +75,9 @@ async function sleep(ms){
 
 async function getLayers(){
     await sleep(200);
-    return layers;
+    let newLayers = cloneDeep(layers);
+    processLayersResponse(newLayers);
+    return newLayers;
 }
 
 async function getDiscoveryResults(){
@@ -141,4 +145,16 @@ function makeMessageSocket(){
         }
     },5000)
     return fakeSocket;
+}
+
+function processLayersResponse(layers){
+    for(let layer of layers){
+        for(let node of layer.nodes){
+            node.address16 = null;
+            node.deviceId = null;
+            node.role = null;
+            node.discovered = null;
+            node.tempId = null;
+        }
+    }
 }

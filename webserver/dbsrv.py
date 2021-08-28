@@ -65,8 +65,6 @@ async def set_floor_image(db: Session, floor_id: int, file: UploadFile):
     db_floor = db.query(dbmodels.Floor).get(floor_id)
     if db_floor is None:
         raise HTTPException(status_code=404, detail="Floor not found")
-    print(contents[:100])
-    print(file.content_type)
     db_floor.image = contents
     db_floor.image_media_type = file.content_type
     db.commit()

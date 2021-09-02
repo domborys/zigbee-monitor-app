@@ -96,5 +96,5 @@ class XBeeDeviceConnection:
     def data_received_callback(self, xbee_message):
         address = str(xbee_message.remote_device.get_64bit_addr())
         received_data = base64.b64encode(xbee_message.data).decode()
-        message_data = {"address64":address, "data":received_data}
+        message_data = {"address64":address, "message":received_data}
         self.notify_queue.put({"type":"notify", "name":"receive", "data":message_data})

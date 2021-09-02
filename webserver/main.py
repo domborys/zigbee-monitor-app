@@ -99,7 +99,7 @@ async def send_message(waiting : XBeeWaiting):
 async def message_websocket(websocket : WebSocket):
     async def websocket_receive(websocket : WebSocket):
         request = await websocket.receive_json()
-        await xbeesrv.send_text_data(address64=request['data']['address64'], text=request['data']['text'])
+        await xbeesrv.send_b64_data(address64=request['address64'], message=request['message'])
     await websocket.accept()
     asyncio.create_task(websocket_receive(websocket))
     reader, writer = await asyncio.open_connection(
@@ -107,4 +107,5 @@ async def message_websocket(websocket : WebSocket):
     while True:
         response_json = await reader.readline()
         response_dict = xbeesrv.decode_command(response_json)
-        await websocket.send_json(response_dict)
+        websocket_message = {'type':'received', 'address64':response_dict['data']['address64'], 'message':response_dict['data']['message']}
+        await websocket.send_json(websocket_message)

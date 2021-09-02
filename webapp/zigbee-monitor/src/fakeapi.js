@@ -141,7 +141,7 @@ function makeMessageSocket(){
     setInterval(() =>{
         if(typeof fakeSocket.onmessage === 'function'){
             const message = receivedMessagesGenerator.next();
-            fakeSocket.onmessage(message);
+            fakeSocket.onmessage({data:message});
         }
     },5000)
     return fakeSocket;

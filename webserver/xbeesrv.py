@@ -15,6 +15,11 @@ async def send_text_data(address64 : str, text : str, output_encoding : str = 'u
     response = await request_response(request)
     return response
 
+async def send_b64_data(address64 : str, message : str):
+    request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
+    response = await request_response(request)
+    return response
+
 async def wait(time : float):
     request = {"type":"request", "name":"wait", "data":{"time":time}}
     return await request_response(request)

@@ -9,35 +9,41 @@ export default {
 import axios from 'axios';
 
 async function getLayers(){
-    const response = await axios.get('/floors');
-    return response.data;
+    const response = await axios.get(apiurl('/floors'));
+    let layers = response.data;
+    processLayersResponse(layers);
+    console.log(layers);
+    return layers;
 }
 
 async function getDiscoveryResults(){
-    const response = await axios.get('/network-discovery');
+    const response = await axios.get(apiurl('/network-discovery'));
+    console.log(response.data);
     return response.data;
 }
 
 async function sendLayer(layer, imageFile){
     let returnedLayer;
+    console.log(layer);
+    //Ewentualnie dodać przetwarzanie
     if(typeof layer.id === 'number'){
-        returnedLayer = await axios.put('/floors/' + layer.id, layer);
+        returnedLayer = await axios.put(apiurl('/floors/' + layer.id), layer);
     }
     else{
-        returnedLayer = await axios.post('/floors', layer);
+        returnedLayer = await axios.post(apiurl('/floors'), layer);
     }
     if(imageFile){
         let formData = new FormData();
         formData.append('file', imageFile);
-        await axios.put('/floors/' + layer.id + '/image', formData, {
+        await axios.put(apiurl('/floors/' + layer.id + '/image'), formData, {
             headers: {'Content-Type': 'multipart/form-data'},
         })
     }
-
+    return returnedLayer;
 }
 
 async function deleteLayer(layer){
-    await axios.delete('/floors/' + layer.id);
+    await axios.delete(apiurl('/floors/' + layer.id));
 
 }
 
@@ -48,7 +54,7 @@ function makeMessageSocket(){
 
 function processLayersResponse(layers){
     for(let layer of layers){
-        layer.imgurl = '/floors/'+layer.id+'/image';
+        layer.imgurl = apiurl('/floors/'+layer.id+'/image');
         for(let node of layer.nodes){
             node.address16 = null;
             node.deviceId = null;
@@ -57,4 +63,8 @@ function processLayersResponse(layers){
             node.tempId = null;
         }
     }
+}
+
+function apiurl(path){
+    return path;
 }

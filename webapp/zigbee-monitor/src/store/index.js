@@ -235,7 +235,8 @@ const store = new Vuex.Store({
             await context.dispatch('downloadLayers');
         },
         async sendMessage(context, message){
-            context.commit('addMessage', message)
+            socket.send(message);
+            context.commit('addMessage', message);
         }
     },
     modules: {
@@ -243,6 +244,6 @@ const store = new Vuex.Store({
 });
 
 const socket = api.makeMessageSocket();
-socket.onmessage = message => store.commit('addMessage', message);
+socket.onmessage = e => store.commit('addMessage', e.data);
 
 export default store;

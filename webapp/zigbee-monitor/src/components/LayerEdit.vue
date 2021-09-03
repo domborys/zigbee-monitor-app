@@ -44,7 +44,6 @@ export default {
         return{
             keepRatio:true,
             image:null,
-            isNewImage:false,
         }
     },
     computed:{
@@ -76,10 +75,10 @@ export default {
         },
         floorNo:{
             get(){
-                return this.layer.floorNo;
+                return this.layer.number;
             },
             set(value){
-                this.$store.commit('setEditedLayerParam', {name:'floorNo', value:value});
+                this.$store.commit('setEditedLayerParam', {name:'number', value:value});
             }
         },
     },
@@ -106,10 +105,10 @@ export default {
                 const imgurl = URL.createObjectURL(file);
                 this.$store.dispatch('loadLayerImage', file);
             }
-            this.isNewImage = true;
+            this.$store.commit('setEditedLayerParam', {name:'isNewImage', value:true});
         },
         async saveLayer(){
-            await this.$store.dispatch('saveEditedLayer', {isNewImage:this.isNewImage});
+            await this.$store.dispatch('saveEditedLayer');
             this.$store.commit('setActiveLayer', this.layer.name);
             this.$store.commit('previousMode');
             //URL.revokeObjectURL(this.layer.imgurl);

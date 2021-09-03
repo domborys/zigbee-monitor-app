@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import FastAPI, WebSocket, Depends, HTTPException, status, Response, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -18,6 +19,19 @@ def get_db():
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+origins = [
+    'http://localhost:8080',
+    'http://localhost:8000'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class MessageToXBee(BaseModel):
     address64 : str
@@ -98,8 +112,9 @@ async def send_message(waiting : XBeeWaiting):
 @app.websocket("/message-socket")
 async def message_websocket(websocket : WebSocket):
     async def websocket_receive(websocket : WebSocket):
-        request = await websocket.receive_json()
-        await xbeesrv.send_b64_data(address64=request['address64'], message=request['message'])
+        while True:
+            request = await websocket.receive_json()
+            await xbeesrv.send_b64_data(address64=request['address64'], message=request['message'])
     await websocket.accept()
     asyncio.create_task(websocket_receive(websocket))
     reader, writer = await asyncio.open_connection(

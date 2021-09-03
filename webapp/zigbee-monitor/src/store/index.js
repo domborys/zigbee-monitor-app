@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from '../fakeapi';
+//import api from '../fakeapi';
+import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -100,10 +101,11 @@ const store = new Vuex.Store({
             state.editedLayer.height = imageData.height;
         },
         prepareNewLayer(state){
-            state.editedLayer = {name:null, imgurl:null, floorNo:null, width:null, height:null, nodes:[]};
+            state.editedLayer = {name:null, imgurl:null, number:null, width:null, height:null, nodes:[], isNewImage:false};
         },
         prepareLayerForEdit(state, layer){
             state.editedLayer = cloneDeep(layer);
+            state.editedLayer.isNewImage = false;
         },
         
         /*
@@ -220,9 +222,9 @@ const store = new Vuex.Store({
             context.commit('setDiscoveryResults', results);
             context.commit('writeDiscoveryStatusToNodes');
         },
-        async saveEditedLayer(context, config){
+        async saveEditedLayer(context){
             const layer = context.getters.activeLayer;
-            if(config.isNewImage){
+            if(layer.isNewImage){
                 await api.sendLayer(layer, context.state.editedLayerImageFile);
             }
             else{
@@ -235,7 +237,7 @@ const store = new Vuex.Store({
             await context.dispatch('downloadLayers');
         },
         async sendMessage(context, message){
-            socket.send(message);
+            socket.send(JSON.stringify(message));
             context.commit('addMessage', message);
         }
     },
@@ -244,6 +246,6 @@ const store = new Vuex.Store({
 });
 
 const socket = api.makeMessageSocket();
-socket.onmessage = e => store.commit('addMessage', e.data);
+socket.onmessage = e => store.commit('addMessage', JSON.parse(e.data));
 
 export default store;

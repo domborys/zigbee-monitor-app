@@ -23,19 +23,23 @@ async function getDiscoveryResults(){
 }
 
 async function sendLayer(layer, imageFile){
+    const layerToSend = prepareLayerToSend(layer);
     let returnedLayer;
-    console.log(layer);
+    console.log(layerToSend);
     //Ewentualnie dodać przetwarzanie
     if(typeof layer.id === 'number'){
-        returnedLayer = await axios.put(apiurl('/floors/' + layer.id), layer);
+        const response = await axios.put(apiurl('/floors/' + layer.id), layer);
+        returnedLayer = response.data;
     }
     else{
-        returnedLayer = await axios.post(apiurl('/floors'), layer);
+        const response = await axios.post(apiurl('/floors'), layer);
+        returnedLayer = response.data;
     }
     if(imageFile){
         let formData = new FormData();
         formData.append('file', imageFile);
-        await axios.put(apiurl('/floors/' + layer.id + '/image'), formData, {
+        console.log('sending image file');
+        await axios.put(apiurl('/floors/' + returnedLayer.id + '/image'), formData, {
             headers: {'Content-Type': 'multipart/form-data'},
         })
     }
@@ -65,6 +69,20 @@ function processLayersResponse(layers){
     }
 }
 
+function prepareLayerToSend(layer){
+    const nodes = layer.nodes.map(node => ({
+        id:node.id, name:node.name, address64:node.address64, x:node.x, y:node.y
+    }));
+    const layerToSend = {
+        name: layer.name,
+        number: layer.number,
+        width:layer.width,
+        height:layer.height,
+        nodes:nodes
+    };
+    return layerToSend;
+}
+
 function apiurl(path){
-    return path;
+    return 'http://localhost:8000' + path;
 }

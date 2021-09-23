@@ -1,4 +1,7 @@
 export default {
+    getToken,
+    setToken,
+    getCurrentUser,
     getLayers,
     getDiscoveryResults,
     sendLayer,
@@ -67,10 +70,39 @@ const layers = [
     ]},
 ];
 
+const users = [
+    {id:1, username:'jan', password:'jan', role:'user', disabled:false},
+    {id:2, username:'anna', password:'anna', role:'admin', disabled:false},
+];
+
+let currentToken = null;
+
 const receivedMessagesGenerator = messageGenerator(layers);
 
 async function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getToken(credentials){
+    await sleep(100);
+    const user = users.find(u => u.username === credentials.username && u.password === credentials.password);
+    if(typeof user === 'undefined' || user.disabled){
+        throw new Error("Incorrect username or password");
+    }
+    return user.id;
+}
+
+function setToken(token){
+    currentToken = token;
+}
+
+async function getCurrentUser(){
+    await sleep(100);
+    const user = users.find(u => u.id === currentToken);
+    if(typeof user === 'undefined'){
+        throw new Error("User not logged in.");
+    }
+    return user;
 }
 
 async function getLayers(){

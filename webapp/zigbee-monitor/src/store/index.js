@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-//import api from '../fakeapi';
-import api from '../api';
+import api from '../fakeapi';
+//import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -9,15 +9,20 @@ Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
 const tempMessageIdGenerator = idGenerator();
-const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode'];
+const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'login'];
 function isValidMode(mode){
     return modes.indexOf(mode) !== -1;
+}
+function isOneColumnMode(mode){
+    const oneColumnModes = ['login'];
+    return oneColumnModes.indexOf(mode) !== -1;
 }
 
 const store = new Vuex.Store({
     state: {
-        //mode:'view',
-        modeStack:['view'],
+        token:null,
+        user:null,
+        modeStack:['login'],
         mainDisplayMode:'map',
         layers:[],
         editedLayer:null,
@@ -37,6 +42,9 @@ const store = new Vuex.Store({
     getters:{
         mode(state){
             return state.modeStack[state.modeStack.length-1];
+        },
+        isOneColumnMode(state, getters){
+            return isOneColumnMode(getters.mode);
         },
         activeLayer(state){
             if(state.editedLayer === null){
@@ -59,6 +67,12 @@ const store = new Vuex.Store({
                 throw new Error("Invalid mode");
             state.mode = mode;
         },*/
+        setToken(state, token){
+            state.token = token;
+        },
+        setUser(state, user){
+            state.user = user;
+        },
         pushMode(state, mode){
             if(!isValidMode(mode))
                 throw new Error("Invalid mode");
@@ -212,6 +226,13 @@ const store = new Vuex.Store({
             }
             image.onerror = (error) => console.log(error);
             
+        },
+        async login(context, credentials){
+            const token = await api.getToken(credentials);
+            api.setToken(token);
+            context.commit('setToken', token);
+            const user = await api.getCurrentUser();
+            context.commit('setUser', user);
         },
         async downloadLayers(context){
             const layers = await api.getLayers();

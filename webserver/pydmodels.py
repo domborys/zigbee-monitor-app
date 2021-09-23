@@ -39,3 +39,20 @@ class Floor(FloorBase):
     class Config:
         orm_mode = True
 
+class UserBase(BaseModel):
+    username: str
+    role: str
+    disabled: bool
+
+class UserCreate(UserBase):
+    password: str
+
+class UserModify(UserBase):
+    password: Optional[str]
+
+class User(UserBase):
+    id: int
+    
+    class Config:
+        orm_mode = True
+

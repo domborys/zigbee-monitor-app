@@ -1,7 +1,7 @@
 <template>
     <div class="main-container">
         <app-header />
-        <div class="below-header">
+        <div v-if="!isOneColumnMode" class="below-header">
             <section class="left-pane">
                 <template v-if="mode === 'view'">
                     <layer-list :layers="layerNames" v-model="activeLayerName" />
@@ -19,6 +19,9 @@
                 <message-display v-if="mainDisplayMode === 'messages'" :node="$store.state.displayedMessagesNode" />
             </main>
         </div>
+        <div v-if="isOneColumnMode" class="below-header-one-column">
+            <login-form v-if="mode === 'login'" />
+        </div>
     </div>
 </template>
 <script>
@@ -30,6 +33,7 @@ import LayerEdit from './LayerEdit.vue';
 import NodeEdit from './NodeEdit.vue';
 import MessageDisplay from './MessageDisplay.vue'
 import AppHeader from './AppHeader.vue';
+import LoginForm from './LoginForm.vue';
 
 export default {
     name:"MainLayout",
@@ -41,7 +45,8 @@ export default {
         LayerEdit,
         NodeEdit,
         MessageDisplay,
-        AppHeader 
+        AppHeader,
+        LoginForm
     },
     data(){
         return{
@@ -56,6 +61,9 @@ export default {
     computed:{
         mode(){
             return this.$store.getters.mode;
+        },
+        isOneColumnMode(){
+            return this.$store.getters.isOneColumnMode;
         },
         mainDisplayMode(){
             return this.$store.state.mainDisplayMode;
@@ -108,6 +116,14 @@ export default {
     flex:auto;
     min-height:0;
 }
+
+.below-header-one-column{
+    display:flex;
+    justify-content: center;
+    flex:auto;
+    min-height:0;
+}
+
 
 .left-pane{
     flex:0 300px;

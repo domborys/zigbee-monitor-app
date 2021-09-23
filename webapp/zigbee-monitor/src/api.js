@@ -3,10 +3,38 @@ export default {
     getDiscoveryResults,
     sendLayer,
     deleteLayer,
-    makeMessageSocket
+    makeMessageSocket,
+    getToken,
+    setToken,
+    getCurrentUser
 };
 
 import axios from 'axios';
+
+let currentToken = null;
+
+async function getToken(credentials){
+    let formData = new FormData();
+    formData.append('username', credentials.username);
+    formData.append('password', credentials.password);
+    const token = await axios.post(apiurl('/token'), formData, {
+        headers: {'Content-Type': 'multipart/form-data'},
+    })
+    return token;
+}
+
+function setToken(token){
+    currentToken = token;
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+}
+
+async function getCurrentUser(){
+    const response = await axios.get(apiurl('/users/me'));
+    console.log(response.data);
+    return response.data;
+}
+
+//Dorobić getCurrentUser
 
 async function getLayers(){
     const response = await axios.get(apiurl('/floors'));

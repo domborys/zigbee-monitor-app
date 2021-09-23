@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
 import dbmodels, pydmodels
 from fastapi import File, UploadFile, HTTPException
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_floor_by_id(db: Session, floor_id: int):
     return db.query(dbmodels.Floor).filter(dbmodels.Floor.id == floor_id).first()
 
 def get_all_floors(db: Session):
-    return db.query(dbmodels.Floor).order_by(dbmodels.Floor.number).all()
+    return db.query(dbmodels.Floor).order_by(dbmodels.Floor.number.desc()).all()
 
 def create_floor(db: Session, floor: pydmodels.FloorCreate):
     #db_floor = dbmodels.Floor(**floor.dict())
@@ -79,4 +82,52 @@ def create_node(db: Session, node: pydmodels.NodeCreate):
     db.commit()
     db.refresh(db_node)
     return db_node
+
+def get_all_users(db: Session):
+    return db.query(dbmodels.User).all()
+
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(dbmodels.User).filter(dbmodels.User.id == user_id).first()
+
+def get_user_by_username(db: Session, username: str):
+    return db.query(dbmodels.User).filter(dbmodels.User.username == username).first()
+
+def create_user(db: Session, user: pydmodels.UserCreate):
+    db_user = dbmodels.User(username=user.username, role=user.role, disabled=user.disabled)
+    db_user.password_hash = pwd_context.hash(user.password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def modify_user(db: Session, user_id: int, user: pydmodels.UserModify):
+    db_user = db.query(dbmodels.User).get(user_id)
+    if db_user is None:
+        return None
+    db_user.username = user.username
+    db_user.role = user.role
+    db_user.disabled = user.disabled
+    if user.password is not None:
+        db_user.password_hash = pwd_context.hash(user.password)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def delete_user(db: Session, user_id: int):
+    db_user = db.query(dbmodels.User).get(user_id)
+    if db_user is None:
+        return False
+    db.delete(db_user)
+    db.commit()
+    return True
+
+def authenticate_user(db: Session, username: str, password: str):
+    db_user = get_user_by_username(db, username)
+    if db_user is None:
+        return None
+    if not pwd_context.verify(password, db_user.password_hash):
+        return None
+    return db_user
+
+
 

@@ -1,11 +1,16 @@
 <template>
     <header class="header">
         <h1 class="page-title">Monitor sieci ZigBee</h1>
-        <nav v-if="isViewMode">
-            <button type="button" class="button" @click="refresh">Odśwież</button>
-            <button type="button" class="button" @click="editNewLayer">Dodaj piętro</button>
-            <button type="button" class="button" @click="editActiveLayer">Edytuj piętro</button>
-            <button type="button" class="button" @click="deleteActiveLayer">Usuń piętro</button>
+        <nav>
+            <template v-if="isViewMode">
+                <button type="button" class="button" @click="refresh">Odśwież</button>
+                <button type="button" class="button" @click="editNewLayer">Dodaj piętro</button>
+                <button type="button" class="button" @click="editActiveLayer">Edytuj piętro</button>
+                <button type="button" class="button" @click="deleteActiveLayer">Usuń piętro</button>
+            </template>
+            <template v-if="isLoggedIn">
+                <button type="button" class="button" @click="logout">Wyloguj</button>
+            </template>
         </nav>
     </header>
 </template>
@@ -22,6 +27,9 @@ export default {
     computed:{
         isViewMode(){
             return this.$store.getters.mode === 'view';
+        },
+        isLoggedIn(){
+            return this.$store.state.user !== null;
         }
     },
     methods:{
@@ -44,6 +52,14 @@ export default {
             finally{
                 e.target.disabled = false;
             }
+        },
+        async logout(){
+            try{
+
+            }
+            catch(e){
+                console.log(e);
+            }
         }
     },
 }
@@ -61,7 +77,7 @@ export default {
 }
 
 .page-title{
-    font-size:25px;
+    font-size:20px;
     font-weight:normal;
     margin: 10px;
 }

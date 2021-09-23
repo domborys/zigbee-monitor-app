@@ -26,3 +26,12 @@ class Node(Base):
     floor_id = Column(Integer, ForeignKey("floors.id"))
     floor = relationship("Floor", back_populates="nodes")
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(64))
+    password_hash = Column(String(128))
+    role = Column(String(32))
+    disabled = Column(Boolean)
+

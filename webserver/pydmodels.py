@@ -56,3 +56,13 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
+class AtCommandBase(BaseModel):
+    address64: str
+    at_command: str
+    apply_changes: bool = True
+
+class AtCommandSet(AtCommandBase):
+    value: str
+
+class AtCommandGetExecute(AtCommandBase):
+    value: Optional[str]

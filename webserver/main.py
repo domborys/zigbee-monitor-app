@@ -198,6 +198,18 @@ async def send_message(message : MessageToXBee):
 async def send_message(waiting : XBeeWaiting):
     return await xbeesrv.wait(waiting.time)
 
+@app.post("/xbee-get-parameter")
+async def get_parameter(command_data : pydmodels.AtCommandGetExecute):
+    return await xbeesrv.at_command("get_parameter", command_data)
+
+@app.post("/xbee-set-parameter")
+async def set_parameter(command_data : pydmodels.AtCommandSet):
+    return await xbeesrv.at_command("set_parameter", command_data)
+
+@app.post("/xbee-execute-command")
+async def get_parameter(command_data : pydmodels.AtCommandGetExecute):
+    return await xbeesrv.at_command("execute_command", command_data)
+
 @app.websocket("/message-socket")
 async def message_websocket(websocket : WebSocket):
     async def websocket_receive(websocket : WebSocket):

@@ -1,5 +1,6 @@
 import asyncio, json, base64
-import config
+from typing import Union
+import config, pydmodels
 
 class XBeeServerError(Exception):
     pass
@@ -17,6 +18,19 @@ async def send_text_data(address64 : str, text : str, output_encoding : str = 'u
 
 async def send_b64_data(address64 : str, message : str):
     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
+    response = await request_response(request)
+    return response
+
+async def at_command(command_type: str, command: Union[pydmodels.AtCommandGetExecute,pydmodels.AtCommandSet]):
+    valid_command_types = ["get_parameter", "set_parameter", "execute_command"]
+    if command_type not in valid_command_types:
+        raise RuntimeError(f"Invalid command_type ({command_type})")
+    request = {"type":"request", "name":command_type, "data":{
+        "address64":command.address64,
+        "at_command": command.at_command,
+        "value": command.value,
+        "apply_changes": command.apply_changes
+    }}
     response = await request_response(request)
     return response
 

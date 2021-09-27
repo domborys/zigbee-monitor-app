@@ -1,6 +1,6 @@
 import threading, time, base64
 from queue import Queue
-from typing import Optional
+from typing import Callable, Optional
 from server_command import ServerCommand
 from digi.xbee.devices import XBeeDevice, XBeeNetwork, RemoteXBeeDevice
 from digi.xbee.exception import XBeeException
@@ -46,6 +46,12 @@ class XBeeDeviceConnection:
             return self.command_discover(command)
         elif name == "send":
             return self.command_send(command)
+        elif name == "get_parameter":
+            return self.command_get_parameter(command)
+        elif name == "set_parameter":
+            return self.command_set_parameter(command)
+        elif name == "execute_command":
+            return self.command_execute_command(command)
         elif name == "wait":
             return self.command_wait(command)
         else:
@@ -92,6 +98,30 @@ class XBeeDeviceConnection:
         data = command.description["data"]
         time.sleep(data["time"])
         return {"time":data["time"]}
+
+    def command_get_parameter(self, command : ServerCommand) -> dict:
+        remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(command.description["data"]["address64"]))
+        return self.at_related_command(command, remote_device.get_parameter)
+
+    def command_set_parameter(self, command : ServerCommand) -> dict:
+        remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(command.description["data"]["address64"]))
+        return self.at_related_command(command, remote_device.set_parameter)
+
+    def command_execute_command(self, command : ServerCommand) -> dict:
+        remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(command.description["data"]["address64"]))
+        return self.at_related_command(command, remote_device.execute_command)
+
+    def at_related_command(self, command : ServerCommand, method : Callable) -> dict:
+        data = command.description["data"]
+        #remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(data["address64"]))
+        at_command = data["at_command"]
+        value = None if data["value"] is None else base64.b64decode(data["value"])
+        apply_changes = data["apply_changes"]
+        result = method(at_command, value, apply_changes)
+        if result is None:
+            return {}
+        else:
+            return {"result":base64.b64encode(result).decode()}
 
     def data_received_callback(self, xbee_message):
         address = str(xbee_message.remote_device.get_64bit_addr())

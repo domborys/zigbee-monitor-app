@@ -9,6 +9,7 @@
                 <button type="button" class="button" @click="deleteActiveLayer">Usuń piętro</button>
             </template>
             <template v-if="isLoggedIn">
+                <span>{{ user.username }}</span>
                 <button type="button" class="button" @click="logout">Wyloguj</button>
             </template>
         </nav>
@@ -30,6 +31,9 @@ export default {
         },
         isLoggedIn(){
             return this.$store.state.user !== null;
+        },
+        user(){
+            return this.$store.state.user;
         }
     },
     methods:{
@@ -55,7 +59,8 @@ export default {
         },
         async logout(){
             try{
-
+                await this.$store.dispatch('logout');
+                this.$store.commit('replaceMode', 'login');
             }
             catch(e){
                 console.log(e);

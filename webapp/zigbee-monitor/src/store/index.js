@@ -9,7 +9,7 @@ Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
 const tempMessageIdGenerator = idGenerator();
-const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'login'];
+const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'login'];
 function isValidMode(mode){
     return modes.indexOf(mode) !== -1;
 }
@@ -57,6 +57,27 @@ const store = new Vuex.Store({
         },
         layerNames(state){
             return state.layers.map(l => l.name);
+        },
+        nodeAddressesInSystem(state){
+            const addr2node = {};
+            for(let layer of state.layers){
+                for(let node of layer.nodes){
+                    addr2node[node.address64] = true;
+                }
+            }
+            return addr2node;
+        },
+        discoveredNodesNotInSystem(state, getters){
+            if(state.discoveryResults === null)
+                return [];
+            const addressLookup = getters.nodeAddressesInSystem;
+            return state.discoveryResults.devices.filter(node => !addressLookup[node.address64]);
+        },
+        discoveredNodesInSystem(state, getters){
+            if(state.discoveryResults === null)
+                return [];
+            const addressLookup = getters.nodeAddressesInSystem;
+            return state.discoveryResults.devices.filter(node => addressLookup[node.address64]);
         }
     },
     mutations: {
@@ -233,6 +254,11 @@ const store = new Vuex.Store({
             context.commit('setToken', token);
             const user = await api.getCurrentUser();
             context.commit('setUser', user);
+        },
+        async logout(context){
+            await api.logout();
+            context.commit('setToken', null);
+            context.commit('setUser', null);
         },
         async downloadLayers(context){
             const layers = await api.getLayers();

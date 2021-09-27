@@ -6,7 +6,8 @@ export default {
     makeMessageSocket,
     getToken,
     setToken,
-    getCurrentUser
+    getCurrentUser,
+    logout
 };
 
 import axios from 'axios';
@@ -17,9 +18,14 @@ async function getToken(credentials){
     let formData = new FormData();
     formData.append('username', credentials.username);
     formData.append('password', credentials.password);
-    const token = await axios.post(apiurl('/token'), formData, {
+    const response = await axios.post(apiurl('/token'), formData, {
         headers: {'Content-Type': 'multipart/form-data'},
-    })
+    });
+    const token = response.data.access_token;
+    console.log(token);
+    if(typeof token !== 'string'){
+        throw new Error("Invalid token.");
+    }
     return token;
 }
 
@@ -34,7 +40,10 @@ async function getCurrentUser(){
     return response.data;
 }
 
-//Dorobić getCurrentUser
+async function logout(){
+    currentToken = null;
+    delete axios.defaults.headers.common['Authorization'];
+}
 
 async function getLayers(){
     const response = await axios.get(apiurl('/floors'));

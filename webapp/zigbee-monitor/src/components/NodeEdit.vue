@@ -71,7 +71,7 @@ export default {
     },
     methods:{
         searchDevice(){
-
+            this.$store.commit('pushMode', 'selectNode');
         },
         saveNode(){
             this.$store.commit('saveEditedNode');

@@ -13,6 +13,9 @@
                 <template v-if="mode === 'newNode' || mode === 'editNode'">
                     <node-edit />
                 </template>
+                <template v-if="mode === 'selectNode'">
+                    <node-select />
+                </template>
             </section>
             <main class="main">
                 <map-display v-if="mainDisplayMode === 'map'" :layer="activeLayer" />
@@ -34,6 +37,7 @@ import NodeEdit from './NodeEdit.vue';
 import MessageDisplay from './MessageDisplay.vue'
 import AppHeader from './AppHeader.vue';
 import LoginForm from './LoginForm.vue';
+import NodeSelect from './NodeSelect.vue';
 
 export default {
     name:"MainLayout",
@@ -46,7 +50,8 @@ export default {
         NodeEdit,
         MessageDisplay,
         AppHeader,
-        LoginForm
+        LoginForm,
+        NodeSelect
     },
     data(){
         return{

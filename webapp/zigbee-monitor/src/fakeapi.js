@@ -2,6 +2,7 @@ export default {
     getToken,
     setToken,
     getCurrentUser,
+    logout,
     getLayers,
     getDiscoveryResults,
     sendLayer,
@@ -103,6 +104,10 @@ async function getCurrentUser(){
         throw new Error("User not logged in.");
     }
     return user;
+}
+
+async function logout(){
+    currentToken = null;
 }
 
 async function getLayers(){

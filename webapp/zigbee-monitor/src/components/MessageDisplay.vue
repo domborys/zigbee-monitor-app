@@ -16,13 +16,66 @@
         <div class="message-display-messages">
             <zigbee-message v-for="message in messagesToDisplay" :key="message.tempId" :message="message" :mode="displayMode" />
         </div>
-        <div class="message-display-inputs">
-            <div class="message-input-container">
-                <input type="text" class="text-input message-input" v-model="messageToSend">
+        <div class="message-display-footer">
+            <div class="writing-mode-container">
+                <label class="mode-radio-item">
+                    Wyślij komunikat
+                    <input type="radio" v-model="writingMode" value="message" name="radioWritingMode">
+                </label>
+                <label class="mode-radio-item">
+                    Odczytaj parametr
+                    <input type="radio" v-model="writingMode" value="getParameter" name="radioWritingMode">
+                </label>
+                <label class="mode-radio-item">
+                    Zapisz parametr
+                    <input type="radio" v-model="writingMode" value="setParameter" name="radioWritingMode">
+                </label>
+                <label class="mode-radio-item">
+                    Wykonaj rozkaz
+                    <input type="radio" v-model="writingMode" value="executeCommand" name="radioWritingMode">
+                </label>
             </div>
-            <div class="button-send-container">
-                <button type="button" class="button" @click="sendMessage">Wyślij</button>
+            <div v-if="writingMode === 'message'" class="message-display-inputs">
+                <div class="message-input-container">
+                    <input type="text" class="text-input message-input" v-model="messageToSend">
+                </div>
+                <div class="button-send-container">
+                    <button type="button" class="button" @click="sendMessage">Wyślij</button>
+                </div>
             </div>
+            <div v-if="writingMode === 'getParameter' || writingMode === 'setParameter' || writingMode === 'executeCommand'" class="at-command-container">
+                <div class="at-command-item">
+                    <label for="atCommandName" class="at-data-label">Komenda AT</label>
+                    <input type="text" class="text-input at-command-input" v-model="atCommandName" id="atCommandName">
+                </div>
+                <div  class="at-command-item">
+                    <div>
+                        Typ danych
+                    </div>
+                    <div class="at-data-mode-container">
+                        
+                        <label class="mode-radio-item">
+                            Brak
+                            <input type="radio" v-model="atDataMode" value="none" name="atDataMode">
+                        </label>
+                        <label class="mode-radio-item">
+                            Text
+                            <input type="radio" v-model="atDataMode" value="text" name="atDataMode">
+                        </label>
+                        <label class="mode-radio-item">
+                            Hex
+                            <input type="radio" v-model="atDataMode" value="hex" name="atDataMode">
+                        </label>
+                    </div>
+                </div>
+                <div  class="at-command-item">
+                    <label for="atCommandData" class="at-data-label">Dane</label>
+                    <input type="text" class="text-input at-data-input" :disabled="atDataMode === 'none'" v-model="atCommandData" id="atCommandData">
+                </div>
+                <div  class="at-command-item">
+                    <button type="button" class="button" @click="sendAtCommand">Wyślij</button>
+                </div>
+            </div> 
         </div>
     </div>
 </template>
@@ -41,7 +94,11 @@ export default {
     },
     data() {
         return {
+            writingMode:'message',
+            atDataMode:'none',
             displayMode:'text',
+            atCommandName:'',
+            atCommandData:'',
             messageToSend:'',
         };
     },
@@ -68,15 +125,15 @@ export default {
         },
         getEncodedMessage(){
             if(this.displayMode === 'text')
-                return this.encodeTextMessage();
+                return this.encodeTextMessage(this.messageToSend);
             else if(this.displayMode === 'hex')
-                return this.encodeHexMessage();
+                return this.encodeHexMessage(this.messageToSend);
         },
-        encodeTextMessage(){
-            return btoa(this.messageToSend);
+        encodeTextMessage(message){
+            return btoa(message);
         },
-        encodeHexMessage(){
-            const numArray = this.messageToSend.split(/\s+/).map(str => parseInt(str, 16));
+        encodeHexMessage(message){
+            const numArray = message.split(/\s+/).map(str => parseInt(str, 16));
             const isValid = numArray.every(n => !isNaN(n) && n >= 0 && n <= 255);
             if(!isValid){
                 throw new Error("Invalid hex string");
@@ -84,10 +141,52 @@ export default {
             const binaryString = numArray.map(n => String.fromCharCode(n)).join('');
             return btoa(binaryString);
         },
+        getEncodedCommandValue(){
+            if(this.atDataMode === 'text')
+                return this.encodeTextMessage(this.atCommandData);
+            else if(this.atDataMode === 'hex')
+                return this.encodeHexMessage(this.atCommandData);
+            else
+                return null;
+            
+        },
+        getAtCommandType(){
+            if(this.writingMode === 'getParameter')
+                return 'get_parameter';
+            else if(this.writingMode === 'setParameter')
+                return 'set_parameter';
+            else if(this.writingMode === 'executeCommand')
+                return 'execute_command';
+            else
+                return '';
+        },
+        sendAtCommand(){
+            try{
+                const commandData = {
+                    commandType:this.getAtCommandType(),
+                    address64:this.node.address64,
+                    atCommand:this.atCommandName,
+                    value:this.getEncodedCommandValue(),
+                    format:this.atDataMode,
+                };
+                this.$store.dispatch('sendAtCommand', commandData);
+            }
+            catch(error){
+                console.error(error);
+            }
+
+        },
         showMap(){
             this.$store.commit('setMainDisplayMode', 'map');
         }
     },
+    watch:{
+        atDataMode(newMode){
+            if(newMode === 'none'){
+                this.atCommandData = '';
+            }
+        }
+    }
 };
 </script>
 
@@ -119,11 +218,14 @@ export default {
     align-items: flex-start;
 }
 
-.message-display-inputs{
+.message-display-footer{
     flex:none;
     box-sizing:border-box;
-    display:flex;
     padding:8px;
+}
+
+.message-display-inputs{
+    display:flex;
 }
 
 .message-input-container{
@@ -132,7 +234,9 @@ export default {
     padding-right:5px;
 }
 
-
+.writing-mode-container{
+    display:flex;
+}
 
 .message-input{
     flex:1;
@@ -149,5 +253,34 @@ export default {
 .mode-radio-item:hover{
     background-color: #E6E6FA;
     cursor: pointer;
+}
+
+.at-command-container{
+    display:flex;
+    flex-wrap: wrap;
+    margin-top:16px;
+}
+
+.at-command-input{
+    width:30px;
+}
+
+.at-data-label{
+    display:block;
+}
+
+.at-data-mode-container{
+    
+    display:flex;
+    
+}
+
+.at-command-item{
+    margin-left:8px;
+    margin-right:16px;
+}
+
+.at-data-input{
+    width:300px;
 }
 </style>

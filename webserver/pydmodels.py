@@ -66,3 +66,12 @@ class AtCommandSet(AtCommandBase):
 
 class AtCommandGetExecute(AtCommandBase):
     value: Optional[str]
+
+class AtCommandWithType(AtCommandBase):
+    command_type: str
+    value: Optional[str]
+
+class AtCommandResult(BaseModel):
+    status: str
+    result: Optional[str]
+    error: Optional[str]

@@ -7,7 +7,8 @@ export default {
     getToken,
     setToken,
     getCurrentUser,
-    logout
+    logout,
+    sendAtCommand,
 };
 
 import axios from 'axios';
@@ -93,6 +94,13 @@ function makeMessageSocket(){
     return socket;
 }
 
+async function sendAtCommand(commandData){
+    const commandToSend = prepareAtCommandToSend(commandData);
+    const response = await axios.post(apiurl('/xbee-at-command'), commandToSend);
+    console.log(response);
+    return response.data;
+}
+
 function processLayersResponse(layers){
     for(let layer of layers){
         layer.imgurl = apiurl('/floors/'+layer.id+'/image');
@@ -118,6 +126,15 @@ function prepareLayerToSend(layer){
         nodes:nodes
     };
     return layerToSend;
+}
+
+function prepareAtCommandToSend(commandData){
+    return{
+        address64:commandData.address64,
+        command_type:commandData.commandType,
+        at_command:commandData.atCommand,
+        value:commandData.value,
+    }
 }
 
 function apiurl(path){

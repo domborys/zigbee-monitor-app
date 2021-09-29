@@ -7,7 +7,8 @@ export default {
     getDiscoveryResults,
     sendLayer,
     deleteLayer,
-    makeMessageSocket
+    makeMessageSocket,
+    sendAtCommand,
 };
 
 import cloneDeep from 'lodash/cloneDeep';
@@ -182,6 +183,23 @@ function makeMessageSocket(){
         }
     },5000)
     return fakeSocket;
+}
+
+async function sendAtCommand(commandData){
+    await sleep(150);
+    const responseData = {result:null};
+    if(commandData.atCommand === 'NI' && commandData.commandType === 'get_parameter'){
+        responseData.result = btoa('fajne urzadzenie');
+    }
+    else if(commandData.atCommand === 'ER'){
+        responseData.error = 'Wystąpił poważny błąd';
+    }
+    else if(commandData.commandType === 'get_parameter'){
+        responseData.result = btoa('ABCD');
+    }
+
+    return responseData;
+
 }
 
 function processLayersResponse(layers){

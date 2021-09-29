@@ -119,7 +119,7 @@ class XBeeDeviceConnection:
         apply_changes = data["apply_changes"]
         result = method(at_command, value, apply_changes)
         if result is None:
-            return {}
+            return {"result":None}
         else:
             return {"result":base64.b64encode(result).decode()}
 

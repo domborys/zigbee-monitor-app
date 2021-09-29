@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from '../fakeapi';
-//import api from '../api';
+//import api from '../fakeapi';
+import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -286,6 +286,16 @@ const store = new Vuex.Store({
         async sendMessage(context, message){
             socket.send(JSON.stringify(message));
             context.commit('addMessage', message);
+        },
+        async sendAtCommand(context, commandData){
+            const message = {
+                type:'at',
+                result:null,
+                ...commandData
+            };
+            context.commit('addMessage', message);
+            const responseData = await api.sendAtCommand(commandData);
+            message.result = responseData.result;
         }
     },
     modules: {

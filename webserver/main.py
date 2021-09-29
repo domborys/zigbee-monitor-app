@@ -207,8 +207,12 @@ async def set_parameter(command_data : pydmodels.AtCommandSet):
     return await xbeesrv.at_command("set_parameter", command_data)
 
 @app.post("/xbee-execute-command")
-async def get_parameter(command_data : pydmodels.AtCommandGetExecute):
+async def execute_command(command_data : pydmodels.AtCommandGetExecute):
     return await xbeesrv.at_command("execute_command", command_data)
+
+@app.post("/xbee-at-command")
+async def execute_command(command_data : pydmodels.AtCommandWithType):
+    return await xbeesrv.at_command(command_data.command_type, command_data)
 
 @app.websocket("/message-socket")
 async def message_websocket(websocket : WebSocket):

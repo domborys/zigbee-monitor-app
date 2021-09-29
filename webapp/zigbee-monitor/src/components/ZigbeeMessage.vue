@@ -4,12 +4,21 @@
             <b>{{ message.nodeName }}</b>
             {{ message.address64 }}
         </div>
-        <div class="zigbee-message-content">
+        <div v-if="message.type === 'sent' || message.type === 'received'" class="zigbee-message-content">
             <template v-if="mode === 'text'">
                 {{ messageAsText }}
             </template>
             <template v-if="mode === 'hex'">
                 {{ messageAsHex }}
+            </template>
+        </div>
+        <div v-if="message.type === 'at'" class="zigbee-message-content">
+            <b>Komenda AT</b>: {{ message.atCommand }}<br>
+            <template v-if="message.value !== null">
+                <b>Dane:</b> {{ atCommandData }}<br>
+            </template>
+            <template v-if="message.result !== null">
+                <b>Wynik:</b> {{ atCommandResult }}
             </template>
         </div>
     </article>
@@ -41,20 +50,44 @@ export default {
     computed:{
         boundClasses(){
             return {
-                'zigbee-message-received':this.message.type === 'received',
-                'zigbee-message-sent':this.message.type === 'sent'
+                'zigbee-message-left':this.message.type === 'received',
+                'zigbee-message-right':this.message.type === 'sent' || this.message.type === 'at'
             };
         },
         messageAsText(){
-            return atob(this.message.message);
+            return this.decodeTextMessage(this.message.message);
         },
         messageAsHex(){
-            const messageBinary = atob(this.message.message);
-            return [...messageBinary].map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+            return this.decodeHexMessage(this.message.message);
+        },
+        atCommandData(){
+            if(this.message.format === 'text'){
+                return this.decodeTextMessage(this.message.value);
+            }
+            else if(this.message.format === 'hex'){
+                return this.decodeHexMessage(this.message.value);
+            }
+            else{
+                return '';
+            }
+        },
+        atCommandResult(){
+            if(!this.message.result)
+                return '';
+            const messageHex = this.decodeHexMessage(this.message.result);
+            const messageText = this.decodeTextMessage(this.message.result);
+            return `${messageHex} (${messageText})`;
         }
         
     },
     methods:{
+        decodeTextMessage(message){
+            return atob(message);
+        },
+        decodeHexMessage(message){
+            const messageBinary = atob(message);
+            return [...messageBinary].map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+        }
     }
 }
 </script>
@@ -68,16 +101,16 @@ export default {
     border-radius: 5px;
 }
 
-.zigbee-message-received{
+.zigbee-message-left{
     /*margin-right:20%;*/
     
     text-align:left;
 }
 
-.zigbee-message-sent{
+.zigbee-message-right{
     /*margin-left:20%;*/
     align-self: flex-end;
-    text-align:right;
+    /*text-align:right;*/
 }
 
 .zigbee-message-header{

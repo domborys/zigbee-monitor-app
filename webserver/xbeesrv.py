@@ -1,5 +1,7 @@
 import asyncio, json, base64
 from typing import Union
+
+from fastapi.exceptions import HTTPException
 import config, pydmodels
 
 class XBeeServerError(Exception):
@@ -21,10 +23,13 @@ async def send_b64_data(address64 : str, message : str):
     response = await request_response(request)
     return response
 
-async def at_command(command_type: str, command: Union[pydmodels.AtCommandGetExecute,pydmodels.AtCommandSet]):
+async def at_command(
+        command_type: str, 
+        command: Union[pydmodels.AtCommandGetExecute, pydmodels.AtCommandSet]
+    ) -> pydmodels.AtCommandResult:
     valid_command_types = ["get_parameter", "set_parameter", "execute_command"]
     if command_type not in valid_command_types:
-        raise RuntimeError(f"Invalid command_type ({command_type})")
+        raise HTTPException(status_code=400, detail=f"Invalid command_type ({command_type})")
     request = {"type":"request", "name":command_type, "data":{
         "address64":command.address64,
         "at_command": command.at_command,
@@ -32,7 +37,7 @@ async def at_command(command_type: str, command: Union[pydmodels.AtCommandGetExe
         "apply_changes": command.apply_changes
     }}
     response = await request_response(request)
-    return response
+    return make_at_command_response(response)
 
 async def wait(time : float):
     request = {"type":"request", "name":"wait", "data":{"time":time}}
@@ -63,5 +68,11 @@ def decode_command(command_bytes : bytes) -> dict:
         return json.loads(command_json)
     except Exception as err:
         raise XBeeServerError(f"Invalid response from the XBee device server. Root cause: {err}")
+
+def make_at_command_response(xbee_response) -> pydmodels.AtCommandResult:
+    if xbee_response["status"] == "ok":
+        return pydmodels.AtCommandResult(status="ok", result=xbee_response["data"]["result"])
+    else:
+        return pydmodels.AtCommandResult(status="error", error=xbee_response["message"])
 
 

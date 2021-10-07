@@ -15,6 +15,11 @@
                 <h3 class="side-panel-h3">Pozycja węzła na planie</h3>
                 Kliknij na planie aby wskazać pozycję węzła.
             </div>
+            <div>
+                <h3 class="side-panel-h3">Wyświetlane wartości</h3>
+                <button type="button" class="button" @click="addReadingConfig">Dodaj wartość</button>
+                <node-parameter v-for="config in node.readingConfigs" :key="makeParameterKey(config)" :readingConfig="config" @edit-config="editConfig(config)" @delete-config="deleteConfig(config)" />
+            </div>
         </div>
         <div class="node-edit-footer">
             <button type="button" class="button footer-button" @click="discardNode">Anuluj</button>
@@ -26,11 +31,13 @@
 <script>
 
 import NodeItemEditMode from './NodeItemEditMode.vue';
+import NodeParameter from './NodeParameter.vue';
 
 export default {
     name:"NodeEdit",
     components:{
-        NodeItemEditMode
+        NodeItemEditMode,
+        NodeParameter
     },
     props:{
         
@@ -70,8 +77,24 @@ export default {
         }
     },
     methods:{
+        makeParameterKey(config){
+            const idStr = typeof config.id === 'number' ? config.id.toString() : '';
+            const tempIdStr = typeof config.tempId === 'number' ? config.tempId.toString() : '';
+            return idStr + '_' + tempIdStr;
+        },
         searchDevice(){
             this.$store.commit('pushMode', 'selectNode');
+        },
+        addReadingConfig(){
+            this.$store.commit('prepareNewReadingConfig');
+            this.$store.commit('pushMode', 'newReadingConfig');
+        },
+        editConfig(config){
+            this.$store.commit('prepareReadingConfigForEdit', config);
+            this.$store.commit('pushMode', 'editReadingConfig');
+        },
+        deleteConfig(config){
+            this.$store.commit('deleteReadingConfig', config);
         },
         saveNode(){
             this.$store.commit('saveEditedNode');

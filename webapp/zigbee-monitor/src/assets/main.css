@@ -58,20 +58,38 @@ body{
     border-radius:4px;
 }
 
+.radio-input{
+    margin-right:8px;
+}
+
 .input-label-group{
     padding:0;
     margin-top:12px;
 }
 
-.input-label-group > .text-label{
+.input-label-group .text-label{
     display:block;
 }
 
-.input-label-group > .text-input{
+.input-label-group .text-input{
     display:block;
     width:100%;
     box-sizing: border-box;
     margin-top:5px;
+}
+
+.radio-set-container{
+    padding:0;
+    margin-top:12px;
+}
+
+.radio-set-legend{
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+.radio-set-content{
+    margin-left:8px;
 }
 
 .file-input-button{

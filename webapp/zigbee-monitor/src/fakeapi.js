@@ -63,12 +63,16 @@ const nodeIdGen = idGenerator();
 
 const layers = [
     {id:layerIdGen.next(),name:'1 Piętro', imgurl: require("@/assets/plan1.jpg"), number:1, width:10, height:10, nodes:[
-        {id:nodeIdGen.next(),name:'Lodówka', address64:'DEADBEEF12345678', x:1, y:1},
-        {id:nodeIdGen.next(),name:'Żarówka nr 8 w żyrandolu', address64:'0000111122223333', x:8, y:4},
+        {id:nodeIdGen.next(),name:'Lodówka', address64:'DEADBEEF12345678', x:1, y:1, readingConfigs:[]},
+        {id:nodeIdGen.next(),name:'Żarówka nr 8 w żyrandolu', address64:'0000111122223333', x:8, y:4, readingConfigs:[]},
     ]},
     {id:layerIdGen.next(),name:'Parter',  imgurl:require("@/assets/plan2.png"), number:0, width:7.8, height:5, nodes:[
-        {id:nodeIdGen.next(),name:'Czujnik dymu', address64:'9999000099990000', x:1, y:4},
-        {id:nodeIdGen.next(),name:'Termometr', address64:'BACABECE87654321', x:5, y:2},
+        {id:nodeIdGen.next(),name:'Czujnik dymu', address64:'9999000099990000', x:1, y:4, readingConfigs:[]},
+        {id:nodeIdGen.next(),name:'Termometr', address64:'BACABECE87654321', x:5, y:2, readingConfigs:[
+            {name:'Temperatura', mode:'listen', messagePrefix:btoa('temp'), messageToSend:null, refreshPeriod:null, atCommand:null, atCommandData:null},
+            {name:'Ciśnienie', mode:'send', messagePrefix:btoa('press'), messageToSend:btoa('getpress'), refreshPeriod:10, atCommand:null, atCommandData:null},
+            {name:'Wilgotność', mode:'at', messagePrefix:null, messageToSend:null, refreshPeriod:5, atCommand:'HU', atCommandData:null}
+        ]},
     ]},
 ];
 

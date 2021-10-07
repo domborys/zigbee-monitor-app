@@ -48,7 +48,7 @@
                     <label for="atCommandName" class="at-data-label">Komenda AT</label>
                     <input type="text" class="text-input at-command-input" v-model="atCommandName" id="atCommandName">
                 </div>
-                <div  class="at-command-item">
+                <div class="at-command-item">
                     <div>
                         Typ danych
                     </div>

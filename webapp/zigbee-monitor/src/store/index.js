@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-//import api from '../fakeapi';
-import api from '../api';
+import api from '../fakeapi';
+//import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -9,7 +9,7 @@ Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
 const tempMessageIdGenerator = idGenerator();
-const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'login'];
+const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'newReadingConfig', 'editReadingConfig', 'login'];
 function isValidMode(mode){
     return modes.indexOf(mode) !== -1;
 }
@@ -28,7 +28,7 @@ const store = new Vuex.Store({
         editedLayer:null,
         editedLayerImageFile:null,
         editedNode:null,
-        //editedNodeCopy:null,
+        editedReadingConfig:null,
         activeLayerName:null,
         discoveryResults:null,
         displayedMessagesNode:null,
@@ -201,6 +201,51 @@ const store = new Vuex.Store({
                 const index = state.editedLayer.nodes.findIndex(n => n.tempId === node.tempId);
                 if(index !== -1){
                     state.editedLayer.nodes.splice(index, 1);
+                }
+            }
+        },
+        prepareNewReadingConfig(state){
+            state.editedReadingConfig = {id:null, tempId:null, name:null, mode:null, messagePrefix:null, messageToSend:null, refreshPeriod:null, atCommand:null, atCommandData:null};
+        },
+        prepareReadingConfigForEdit(state, readingConfig){
+            state.editedReadingConfig = cloneDeep(readingConfig);
+        },
+        setEditedReadingConfigParam(state, description){
+            state.editedReadingConfig[description.name] = description.value;
+        },
+        saveEditedReadingConfig(state){
+            if(state.editedReadingConfig.id !== null){
+                const index = state.editedNode.readingConfigs.findIndex(rc => rc.id === state.editedReadingConfig.id);
+                if(index !== -1){
+                    state.editedNode.readingConfigs.splice(index, 1, state.editedReadingConfig);
+                }
+            }
+            else if(state.editedReadingConfig.tempId !== null){
+                const index = state.editedNode.readingConfigs.findIndex(rc => rc.tempId === state.editedReadingConfig.tempId);
+                if(index !== -1){
+                    state.editedNode.readingConfigs.splice(index, 1, state.editedReadingConfig);
+                }
+            }
+            else{
+                state.editedReadingConfig.tempId = tempIdGenerator.next();
+                state.editedNode.readingConfigs.push(state.editedReadingConfig);
+            }
+            state.editedReadingConfig = null;
+        },
+        discardEditedReadingConfig(state){
+            state.editedReadingConfig = null;
+        },
+        deleteReadingConfig(state, readingConfig){
+            if(readingConfig.id !== null){
+                const index = state.editedNode.readingConfigs.findIndex(rc => rc.id === readingConfig.id);
+                if(index !== -1){
+                    state.editedNode.readingConfigs.splice(index, 1);
+                }
+            }
+            else if(readingConfig.tempId !== null){
+                const index = state.editedNode.readingConfigs.findIndex(rc => rc.tempId === readingConfig.tempId);
+                if(index !== -1){
+                    state.editedNode.readingConfigs.splice(index, 1);
                 }
             }
         },

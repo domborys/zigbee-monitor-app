@@ -18,6 +18,12 @@
             :lat-lng="{lng: node.x, lat: node.y}"
             :icon="getIcon(node)"
         >
+            <l-tooltip :options="{direction:'top', permanent:true, offset:[0,-23]}">
+                <b>{{node.name}}</b><br>
+                <div v-for="config in node.readingConfigs" :key="config.name">
+                    {{config.name}}: {{config.lastReading === null ? '---' : config.lastReading}}
+                </div>
+            </l-tooltip>
             <l-popup :content="node.name" />
         </l-marker>
         <l-marker
@@ -50,7 +56,7 @@
 
 <script>
 import { CRS, icon,Icon } from "leaflet";
-import { LMap, LImageOverlay, LMarker, LPopup, LPolyline } from "vue2-leaflet";
+import { LMap, LImageOverlay, LMarker, LPopup, LPolyline, LTooltip } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';
 
 delete Icon.Default.prototype._getIconUrl;
@@ -93,7 +99,8 @@ export default {
         LImageOverlay,
         LMarker,
         LPopup,
-        LPolyline
+        LPolyline,
+        LTooltip
     },
     props:{
         layer: Object

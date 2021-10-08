@@ -3,6 +3,7 @@ export default {
     encodeHexMessage,
     decodeMessageToText,
     decodeMessageToHex,
+    decodeToDecBigEndian
 };
 
 function encodeTextMessage(message){
@@ -26,4 +27,11 @@ function decodeMessageToText(base64Message){
 function decodeMessageToHex(base64Message){
     const messageBinary = atob(base64Message);
     return [...messageBinary].map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+}
+
+function decodeToDecBigEndian(base64Message){
+    const messageBinary = atob(base64Message);
+    return [...messageBinary]
+        .map(char => char.charCodeAt(0))
+        .reduce((previous, current) => current + (previous << 8));
 }

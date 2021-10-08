@@ -4,6 +4,8 @@ import api from '../fakeapi';
 //import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
+import escapeRegExp from 'lodash/escapeRegExp';
+import utils from '../utils';
 
 Vue.use(Vuex)
 
@@ -32,6 +34,7 @@ const store = new Vuex.Store({
         activeLayerName:null,
         discoveryResults:null,
         displayedMessagesNode:null,
+        readingTimers:[],
         messages:[
             {type:'sent', address64:'DEADBEEF12345678', message:btoa('ledon'), tempId:tempMessageIdGenerator.next()},
             {type:'received', address64:'DEADBEEF12345678', message:btoa('temp 31'), tempId:tempMessageIdGenerator.next()},
@@ -205,7 +208,7 @@ const store = new Vuex.Store({
             }
         },
         prepareNewReadingConfig(state){
-            state.editedReadingConfig = {id:null, tempId:null, name:null, mode:null, messagePrefix:null, messageToSend:null, refreshPeriod:null, atCommand:null, atCommandData:null};
+            state.editedReadingConfig = {id:null, tempId:null, name:null, mode:null, messagePrefix:null, messageToSend:null, refreshPeriod:null, atCommand:null, atCommandData:null, atCommandResultFormat:null, lastReading:null};
         },
         prepareReadingConfigForEdit(state, readingConfig){
             state.editedReadingConfig = cloneDeep(readingConfig);
@@ -277,7 +280,38 @@ const store = new Vuex.Store({
         },
         setDisplayedMessagesNode(state, node){
             state.displayedMessagesNode = node;
+        },
+        updateLastReadings(state, message){
+            let messageText = utils.decodeMessageToText(message.message);
+            for(let layer of state.layers){
+                for(let node of layer.nodes){
+                    if(node.address64 === message.address64){
+                        for(let rc of node.readingConfigs){
+                            if(rc.mode === 'listen' || rc.mode === 'send'){
+                                const prefix = utils.decodeMessageToText(rc.messagePrefix);
+                                const regExp = new RegExp('^' + escapeRegExp(prefix) + '\\s*(.*)');
+                                const matchResults = messageText.match(regExp);
+                                if(matchResults !== null){
+                                    const reading = matchResults[1];
+                                    rc.lastReading = reading;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        setLastReading(state, data){
+            data.readingConfig.lastReading = data.lastReading;
+        },
+        addReadingTimer(state, timerId){
+            state.readingTimers.push(timerId);
+        },
+        clearReadingTimers(state){
+            state.readingTimers.forEach(clearInterval);
         }
+
+        
     },
     actions: {
         loadLayerImage(context, imageFile){
@@ -308,6 +342,8 @@ const store = new Vuex.Store({
         async downloadLayers(context){
             const layers = await api.getLayers();
             context.commit('setLayers', layers);
+            context.commit('clearReadingTimers');
+            context.dispatch('setReadingTimers');
         },
         async downloadDiscoveryResults(context){
             const results = await api.getDiscoveryResults();
@@ -332,6 +368,53 @@ const store = new Vuex.Store({
             socket.send(JSON.stringify(message));
             context.commit('addMessage', message);
         },
+        addReceivedMessage(context, message){
+            store.commit('addMessage', message);
+            store.commit('updateLastReadings', message);
+        },
+        setReadingTimers(context){
+            for(let layer of context.state.layers){
+                for(let node of layer.nodes){
+                    for(let rc of node.readingConfigs){
+                        if(rc.mode === 'send'){
+                            const actionData = {node:node, readingConfig:rc};
+                            const timerId = setInterval(context.dispatch, rc.refreshPeriod*1000, 'sendMessageForReading', actionData);
+                            context.commit('addReadingTimer', timerId);
+                        }
+                        else if(rc.mode === 'at'){
+                            const actionData = {node:node, readingConfig:rc};
+                            const timerId = setInterval(context.dispatch, rc.refreshPeriod*1000, 'sendAtCommandForReading', actionData);
+                            context.commit('addReadingTimer', timerId);
+                        }
+                    }
+                }
+            }
+        },
+        async sendMessageForReading(context, data){
+            const message = {type:'sent', address64:data.node.address64, message:data.readingConfig.messageToSend};
+            await context.dispatch('sendMessage', message);
+
+        },
+        async sendAtCommandForReading(context, data){
+            const commandData = {
+                commandType:'get_parameter',
+                address64:data.node.address64,
+                atCommand:data.readingConfig.atCommand,
+                value:data.readingConfig.atCommandData,
+                //format:???,
+            };
+            const message = await context.dispatch('sendAtCommand', commandData);
+            let lastReading;
+            if(data.readingConfig.atCommandResultFormat === 'hex')
+                lastReading = utils.decodeMessageToHex(message.result);
+            else if(data.readingConfig.atCommandResultFormat === 'dec')
+                lastReading = utils.decodeToDecBigEndian(message.result);
+            else
+                lastReading = utils.decodeMessageToText(message.result);
+
+            context.commit('setLastReading', {readingConfig:data.readingConfig, lastReading:lastReading});
+
+        },
         async sendAtCommand(context, commandData){
             const message = {
                 type:'at',
@@ -341,6 +424,7 @@ const store = new Vuex.Store({
             context.commit('addMessage', message);
             const responseData = await api.sendAtCommand(commandData);
             message.result = responseData.result;
+            return message;
         }
     },
     modules: {
@@ -348,6 +432,6 @@ const store = new Vuex.Store({
 });
 
 const socket = api.makeMessageSocket();
-socket.onmessage = e => store.commit('addMessage', JSON.parse(e.data));
+socket.onmessage = e => store.dispatch('addReceivedMessage', JSON.parse(e.data));
 
 export default store;

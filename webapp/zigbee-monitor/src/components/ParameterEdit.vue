@@ -78,11 +78,28 @@
                 </div>
                 <div class="input-label-group">
                     <label for="atCommandData" class="at-data-label">Dane komendy AT</label>
-                    <input type="text" v-model="atCommandData" class="text-input" id="atCommandData">
+                    <input type="text" v-model="atCommandData" :disabled="atCommandFormat === 'none'" class="text-input" id="atCommandData">
                 </div>
                 <div class="input-label-group">
                     <label for="atRefreshPeriodInput" class="text-label">Czas odświeżania w sekundach</label>
                     <input type="text" v-model="refreshPeriod" class="text-input refresh-time-input" id="atRefreshPeriodInput">
+                </div>
+                <div>
+                    <div class="radio-set-legend">Format wyniku komendy</div>
+                    <div class="radio-set-content">
+                        <div class="radio-item-container">
+                            <input type="radio" class="radio-input" v-model="atCommandResultFormat" name="atCommandResponseFormat" id="atCommandResponseFormatText" value="text">
+                            <label for="atCommandResponseFormatText">Dane tekstowe</label>
+                        </div>
+                        <div class="radio-item-container">
+                            <input type="radio" class="radio-input" v-model="atCommandResultFormat" name="atCommandResponseFormat" id="atCommandResponseFormatDec" value="dec">
+                            <label for="atCommandResponseFormatDec">Liczba dziesiętna</label>
+                        </div>
+                        <div class="radio-item-container">
+                            <input type="radio" class="radio-input" v-model="atCommandResultFormat" name="atCommandResponseFormat" id="atCommandResponseFormatHex" value="hex">
+                            <label for="atCommandResponseFormatHex">Dane w formacie heksadecymalnym</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -184,6 +201,14 @@ export default {
                 //this.rawCommandData = value;
                 let commandBase64 = this.getEncodedCommandData(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'atCommandData', value:commandBase64});
+            }
+        },
+        atCommandResultFormat:{
+            get(){
+                return this.readingConfig.atCommandResultFormat;
+            },
+            set(value){
+                this.$store.commit('setEditedReadingConfigParam', {name:'atCommandResultFormat', value:value});
             }
         },
         newConfigMode(){

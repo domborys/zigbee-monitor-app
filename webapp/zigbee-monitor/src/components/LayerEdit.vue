@@ -108,11 +108,16 @@ export default {
             this.$store.commit('setEditedLayerParam', {name:'isNewImage', value:true});
         },
         async saveLayer(){
-            await this.$store.dispatch('saveEditedLayer');
-            this.$store.commit('setActiveLayer', this.layer.name);
-            this.$store.commit('previousMode');
-            //URL.revokeObjectURL(this.layer.imgurl);
-            this.$store.commit('setEditedLayer', null);
+            try{
+                await this.$store.dispatch('saveEditedLayer');
+                this.$store.commit('setActiveLayer', this.layer.name);
+                this.$store.commit('previousMode');
+                //URL.revokeObjectURL(this.layer.imgurl);
+                this.$store.commit('setEditedLayer', null);
+            }
+            catch(e){
+                console.error(e);
+            }
             
         },
         discardLayer(){

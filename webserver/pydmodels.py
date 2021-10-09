@@ -1,11 +1,29 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
+class ReadingConfigBase(BaseModel):
+    name: str
+    mode: str
+    refresh_period: Optional[float]
+    message_prefix: Optional[str]
+    message_to_send: Optional[str]
+    at_command: Optional[str]
+    at_command_data: Optional[str]
+    at_command_result_format: Optional[str]
+
+class ReadingConfigInNode(ReadingConfigBase):
+    id: Optional[int]
+    node_id: Optional[int]
+    class Config:
+        orm_mode = True
+
+
 class NodeBase(BaseModel):
     name: str
     address64: str
     x: float
     y: float
+    reading_configs: List[ReadingConfigInNode] = []
     
 
 class NodeCreate(NodeBase):
@@ -38,6 +56,8 @@ class Floor(FloorBase):
     id: int
     class Config:
         orm_mode = True
+
+
 
 class UserBase(BaseModel):
     username: str

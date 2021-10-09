@@ -15,7 +15,8 @@ def create_floor(db: Session, floor: pydmodels.FloorCreate):
     #db_floor = dbmodels.Floor(**floor.dict())
     db_floor = dbmodels.Floor(name=floor.name, number=floor.number, width=floor.width, height=floor.height)
     for node in floor.nodes:
-        db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+        #db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+        db_node = make_db_node(node)
         db_floor.nodes.append(db_node)
     db.add(db_floor)
     db.commit()
@@ -44,15 +45,17 @@ def delete_nodes_in_floor(floor: pydmodels.Floor, db_floor: dbmodels.Floor):
 def update_nodes_in_floor(floor: pydmodels.Floor, db_floor: dbmodels.Floor):
     for db_node in db_floor.nodes:
         node = next(n for n in floor.nodes if n.id == db_node.id)
-        db_node.name = node.name
-        db_node.address64 = node.address64
-        db_node.x = node.x
-        db_node.y = node.y
+        db_node = modify_db_node(node, db_node)
+        # db_node.name = node.name
+        # db_node.address64 = node.address64
+        # db_node.x = node.x
+        # db_node.y = node.y
 
 def add_nodes_in_floor(floor: pydmodels.Floor, db_floor: dbmodels.Floor):
     for node in floor.nodes:
         if node.id is None:
-            db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+            #db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+            db_node = make_db_node(node)
             db_floor.nodes.append(db_node)
 
 def delete_floor(db: Session, floor_id: int):
@@ -72,6 +75,61 @@ async def set_floor_image(db: Session, floor_id: int, file: UploadFile):
     db_floor.image_media_type = file.content_type
     db.commit()
     db.refresh(db_floor)
+
+def make_db_node(node: pydmodels.Node) -> dbmodels.Node:
+    db_node = dbmodels.Node(name=node.name, address64=node.address64, x=node.x, y=node.y)
+    for rc in node.reading_configs:
+        db_rc = make_db_rc(rc)
+        db_node.reading_configs.append(db_rc)
+    return db_node
+
+def modify_db_node(node: pydmodels.Node, db_node: dbmodels.Node):
+    db_node.name = node.name
+    db_node.address64 = node.address64
+    db_node.x = node.x
+    db_node.y = node.y
+    delete_rcs_in_node(node, db_node)
+    update_rcs_in_node(node, db_node)
+    add_rcs_in_node(node, db_node)
+
+def delete_rcs_in_node(node: pydmodels.Node, db_node: dbmodels.Node):
+    node_rc_ids = [rc.id for rc in node.reading_configs]
+    db_node.reading_configs[:] = [rc for rc in db_node.reading_configs if rc.id in node_rc_ids]
+
+def update_rcs_in_node(node: pydmodels.Node, db_node: dbmodels.Node):
+    for db_rc in db_node.reading_configs:
+        rc = next(rc for rc in node.reading_configs if rc.id == db_rc.id)
+        update_db_rc(rc, db_rc)
+
+def add_rcs_in_node(node: pydmodels.Node, db_node: dbmodels.Node):
+    for rc in node.reading_configs:
+        if rc.id is None:
+            db_rc = make_db_rc(rc)
+            db_node.reading_configs.append(db_rc)
+
+
+def make_db_rc(rc: pydmodels.ReadingConfigInNode) -> dbmodels.ReadingConfig:
+    db_rc = dbmodels.ReadingConfig(
+        name = rc.name,
+        mode = rc.mode,
+        refresh_period = rc.refresh_period,
+        message_prefix = rc.message_prefix,
+        message_to_send = rc.message_to_send,
+        at_command = rc.at_command,
+        at_command_data = rc.at_command_data,
+        at_command_result_format = rc.at_command_result_format
+    )
+    return db_rc
+
+def update_db_rc(rc: pydmodels.ReadingConfigInNode, db_rc: dbmodels.ReadingConfig):
+    db_rc.name = rc.name
+    db_rc.mode = rc.mode
+    db_rc.refresh_period = rc.refresh_period
+    db_rc.message_prefix = rc.message_prefix
+    db_rc.message_to_send = rc.message_to_send
+    db_rc.at_command = rc.at_command
+    db_rc.at_command_data = rc.at_command_data
+    db_rc.at_command_result_format = rc.at_command_result_format
 
 def get_node_by_id(db: Session, node_id: int):
     return db.query(dbmodels.Node).filter(dbmodels.Node.id == node_id).first()

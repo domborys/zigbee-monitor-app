@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from '../fakeapi';
-//import api from '../api';
+//import api from '../fakeapi';
+import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
 import escapeRegExp from 'lodash/escapeRegExp';
@@ -159,7 +159,7 @@ const store = new Vuex.Store({
         },*/
         
         prepareNewNode(state){
-            state.editedNode = {id:null, tempId:null, name:null, address64:null,  x:null, y:null};
+            state.editedNode = {id:null, tempId:null, name:null, address64:null,  x:null, y:null, readingConfigs:[]};
         },
         prepareNodeForEdit(state, node){
             state.editedNode = cloneDeep(node);

@@ -44,6 +44,8 @@ export default {
             try{
                 await this.$store.dispatch('login', credentials);
                 this.$store.commit('replaceMode', 'view');
+                this.$store.dispatch('downloadLayers')
+                    .then(() => this.$store.dispatch('downloadDiscoveryResults'))
             }
             catch(error){
                 console.log(error);

@@ -25,6 +25,7 @@ class Node(Base):
     y = Column(Float)
     floor_id = Column(Integer, ForeignKey("floors.id"))
     floor = relationship("Floor", back_populates="nodes")
+    reading_configs = relationship("ReadingConfig", back_populates="node", cascade="all, delete")
 
 class User(Base):
     __tablename__ = "users"
@@ -34,4 +35,20 @@ class User(Base):
     password_hash = Column(String(128))
     role = Column(String(32))
     disabled = Column(Boolean)
+
+class ReadingConfig(Base):
+    __tablename__ = "reading_configs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(64))
+    mode = Column(String(8))
+    refresh_period = Column(Float)
+    message_prefix = Column(String(256))
+    message_to_send = Column(String(256))
+    at_command = Column(String(2))
+    at_command_data = Column(String(256))
+    at_command_result_format = Column(String(8))
+    node_id = Column(Integer, ForeignKey("nodes.id"))
+    node = relationship("Node", back_populates="reading_configs")
+
 

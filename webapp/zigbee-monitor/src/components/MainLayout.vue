@@ -106,8 +106,8 @@ export default {
     methods:{
     },
     mounted(){
-        this.$store.dispatch('downloadLayers')
-            .then(() => this.$store.dispatch('downloadDiscoveryResults'))
+        // this.$store.dispatch('downloadLayers')
+        //     .then(() => this.$store.dispatch('downloadDiscoveryResults'))
     }
 }
 </script>

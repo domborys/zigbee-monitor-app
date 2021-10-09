@@ -63,14 +63,14 @@ async function getDiscoveryResults(){
 async function sendLayer(layer, imageFile){
     const layerToSend = prepareLayerToSend(layer);
     let returnedLayer;
-    console.log(layerToSend);
+    console.log('layer sent', layerToSend);
     //Ewentualnie dodać przetwarzanie
     if(typeof layer.id === 'number'){
-        const response = await axios.put(apiurl('/floors/' + layer.id), layer);
+        const response = await axios.put(apiurl('/floors/' + layer.id), layerToSend);
         returnedLayer = response.data;
     }
     else{
-        const response = await axios.post(apiurl('/floors'), layer);
+        const response = await axios.post(apiurl('/floors'), layerToSend);
         returnedLayer = response.data;
     }
     if(imageFile){
@@ -81,6 +81,7 @@ async function sendLayer(layer, imageFile){
             headers: {'Content-Type': 'multipart/form-data'},
         })
     }
+    console.log('layer returned', returnedLayer);
     return returnedLayer;
 }
 
@@ -110,14 +111,14 @@ function processLayersResponse(layers){
             node.role = null;
             node.discovered = null;
             node.tempId = null;
+            const convertedRcs = node.reading_configs.map(processReadingConfig);
+            node.readingConfigs = convertedRcs;
         }
     }
 }
 
 function prepareLayerToSend(layer){
-    const nodes = layer.nodes.map(node => ({
-        id:node.id, name:node.name, address64:node.address64, x:node.x, y:node.y
-    }));
+    const nodes = layer.nodes.map(prepareNodeToSend);
     const layerToSend = {
         name: layer.name,
         number: layer.number,
@@ -126,6 +127,46 @@ function prepareLayerToSend(layer){
         nodes:nodes
     };
     return layerToSend;
+}
+
+function prepareNodeToSend(node){
+    return {
+        id:node.id,
+        name:node.name,
+        address64:node.address64,
+        x:node.x,
+        y:node.y,
+        reading_configs:node.readingConfigs.map(prepareReadingConfigToSend)
+    };
+}
+
+function prepareReadingConfigToSend(rc){
+    return {
+        id: rc.id,
+        name: rc.name,
+        mode: rc.mode,
+        refresh_period: rc.refreshPeriod,
+        message_prefix: rc.messagePrefix,
+        message_to_send: rc.messageToSend,
+        at_command: rc.atCommand,
+        at_command_data: rc.atCommandData,
+        at_command_result_format: rc.atCommandResultFormat,
+    };
+}
+
+function processReadingConfig(rc){
+    return {
+        id: rc.id,
+        tempId:null,
+        name: rc.name,
+        mode: rc.mode,
+        refreshPeriod: rc.refresh_period,
+        messagePrefix: rc.message_prefix,
+        messageToSend: rc.message_to_send,
+        atCommand: rc.at_command,
+        atCommandData: rc.at_command_data,
+        atCommandResultFormat: rc.at_command_result_format
+    };
 }
 
 function prepareAtCommandToSend(commandData){

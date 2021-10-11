@@ -224,7 +224,7 @@ export default {
     padding:10px;
     z-index:100;
     font-size:20px;
-    background-color: #630094;
+    background-color: rgb(130,68,190);
     color:white;
 }
 .edited-node-mode .vue2leaflet-map{

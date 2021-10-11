@@ -97,7 +97,7 @@ export default {
 
 .zigbee-message{
     margin: 8px 0;
-    border: 2px solid #630094;
+    border: 2px solid rgb(130,68,190);
     border-radius: 5px;
 }
 

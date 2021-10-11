@@ -3,7 +3,7 @@
         <div class="layer-edit-main">
             <h2 class="side-panel-h2">{{ headerText }}</h2>
             <div class="input-label-group">
-                <label for="layerNameInput" class="text-label">Nazwa piętra</label>
+                <label for="layerNameInput" class="text-label">Nazwa mapy</label>
                 <input type="text" class="text-input" v-model="layerName" id="layerNameInput" placeholder="Parter">
             </div>
             <div class="input-label-group">
@@ -11,14 +11,16 @@
                 <input type="text" class="text-input" v-model="floorNo" id="floorNoInput" placeholder="0">
             </div>
             <div>
-                <h3 class="side-panel-h3">Plan piętra</h3>
+                <h3 class="side-panel-h3">Plan</h3>
                 <label for="floorPlanInput" class="file-input-button">{{ imageInputText }}</label>
                 <input type="file" ref="floorPlanFile" class="file-input-hidden" @change="loadFloorPlan" accept="image/*" id="floorPlanInput">
             </div>
             <div v-if="isMapVisible">
                 <h3 class="side-panel-h3">Węzły sieci</h3>
                 <button type="button" class="button" @click="addNode">Dodaj węzeł</button>
-                <node-item-edit-mode v-for="node in layer.nodes" :key="makeNodeKey(node)" :node="node" @edit-node="editNode(node)" @delete-node="deleteNode(node)" />
+                <ul class="node-list-edit">
+                    <node-item-edit-mode v-for="node in layer.nodes" :key="makeNodeKey(node)" :node="node" @edit-node="editNode(node)" @delete-node="deleteNode(node)" />
+                </ul>
             </div>
         </div>
         <div class="layer-edit-footer">
@@ -54,7 +56,7 @@ export default {
             return this.$store.getters.mode === 'editLayer';
         },
         headerText(){
-            return this.newLayerMode ? 'Nowe piętro' : 'Edytuj piętro';
+            return this.newLayerMode ? 'Nowa mapa' : 'Edytuj mapę';
         },
         imageInputText(){
             return this.newLayerMode ? 'Dodaj plik z planem' : 'Załaduj nowy plan';
@@ -157,6 +159,12 @@ export default {
 
 .footer-button{
     flex:1;
+}
+
+.node-list-edit{
+    list-style-type: none;
+    padding:0;
+    margin:5px 0 0 0;
 }
 
 </style>

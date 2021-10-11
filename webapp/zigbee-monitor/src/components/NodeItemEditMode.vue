@@ -1,15 +1,18 @@
 <template>
-    <article class="node-item">
-        <div class="node-item-content" @click="editClick">
+    <li class="node-item" @click="editClick">
+        <div class="node-item-content" >
             <h3 class="node-item-header">{{ node.name }}</h3>
             <div>
-                <b>Adres 64-bit: </b> {{ node.address64 }}
+                {{ node.address64 }}
             </div>
         </div>
-        <div class="node-item-close">
-            <button type="button" class="close-button" @click="deleteClick"></button>
-        </div>
-    </article>
+        
+            <button type="button" class="close-button" @click.stop="deleteClick">
+                <img :src="require('@/assets/icons/x.svg')" width="35" height="35">
+
+            </button>
+        
+    </li>
 </template>
 
 <script>
@@ -42,15 +45,25 @@ export default {
 <style scoped>
 
 .node-item{
+    /*
     font-size:12px;
     margin: 8px 0;
     padding:6px;
     border-width: 2px;
     border-style:solid;
     border-radius: 5px;
-    border-color:#630094;
+    border-color:rgb(130,68,190);
+    */
+    padding:10px;
+    border-bottom: 1px solid #E6E6FA;
+    border-right: 1px solid #E6E6FA;
+    border-left: 1px solid #E6E6FA;
     display:flex;
     align-items:center;
+}
+
+.node-item:first-child{
+    border-top: 1px solid #E6E6FA;
 }
 
 .node-item-content{
@@ -59,22 +72,31 @@ export default {
 }
 
 .close-button{
+    
     background: none;
 	color: inherit;
 	border: none;
 	padding: 0;
-	cursor: pointer;
     font-family: inherit;
+    cursor:pointer;
+    /*
+	cursor: pointer;
+    
     font-size: 35px;
     width:30px;
     height:30px;
-    overflow:hidden;
+    overflow:hidden;*/
     
 }
 
+.close-button > *{
+    display:block;
+}
+
+/*
 .close-button::after{
     content:"×";
-}
+}*/
 
 .node-item:hover{
     background-color: #E6E6FA;
@@ -85,6 +107,7 @@ export default {
 .node-item-header{
     margin:0 0 4px 0;
     font-size: 15px;
+    font-weight:600;
 }
 
 

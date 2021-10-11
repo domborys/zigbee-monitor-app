@@ -4,9 +4,9 @@
         <nav>
             <template v-if="isViewMode">
                 <button type="button" class="button" @click="refresh">Odśwież</button>
-                <button type="button" class="button" @click="editNewLayer">Dodaj piętro</button>
-                <button type="button" class="button" @click="editActiveLayer">Edytuj piętro</button>
-                <button type="button" class="button" @click="deleteActiveLayer">Usuń piętro</button>
+                <button type="button" class="button" @click="editNewLayer">Dodaj mapę</button>
+                <button type="button" class="button" @click="editActiveLayer">Edytuj mapę</button>
+                <button type="button" class="button" @click="deleteActiveLayer">Usuń mapę</button>
             </template>
             <template v-if="isLoggedIn">
                 <span>{{ user.username }}</span>

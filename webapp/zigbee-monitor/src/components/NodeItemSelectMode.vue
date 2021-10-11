@@ -48,7 +48,7 @@ export default {
     border-width: 2px;
     border-style:solid;
     border-radius: 5px;
-    border-color:#630094;
+    border-color:rgb(130,68,190);
     cursor:pointer;
 }
 

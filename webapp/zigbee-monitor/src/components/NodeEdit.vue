@@ -18,7 +18,9 @@
             <div>
                 <h3 class="side-panel-h3">Wyświetlane wartości</h3>
                 <button type="button" class="button" @click="addReadingConfig">Dodaj wartość</button>
-                <node-parameter v-for="config in node.readingConfigs" :key="makeParameterKey(config)" :readingConfig="config" @edit-config="editConfig(config)" @delete-config="deleteConfig(config)" />
+                <ul class="parameter-list-edit">
+                    <node-parameter v-for="config in node.readingConfigs" :key="makeParameterKey(config)" :readingConfig="config" @edit-config="editConfig(config)" @delete-config="deleteConfig(config)" />
+                </ul>
             </div>
         </div>
         <div class="node-edit-footer">
@@ -138,5 +140,11 @@ export default {
 
 .footer-button{
     flex:1;
+}
+
+.parameter-list-edit{
+    list-style-type: none;
+    padding:0;
+    margin:5px 0 0 0;
 }
 </style>

@@ -131,3 +131,62 @@ body{
     margin-top:8px;
     margin-bottom:8px;
 }
+
+
+.dropdown-toggle::after{
+    margin-left:0.5rem;
+    display: inline-block;
+    content: "";
+    background-image: url('~@/assets/icons/chevron-down.svg');
+    background-repeat: no-repeat;
+    vertical-align: -.2em;
+    background-size: 1rem 1rem;
+    width:1rem;
+    height:1rem;
+}
+
+.dropdown-menu{
+    display:inline-block;
+    position:relative;
+}
+
+.dropdown-content{
+    position:absolute;
+    top:100%;
+    right:0;
+    z-index:100;
+    background-color: white;
+    border: 1px solid #E6E6FA;
+    box-shadow: 0px 0px 5px 2px #E6E6FA;
+}
+
+.dropdown-list-button{
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+    text-align:left;
+    border-style:none;
+    background-color:transparent;
+    font-size:inherit;
+    font-family: inherit;
+    padding:8px 12px;
+    cursor:pointer;
+    white-space: nowrap;
+    
+}
+
+.dropdown-list-button:hover{
+    background-color:#E6E6FA;
+}
+
+.header-button{
+    background-color: transparent;
+    border-style:none;
+    font-size:inherit;
+    font-family: inherit;
+    padding:8px;
+    cursor:pointer;
+}
+.header-button:hover{
+    background-color: #E6E6FA;
+}

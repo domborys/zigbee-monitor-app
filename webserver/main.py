@@ -175,6 +175,10 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if not existed_before:
         raise HTTPException(status_code=404, detail="User not found")
 
+@app.post("/password-change", response_model=pydmodels.User)
+def change_password(password_change: pydmodels.PasswordChange, db: Session = Depends(get_db), current_user: dbmodels.User = Depends(get_current_active_user)):
+    return dbsrv.change_password(db, password_change, current_user.username)
+
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     db_user = dbsrv.authenticate_user(db, form_data.username, form_data.password)

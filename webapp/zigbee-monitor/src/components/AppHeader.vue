@@ -30,7 +30,7 @@
                         <span class="button-username">{{ user.username }}</span>
                     </template>
                     <template v-slot:content>
-                        <button type="button" class="dropdown-list-button">Zmień hasło</button>
+                        <button type="button" class="dropdown-list-button" @click="changePassword">Zmień hasło</button>
                         <button type="button" class="dropdown-list-button" @click="logout">Wyloguj</button>
                     </template>
                 </dropdown-menu>
@@ -92,7 +92,10 @@ export default {
             catch(e){
                 console.log(e);
             }
-        }
+        },
+        changePassword(){
+            this.$store.commit('pushMode', 'changePassword');
+        },
     },
 }
 </script>

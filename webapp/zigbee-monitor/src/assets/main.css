@@ -132,6 +132,12 @@ body{
     margin-bottom:8px;
 }
 
+.success-message{
+    color:green;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
 
 .dropdown-toggle::after{
     margin-left:0.5rem;

@@ -3,12 +3,18 @@ export default {
     setToken,
     getCurrentUser,
     logout,
+    changePassword,
     getLayers,
     getDiscoveryResults,
     sendLayer,
     deleteLayer,
     makeMessageSocket,
     sendAtCommand,
+
+    getUsers,
+    addUser,
+    modifyUser,
+    deleteUser
 };
 
 import cloneDeep from 'lodash/cloneDeep';
@@ -60,6 +66,7 @@ function messageGenerator(layers){
 
 const layerIdGen = idGenerator();
 const nodeIdGen = idGenerator();
+const userIdGen = idGenerator();
 
 const layers = [
     {id:layerIdGen.next(),name:'1 Piętro', imgurl: require("@/assets/plan1.jpg"), number:1, width:10, height:10, nodes:[
@@ -77,8 +84,8 @@ const layers = [
 ];
 
 const users = [
-    {id:1, username:'jan', password:'jan', role:'user', disabled:false},
-    {id:2, username:'anna', password:'anna', role:'admin', disabled:false},
+    {id:userIdGen.next(), username:'jan', password:'jan', role:'user', disabled:false},
+    {id:userIdGen.next(), username:'anna', password:'anna', role:'admin', disabled:false},
 ];
 
 let currentToken = null;
@@ -113,6 +120,14 @@ async function getCurrentUser(){
 
 async function logout(){
     currentToken = null;
+}
+
+async function changePassword(passwords){
+    const user = await getCurrentUser();
+    if(user.password !== passwords.oldPassword){
+        throw new Error("Bad password");
+    }
+    user.password = passwords.newPassword;
 }
 
 async function getLayers(){
@@ -204,6 +219,40 @@ async function sendAtCommand(commandData){
 
     return responseData;
 
+}
+
+async function getUsers(){
+    await sleep(200);
+    return cloneDeep(users);
+}
+
+async function addUser(user){
+    await sleep(150);
+    const apiUser = {...user};
+    apiUser.id = userIdGen.next();
+    users.push(apiUser);
+    const returnedUser = {...apiUser};
+    delete returnedUser.password;
+    return returnedUser;
+}
+
+async function modifyUser(user){
+    await sleep(250);
+    const apiUser = {...user};
+    const index = users.findIndex(u => u.id === apiUser.id);
+    if(apiUser.password === null){
+        apiUser.password = users[index].password;
+    }
+    users.splice(index, 1, apiUser);
+    const returnedUser = {...apiUser};
+    delete returnedUser.password;
+    return returnedUser;
+}
+
+async function deleteUser(user){
+    await sleep(250);
+    const index = users.findIndex(u => u.id === user.id);
+    users.splice(index, 1);
 }
 
 function processLayersResponse(layers){

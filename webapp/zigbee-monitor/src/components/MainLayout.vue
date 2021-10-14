@@ -27,6 +27,7 @@
         </div>
         <div v-if="isOneColumnMode" class="below-header-one-column">
             <login-form v-if="mode === 'login'" />
+            <password-change-form v-if="mode === 'changePassword'" />
         </div>
     </div>
 </template>
@@ -40,6 +41,7 @@ import NodeEdit from './NodeEdit.vue';
 import MessageDisplay from './MessageDisplay.vue'
 import AppHeader from './AppHeader.vue';
 import LoginForm from './LoginForm.vue';
+import PasswordChangeForm from './PasswordChangeForm.vue';
 import NodeSelect from './NodeSelect.vue';
 import ParameterEdit from './ParameterEdit.vue';
 
@@ -56,7 +58,8 @@ export default {
         AppHeader,
         LoginForm,
         NodeSelect,
-        ParameterEdit
+        ParameterEdit,
+        PasswordChangeForm
     },
     data(){
         return{

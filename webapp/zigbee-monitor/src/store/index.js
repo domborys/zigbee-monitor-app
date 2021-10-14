@@ -1,22 +1,22 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from '../fakeapi';
-//import api from '../api';
+import api from '../api';
 import idGenerator from '../idGenerator';
 import cloneDeep from 'lodash/cloneDeep';
 import escapeRegExp from 'lodash/escapeRegExp';
 import utils from '../utils';
+import usersModule from './users';
 
 Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
 const tempMessageIdGenerator = idGenerator();
-const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'newReadingConfig', 'editReadingConfig', 'login'];
+const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'newReadingConfig', 'editReadingConfig', 'login', 'changePassword'];
 function isValidMode(mode){
     return modes.indexOf(mode) !== -1;
 }
 function isOneColumnMode(mode){
-    const oneColumnModes = ['login'];
+    const oneColumnModes = ['login', 'changePassword'];
     return oneColumnModes.indexOf(mode) !== -1;
 }
 
@@ -339,6 +339,9 @@ const store = new Vuex.Store({
             context.commit('setToken', null);
             context.commit('setUser', null);
         },
+        async changePassword(context, passwords){
+            await api.changePassword(passwords);
+        },
         async downloadLayers(context){
             const layers = await api.getLayers();
             context.commit('setLayers', layers);
@@ -425,9 +428,10 @@ const store = new Vuex.Store({
             const responseData = await api.sendAtCommand(commandData);
             message.result = responseData.result;
             return message;
-        }
+        },
     },
     modules: {
+        users:usersModule,
     }
 });
 

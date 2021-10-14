@@ -76,6 +76,10 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
+class PasswordChange(BaseModel):
+    old_password: str
+    new_password: str
+
 class AtCommandBase(BaseModel):
     address64: str
     at_command: str

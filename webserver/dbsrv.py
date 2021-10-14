@@ -179,6 +179,16 @@ def delete_user(db: Session, user_id: int):
     db.commit()
     return True
 
+def change_password(db: Session, password_change: pydmodels.PasswordChange, username: str):
+    db_user = get_user_by_username(db, username)
+    if not pwd_context.verify(password_change.old_password, db_user.password_hash):
+        raise HTTPException(status_code=403, detail="Incorrect old password")
+    db_user.password_hash = pwd_context.hash(password_change.new_password)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+    
+
 def authenticate_user(db: Session, username: str, password: str):
     db_user = get_user_by_username(db, username)
     if db_user is None:

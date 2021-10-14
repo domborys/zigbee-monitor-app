@@ -3,7 +3,7 @@
         <button type="button" class="header-button dropdown-toggle button-username" @click="toggleDropdown">
             <slot name="toggle-button"></slot>
         </button>
-        <div v-if="expanded" class="dropdown-content">
+        <div v-if="expanded" class="dropdown-content" @click="collapseDropdown">
             <slot name="content"></slot>
         </div>
     </div>
@@ -20,6 +20,9 @@ export default {
     methods:{
         toggleDropdown(){
             this.expanded = !this.expanded;
+        },
+        collapseDropdown(){
+            this.expanded = false;
         }
     },
 }

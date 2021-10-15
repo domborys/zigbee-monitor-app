@@ -86,6 +86,7 @@ const layers = [
 const users = [
     {id:userIdGen.next(), username:'jan', password:'jan', role:'user', disabled:false},
     {id:userIdGen.next(), username:'anna', password:'anna', role:'admin', disabled:false},
+    {id:userIdGen.next(), username:'łobuz', password:'aaa', role:'user', disabled:true},
 ];
 
 let currentToken = null;
@@ -223,7 +224,10 @@ async function sendAtCommand(commandData){
 
 async function getUsers(){
     await sleep(200);
-    return cloneDeep(users);
+    const returnedUsers = cloneDeep(users);
+    delete returnedUsers.password;
+    console.log(returnedUsers);
+    return returnedUsers;
 }
 
 async function addUser(user){

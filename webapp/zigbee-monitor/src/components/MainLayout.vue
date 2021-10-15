@@ -19,6 +19,9 @@
                 <template v-if="mode === 'newReadingConfig' || mode === 'editReadingConfig'">
                     <parameter-edit />
                 </template>
+                <user-management v-if="mode === 'manageUsers'" />
+                <user-details v-if="mode === 'showUser'" />
+                <user-edit v-if="mode === 'newUser' || mode === 'editUser'" />
             </section>
             <main class="main">
                 <map-display v-if="mainDisplayMode === 'map'" :layer="activeLayer" />
@@ -44,6 +47,9 @@ import LoginForm from './LoginForm.vue';
 import PasswordChangeForm from './PasswordChangeForm.vue';
 import NodeSelect from './NodeSelect.vue';
 import ParameterEdit from './ParameterEdit.vue';
+import UserManagement from './UserManagement.vue';
+import UserDetails from './UserDetails.vue';
+import UserEdit from './UserEdit.vue'
 
 export default {
     name:"MainLayout",
@@ -59,7 +65,10 @@ export default {
         LoginForm,
         NodeSelect,
         ParameterEdit,
-        PasswordChangeForm
+        PasswordChangeForm,
+        UserManagement,
+        UserDetails,
+        UserEdit
     },
     data(){
         return{

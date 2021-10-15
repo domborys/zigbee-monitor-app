@@ -25,6 +25,9 @@ export default {
         },
         selectNewUser(state){
             state.selectedUser = {id:null, username:null, password:null, role:'user', disabled:false};
+        },
+        setSelectedUserParam(state, description){
+            state.selectedUser[description.name] = description.value;
         }
     },
     actions: {

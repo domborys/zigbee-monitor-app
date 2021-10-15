@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modeDescription">
+            <div class="option-description">
                 <span v-if="readMode === 'listen'" id="modeListenDescription">
                     Aplikacja będzie oczekiwać na komunikaty przysłane z urządzenia o zadanym formacie.
                 </span>
@@ -314,9 +314,4 @@ export default {
     width:60px;
 }
 
-.modeDescription{
-    margin-top:12px;
-    color:#444444;
-    font-size:14px;
-}
 </style>

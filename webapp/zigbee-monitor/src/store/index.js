@@ -11,7 +11,7 @@ Vue.use(Vuex)
 
 const tempIdGenerator = idGenerator();
 const tempMessageIdGenerator = idGenerator();
-const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'newReadingConfig', 'editReadingConfig', 'login', 'changePassword'];
+const modes = ['view', 'newLayer', 'editLayer', 'newNode', 'editNode', 'selectNode', 'newReadingConfig', 'editReadingConfig', 'login', 'changePassword', 'manageUsers', 'showUser', 'newUser', 'editUser'];
 function isValidMode(mode){
     return modes.indexOf(mode) !== -1;
 }

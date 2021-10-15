@@ -27,6 +27,7 @@ body{
 .dl-inline dt { 
     clear: both; 
     font-weight: 600;
+    margin-right:5px;
 }
 
 .dl-inline dd { 
@@ -63,6 +64,10 @@ body{
 }
 
 .radio-input{
+    margin-right:8px;
+}
+
+.checkbox-input{
     margin-right:8px;
 }
 
@@ -195,4 +200,39 @@ body{
 }
 .header-button:hover{
     background-color: #E6E6FA;
+}
+
+.heading-back-group{
+    display:flex;
+    align-items: center;
+    border-bottom: 1px solid #E6E6FA;
+    margin-bottom:8px;
+}
+
+.heading-back-button{
+    display:inline-block;
+    background-color: transparent;
+    border-style:none;
+    font-size:inherit;
+    font-family: inherit;
+    margin-right:8px;
+    cursor:pointer;
+    background-image: url('~@/assets/icons/arrow-left.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    width:20px;
+    height:20px;
+
+}
+
+.heading-back-heading{
+    font-size:18px;
+    margin:5px 0;
+    flex: auto;
+    font-weight:600;
+}
+
+.option-description{
+    margin-top:12px;
+    color:#444444;
 }

@@ -1,29 +1,16 @@
 <template>
     <header class="header">
-        <h1 class="page-title">Monitor sieci ZigBee</h1>
+        <h1 class="page-title" tabindex="0" @click="showMainMode">Monitor sieci ZigBee</h1>
         <nav>
             <template v-if="isViewMode">
                 <button type="button" class="header-button" @click="refresh">Odśwież</button>
                 <button type="button" class="header-button" @click="editNewLayer">Dodaj mapę</button>
                 <button type="button" class="header-button" @click="editActiveLayer">Edytuj mapę</button>
                 <button type="button" class="header-button" @click="deleteActiveLayer">Usuń mapę</button>
+                <button v-if="isAdmin" type="button" class="header-button" @click="manageUsers">Użytkownicy</button>
             </template>
+            <button v-if="isUsersManagement" type="button" class="header-button" @click="showMainMode">Mapa</button>
             <template v-if="isLoggedIn">
-                <!--
-                <span>{{ user.username }}</span>
-                <button type="button" class="header-button" @click="logout">Wyloguj</button>
-                -->
-                <!--
-                <div class="dropdown-menu">
-                    <button type="button" class="header-button dropdown-toggle button-username">
-                        {{ user.username }}
-                    </button>
-                    <div class="dropdown-content">
-                        
-                        <button type="button" class="dropdown-list-button">Zmień hasło</button>
-                        <button type="button" class="dropdown-list-button">Wyloguj</button>
-                    </div>
-                </div>-->
                 <dropdown-menu>
                     <template v-slot:toggle-button>
                         <img src="~@/assets/icons/person.svg" class="user-icon" />
@@ -56,14 +43,24 @@ export default {
         isViewMode(){
             return this.$store.getters.mode === 'view';
         },
+        isUsersManagement(){
+            const userManagementModes = ['changePassword', 'manageUsers', 'showUser', 'newUser', 'editUser']
+            return userManagementModes.includes(this.$store.getters.mode);
+        },
         isLoggedIn(){
             return this.$store.state.user !== null;
+        },
+        isAdmin(){
+            return this.user.role === 'admin';
         },
         user(){
             return this.$store.state.user;
         }
     },
     methods:{
+        showMainMode(){
+            this.$store.commit('pushMode', 'view');
+        },
         editNewLayer(){
             this.$store.commit('prepareNewLayer');
             this.$store.commit('pushMode', 'newLayer');
@@ -96,6 +93,9 @@ export default {
         changePassword(){
             this.$store.commit('pushMode', 'changePassword');
         },
+        manageUsers(){
+            this.$store.commit('pushMode', 'manageUsers');
+        }
     },
 }
 </script>
@@ -115,6 +115,7 @@ export default {
     font-size:20px;
     font-weight:normal;
     margin: 10px;
+    cursor: pointer;
 }
 
 .user-icon{

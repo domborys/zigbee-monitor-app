@@ -1,4 +1,5 @@
 import api from '../api';
+import cloneDeep from 'lodash/cloneDeep';
 export default {
     state: () => ({
         users:[],
@@ -21,10 +22,24 @@ export default {
             state.users.splice(index, 1);
         },
         selectUser(state, user){
-            state.selectedUser = user;
+            const userToSelect = cloneDeep(user);
+            userToSelect.password = null;
+            state.selectedUser = userToSelect;
         },
         selectNewUser(state){
             state.selectedUser = {id:null, username:null, password:null, role:'user', disabled:false};
+        },
+        reselectUser(state){
+            if(state.selectedUser && state.selectedUser.id !== null){
+                const stateUser = state.users.find(u => u.id === state.selectedUser.id);
+                if(stateUser)
+                    state.selectedUser = cloneDeep(stateUser);
+                else
+                    state.selectedUser = null;
+            }
+            else{
+                state.selectedUser = null;
+            }
         },
         setSelectedUserParam(state, description){
             state.selectedUser[description.name] = description.value;

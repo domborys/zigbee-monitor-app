@@ -156,20 +156,20 @@ async def get_user_me(current_user: dbmodels.User = Depends(get_current_active_u
 def get_users(user_id: int, db: Session = Depends(get_db)):
     return dbsrv.get_user_by_id(db, user_id)
 
-@app.post("/user", response_model=pydmodels.User)
+@app.post("/users", response_model=pydmodels.User)
 def create_user(user: pydmodels.UserCreate, db: Session = Depends(get_db)):
     return dbsrv.create_user(db, user)
 
 
 
-@app.put("/user/{user_id}", response_model=pydmodels.User)
+@app.put("/users/{user_id}", response_model=pydmodels.User)
 def modify_user(user_id: int, user: pydmodels.UserModify, db: Session = Depends(get_db)):
     db_user = dbsrv.modify_user(db, user_id, user)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User")
     return db_user
 
-@app.delete("/user/{user_id}", response_class=Response,  status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/users/{user_id}", response_class=Response,  status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     existed_before = dbsrv.delete_user(db, user_id)
     if not existed_before:

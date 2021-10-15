@@ -121,9 +121,13 @@ export default {
     },
     methods:{
         back(){
+            this.$store.commit('reselectUser');
             this.$store.commit('previousMode');
         },
         async saveUser(){
+            if(this.passwordFieldDisabled){
+                this.password = null;
+            }
             if(this.newUserMode){
                 await this.$store.dispatch('addUser', this.user);
             }

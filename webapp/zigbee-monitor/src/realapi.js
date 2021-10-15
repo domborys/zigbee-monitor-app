@@ -10,6 +10,11 @@ export default {
     logout,
     changePassword,
     sendAtCommand,
+
+    getUsers,
+    addUser,
+    modifyUser,
+    deleteUser
 };
 
 import axios from 'axios';
@@ -110,6 +115,28 @@ async function sendAtCommand(commandData){
     return response.data;
 }
 
+async function getUsers(){
+    const response = await axios.get(apiurl('/users'));
+    console.log(response);
+    return response.data;
+}
+
+async function addUser(user){
+    const response = await axios.post(apiurl('/users'), user);
+    const returnedUser = response.data;
+    return returnedUser;
+}
+
+async function modifyUser(user){
+    const response = await axios.put(apiurl('/users/' + user.id), user);
+    const returnedUser = response.data;
+    return returnedUser;
+}
+
+async function deleteUser(user){
+    await axios.delete(apiurl('/users/' + user.id));
+}
+
 function processLayersResponse(layers){
     for(let layer of layers){
         layer.imgurl = apiurl('/floors/'+layer.id+'/image');
@@ -192,6 +219,7 @@ function preparePasswordChangeRequest(passwords){
         new_password: passwords.newPassword
     };
 }
+
 
 function apiurl(path){
     return 'http://localhost:8000' + path;

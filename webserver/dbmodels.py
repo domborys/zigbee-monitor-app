@@ -35,6 +35,7 @@ class User(Base):
     password_hash = Column(String(128))
     role = Column(String(32))
     disabled = Column(Boolean)
+    sessions = relationship("UserSession", back_populates="user", cascade="all, delete")
 
 class ReadingConfig(Base):
     __tablename__ = "reading_configs"
@@ -50,5 +51,13 @@ class ReadingConfig(Base):
     at_command_result_format = Column(String(8))
     node_id = Column(Integer, ForeignKey("nodes.id"))
     node = relationship("Node", back_populates="reading_configs")
+
+class UserSession(Base):
+    __tablename__ = "user_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(String(43), index = True, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship(User, back_populates="sessions")
 
 

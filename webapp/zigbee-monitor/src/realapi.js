@@ -48,6 +48,7 @@ async function getCurrentUser(){
 }
 
 async function logout(){
+    await axios.post(apiurl('/logout'));
     currentToken = null;
     delete axios.defaults.headers.common['Authorization'];
 }

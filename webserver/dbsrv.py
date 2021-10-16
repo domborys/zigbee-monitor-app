@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 import dbmodels, pydmodels
 from fastapi import File, UploadFile, HTTPException
 from passlib.context import CryptContext
+import secrets
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -195,7 +196,25 @@ def authenticate_user(db: Session, username: str, password: str):
         return None
     if not pwd_context.verify(password, db_user.password_hash):
         return None
-    return db_user
+    user_session = start_user_session(db, db_user)
+    return user_session
+
+def start_user_session(db: Session, db_user: dbmodels.User) -> dbmodels.UserSession:
+    session_id = secrets.token_urlsafe(32)
+    user_session = dbmodels.UserSession(session_id=session_id, user_id=db_user.id)
+    db.add(user_session)
+    db.commit()
+    db.refresh(user_session)
+    return user_session
+
+def end_user_session(db: Session, session_id: str):
+    user_session = db.query(dbmodels.UserSession).filter(dbmodels.UserSession.session_id == session_id).first()
+    db.delete(user_session)
+    db.commit()
+
+def get_session_by_session_id(db: Session, session_id: str):
+    return db.query(dbmodels.UserSession).filter(dbmodels.UserSession.session_id == session_id).first()
+
 
 
 

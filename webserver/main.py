@@ -1,6 +1,8 @@
+from asyncio.streams import StreamReader
 from typing import List, Optional
 from datetime import datetime, timedelta
 from fastapi import FastAPI, WebSocket, Depends, HTTPException, status, Response, UploadFile, File
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -11,6 +13,7 @@ from sqlalchemy.orm import Session
 import asyncio
 
 from sqlalchemy.sql.functions import user
+from starlette.requests import Request
 import xbeesrv, config, dbmodels, pydmodels, dbsrv
 from database import SessionLocal, engine
 
@@ -93,7 +96,7 @@ app.add_middleware(
 
 class MessageToXBee(BaseModel):
     address64 : str
-    text: str
+    message: str
 
 class XBeeWaiting(BaseModel):
     time : float
@@ -205,7 +208,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 def logout(db: Session = Depends(get_db), user_session: dbmodels.UserSession = Depends(get_current_session)):
     dbsrv.end_user_session(db, user_session.session_id)
 
-    
+@app.exception_handler(xbeesrv.XBeeServerError)
+def handle_xbee_error(request: Request, err: xbeesrv.XBeeServerError):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Error with XBee device connection {err}"},
+    )
 
 @app.get("/network-discovery", dependencies=[Depends(is_valid_user)])
 async def discover_network():
@@ -213,7 +221,7 @@ async def discover_network():
 
 @app.post("/xbee-message", dependencies=[Depends(is_valid_user)])
 async def send_message(message : MessageToXBee):
-    return await xbeesrv.send_text_data(address64=message.address64, text=message.text)
+    return await xbeesrv.send_b64_data(address64=message.address64, message=message.message)
 
 @app.post("/xbee-wait", dependencies=[Depends(is_valid_user)])
 async def send_message(waiting : XBeeWaiting):
@@ -238,15 +246,33 @@ async def execute_command(command_data : pydmodels.AtCommandWithType):
 @app.websocket("/message-socket")
 async def message_websocket(websocket : WebSocket):
     async def websocket_receive(websocket : WebSocket):
+        try:
+            while True:
+                await receive_websocket_send_message(websocket)
+        except Exception as err:
+            await websocket.close()
+    try:
+        await websocket.accept()
+        # asyncio.create_task(websocket_receive(websocket))
+        reader, writer = await asyncio.open_connection(
+            config.XBEE_IP_ADDRESS, config.XBEE_PORT_NOTIFY)
         while True:
-            request = await websocket.receive_json()
-            await xbeesrv.send_b64_data(address64=request['address64'], message=request['message'])
-    await websocket.accept()
-    asyncio.create_task(websocket_receive(websocket))
-    reader, writer = await asyncio.open_connection(
-        config.XBEE_IP_ADDRESS, config.XBEE_PORT_NOTIFY)
-    while True:
+            await receive_message_send_websocket(websocket, reader)
+    except Exception as err:
+        await websocket.close()
+
+async def receive_websocket_send_message(websocket: WebSocket):
+    try:
+        request = await websocket.receive_json()
+        await xbeesrv.send_b64_data(address64=request['address64'], message=request['message'])
+    except xbeesrv.XBeeServerError as xbee_err:
+        pass
+
+async def receive_message_send_websocket(websocket: WebSocket, reader: StreamReader):
+    try:
         response_json = await reader.readline()
         response_dict = xbeesrv.decode_command(response_json)
         websocket_message = {'type':'received', 'address64':response_dict['data']['address64'], 'message':response_dict['data']['message']}
         await websocket.send_json(websocket_message)
+    except xbeesrv.XBeeServerError as xbee_err:
+        pass

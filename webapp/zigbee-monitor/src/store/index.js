@@ -336,6 +336,7 @@ const store = new Vuex.Store({
         },
         async logout(context){
             await api.logout();
+            context.commit('clearReadingTimers');
             context.commit('setToken', null);
             context.commit('setUser', null);
         },
@@ -368,7 +369,7 @@ const store = new Vuex.Store({
             await context.dispatch('downloadLayers');
         },
         async sendMessage(context, message){
-            socket.send(JSON.stringify(message));
+            await api.sendMessage(message);
             context.commit('addMessage', message);
         },
         addReceivedMessage(context, message){
@@ -435,7 +436,7 @@ const store = new Vuex.Store({
     }
 });
 
-const socket = api.makeMessageSocket();
+let socket = api.makeMessageSocket();
 socket.onmessage = e => store.dispatch('addReceivedMessage', JSON.parse(e.data));
 
 export default store;

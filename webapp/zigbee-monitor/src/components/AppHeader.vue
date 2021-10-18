@@ -14,7 +14,7 @@
                 <dropdown-menu>
                     <template v-slot:toggle-button>
                         <img src="~@/assets/icons/person.svg" class="user-icon" />
-                        <span class="button-username">{{ user.username }}</span>
+                        <span class="button-username">{{ user ? user.username : '' }}</span>
                     </template>
                     <template v-slot:content>
                         <button type="button" class="dropdown-list-button" @click="changePassword">Zmień hasło</button>
@@ -51,7 +51,7 @@ export default {
             return this.$store.state.user !== null;
         },
         isAdmin(){
-            return this.user.role === 'admin';
+            return this.user &&  this.user.role === 'admin';
         },
         user(){
             return this.$store.state.user;

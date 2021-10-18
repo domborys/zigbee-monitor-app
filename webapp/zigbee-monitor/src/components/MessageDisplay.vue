@@ -108,7 +108,7 @@ export default {
         }
     },
     methods:{
-        sendMessage(){
+        async sendMessage(){
             try{
                 const encodedMessage = this.getEncodedMessage();
                 const message = {
@@ -116,7 +116,7 @@ export default {
                     address64:this.node.address64,
                     message:encodedMessage
                 };
-                this.$store.dispatch('sendMessage', message);
+                await this.$store.dispatch('sendMessage', message);
                 this.messageToSend = '';
             }
             catch(error){

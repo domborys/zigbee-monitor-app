@@ -10,6 +10,7 @@ export default {
     logout,
     changePassword,
     sendAtCommand,
+    sendMessage,
 
     getUsers,
     addUser,
@@ -112,6 +113,13 @@ function makeMessageSocket(){
 async function sendAtCommand(commandData){
     const commandToSend = prepareAtCommandToSend(commandData);
     const response = await axios.post(apiurl('/xbee-at-command'), commandToSend);
+    console.log(response);
+    return response.data;
+}
+
+async function sendMessage(messageData){
+    const messageToSend = {address64:messageData.address64, message:messageData.message};
+    const response = await axios.post(apiurl('/xbee-message'), messageToSend);
     console.log(response);
     return response.data;
 }

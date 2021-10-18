@@ -7,22 +7,34 @@ import config, pydmodels
 class XBeeServerError(Exception):
     pass
 
+def unify_exceptions(func):
+    async def wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except Exception as err:
+            raise XBeeServerError(err)
+    return wrapper
+
+@unify_exceptions
 async def discover_network():
     request = {"type":"request", "name":"discover"}
     response = await request_response(request)
     return response["data"]
 
+@unify_exceptions
 async def send_text_data(address64 : str, text : str, output_encoding : str = 'utf-8'):
     message = base64.b64encode(text.encode(output_encoding)).decode()
     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
     response = await request_response(request)
     return response
 
+@unify_exceptions
 async def send_b64_data(address64 : str, message : str):
     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
     response = await request_response(request)
     return response
 
+@unify_exceptions
 async def at_command(
         command_type: str, 
         command: Union[pydmodels.AtCommandGetExecute, pydmodels.AtCommandSet]
@@ -39,6 +51,7 @@ async def at_command(
     response = await request_response(request)
     return make_at_command_response(response)
 
+@unify_exceptions
 async def wait(time : float):
     request = {"type":"request", "name":"wait", "data":{"time":time}}
     return await request_response(request)

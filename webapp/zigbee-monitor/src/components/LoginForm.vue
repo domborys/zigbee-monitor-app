@@ -43,9 +43,7 @@ export default {
             const credentials = {username:this.username, password:this.password};
             try{
                 await this.$store.dispatch('login', credentials);
-                this.$store.commit('replaceMode', 'view');
-                this.$store.dispatch('downloadLayers')
-                    .then(() => this.$store.dispatch('downloadDiscoveryResults'))
+                await this.$store.dispatch('loadDataAfterLogin');
             }
             catch(error){
                 console.log(error);

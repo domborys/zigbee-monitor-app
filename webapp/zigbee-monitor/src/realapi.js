@@ -7,6 +7,7 @@ export default {
     getToken,
     setToken,
     getCurrentUser,
+    login,
     logout,
     changePassword,
     sendAtCommand,
@@ -21,6 +22,15 @@ export default {
 import axios from 'axios';
 
 let currentToken = null;
+
+async function login(credentials){
+    let formData = new FormData();
+    formData.append('username', credentials.username);
+    formData.append('password', credentials.password);
+    const response = await axios.post(apiurl('/login'), formData, {
+        headers: {'Content-Type': 'multipart/form-data'},
+    });
+}
 
 async function getToken(credentials){
     let formData = new FormData();
@@ -106,7 +116,13 @@ async function deleteLayer(layer){
 }
 
 function makeMessageSocket(){
-    const socket = new WebSocket('ws://localhost:8000/message-socket');
+    var location = window.location;
+    var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+    var url = protocol + location.host + '/message-socket';
+    //const socket = new WebSocket('ws://localhost:8000/message-socket');
+    const socket = new WebSocket(url);
+    socket.onerror = (event) => console.log('WebSocket error', event);
+    socket.onclose = (event) => console.log('WebSocket closed', event);
     return socket;
 }
 
@@ -231,5 +247,6 @@ function preparePasswordChangeRequest(passwords){
 
 
 function apiurl(path){
-    return 'http://localhost:8000' + path;
+    //return 'http://localhost:8000' + path;
+    return '' + path;
 }

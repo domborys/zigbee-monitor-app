@@ -117,9 +117,13 @@ export default {
     },
     methods:{
     },
-    mounted(){
-        // this.$store.dispatch('downloadLayers')
-        //     .then(() => this.$store.dispatch('downloadDiscoveryResults'))
+    async mounted(){
+        try{
+            await this.$store.dispatch('loadDataAfterLogin');
+        }
+        catch(e){
+
+        }
     }
 }
 </script>

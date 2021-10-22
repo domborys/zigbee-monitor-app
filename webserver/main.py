@@ -2,15 +2,16 @@ from asyncio.streams import StreamReader
 from typing import List, Optional
 from datetime import datetime, timedelta
 from fastapi import FastAPI, WebSocket, Depends, HTTPException, status, Response, UploadFile, File
+from fastapi.params import Cookie
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyCookie
 from jose import JWTError, jwt
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import asyncio
+import asyncio, secrets
 
 from sqlalchemy.sql.functions import user
 from starlette.requests import Request
@@ -34,20 +35,45 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+cookie_sid = APIKeyCookie(name="SID")
 
-def decode_token(db : Session, token : str) -> dbmodels.User:
-    db_user = dbsrv.get_user_by_username(db, token)
-    return db_user
 
-async def get_current_session(token: str = Depends(oauth2_scheme), db : Session = Depends(get_db)) -> dbmodels.UserSession:
+async def get_current_session(request: Request, sid: str = Depends(cookie_sid), db : Session = Depends(get_db)) -> dbmodels.UserSession:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
     )
-    db_session = dbsrv.get_session_by_session_id(db, token)
+    db_session = dbsrv.get_session_by_session_id(db, sid)
     if db_session is None:
         raise credentials_exception
+    check_csrf_token(request)
+    return db_session
+
+def check_csrf_token(request: Request):
+    csrf_exception =  HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Invalid CSRF token",
+    )
+    if request.method in ["POST", "PUT", "DELETE", "PATCH"]:
+        if not csrf_tokens_equal(request):
+            raise csrf_exception
+
+def csrf_tokens_equal(request: Request):
+    try:
+        cookie_token = request.cookies["XSRF-TOKEN"]
+        header_token = request.headers["X-XSRF-TOKEN"]
+        return secrets.compare_digest(cookie_token, header_token)
+    except KeyError:
+        return False
+
+async def get_current_session_ws(websocket: WebSocket, sid: Optional[str] = Cookie(None, alias="SID"), db : Session = Depends(get_db)) -> dbmodels.UserSession:
+    if sid is None:
+        print("No SID cookie in websocket")
+        return None
+    db_session = dbsrv.get_session_by_session_id(db, sid)
+    if db_session is None:
+        print("No valid session in websocket")
+        return None
     return db_session
 
 async def get_current_user(user_session: dbmodels.UserSession = Depends(get_current_session)) -> dbmodels.User:
@@ -194,7 +220,7 @@ def change_password(password_change: pydmodels.PasswordChange, db: Session = Dep
     return dbsrv.change_password(db, password_change, current_user.username)
 
 @app.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
     if db_session is None:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
@@ -204,8 +230,21 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     # )
     return {"access_token": db_session.session_id, "token_type": "bearer"}
 
+@app.post("/login")
+async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db), response_class=Response,  status_code=status.HTTP_204_NO_CONTENT):
+    db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
+    if db_session is None:
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
+    # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # access_token = create_access_token(
+    #     data={"sub": db_user.username}, expires_delta=access_token_expires
+    # )
+    response.set_cookie("SID", db_session.session_id, httponly=True)
+    response.set_cookie("XSRF-TOKEN", secrets.token_urlsafe(32))
+
 @app.post("/logout", response_class=Response,  status_code=status.HTTP_204_NO_CONTENT)
-def logout(db: Session = Depends(get_db), user_session: dbmodels.UserSession = Depends(get_current_session)):
+def logout(response: Response, db: Session = Depends(get_db), user_session: dbmodels.UserSession = Depends(get_current_session)):
+    response.delete_cookie("SID")
     dbsrv.end_user_session(db, user_session.session_id)
 
 @app.exception_handler(xbeesrv.XBeeServerError)
@@ -244,7 +283,11 @@ async def execute_command(command_data : pydmodels.AtCommandWithType):
     return await xbeesrv.at_command(command_data.command_type, command_data)
 
 @app.websocket("/message-socket")
-async def message_websocket(websocket : WebSocket):
+async def message_websocket(websocket : WebSocket, user_session : Optional[dbmodels.UserSession] = Depends(get_current_session_ws)):
+    if user_session is None:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+    print("websocket started")
     async def websocket_receive(websocket : WebSocket):
         try:
             while True:
@@ -259,6 +302,7 @@ async def message_websocket(websocket : WebSocket):
         while True:
             await receive_message_send_websocket(websocket, reader)
     except Exception as err:
+        print(f"websocket closing because of error {err}")
         await websocket.close()
 
 async def receive_websocket_send_message(websocket: WebSocket):

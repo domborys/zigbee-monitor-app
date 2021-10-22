@@ -22,7 +22,6 @@ function isOneColumnMode(mode){
 
 const store = new Vuex.Store({
     state: {
-        token:null,
         user:null,
         modeStack:['login'],
         mainDisplayMode:'map',
@@ -41,6 +40,7 @@ const store = new Vuex.Store({
             {type:'received', address64:'DEADBEEF12345678', message:btoa('result 234'), tempId:tempMessageIdGenerator.next()},
             {type:'sent', address64:'DEADBEEF12345678', message:btoa('freeze'), tempId:tempMessageIdGenerator.next()},
         ],
+        messageSocket:null,
     },
     getters:{
         mode(state){
@@ -91,9 +91,6 @@ const store = new Vuex.Store({
                 throw new Error("Invalid mode");
             state.mode = mode;
         },*/
-        setToken(state, token){
-            state.token = token;
-        },
         setUser(state, user){
             state.user = user;
         },
@@ -309,8 +306,10 @@ const store = new Vuex.Store({
         },
         clearReadingTimers(state){
             state.readingTimers.forEach(clearInterval);
+        },
+        setMessageSocket(state, socket){
+            state.messageSocket = socket;
         }
-
         
     },
     actions: {
@@ -327,18 +326,25 @@ const store = new Vuex.Store({
             image.onerror = (error) => console.log(error);
             
         },
+        async loadDataAfterLogin(context, credentials){
+            await context.dispatch('getCurrentUser', credentials);
+            context.commit('replaceMode', 'view');
+            context.dispatch('openMessageSocket');
+            await context.dispatch('downloadLayers');
+            await context.dispatch('downloadDiscoveryResults');
+        },
         async login(context, credentials){
-            const token = await api.getToken(credentials);
-            api.setToken(token);
-            context.commit('setToken', token);
+            await api.login(credentials);
+        },
+        async getCurrentUser(context){
             const user = await api.getCurrentUser();
             context.commit('setUser', user);
         },
         async logout(context){
-            await api.logout();
             context.commit('clearReadingTimers');
-            context.commit('setToken', null);
             context.commit('setUser', null);
+            context.dispatch('closeMessageSocket');
+            await api.logout();
         },
         async changePassword(context, passwords){
             await api.changePassword(passwords);
@@ -430,13 +436,23 @@ const store = new Vuex.Store({
             message.result = responseData.result;
             return message;
         },
+        openMessageSocket(context){
+            const socket = api.makeMessageSocket();
+            socket.onmessage = e => store.dispatch('addReceivedMessage', JSON.parse(e.data));
+            context.commit('setMessageSocket', socket);
+        },
+        closeMessageSocket(context){
+            if(context.state.messageSocket)
+                context.state.messageSocket.close(1000);
+            context.commit('setMessageSocket', null);
+        }
     },
     modules: {
         users:usersModule,
     }
 });
 
-let socket = api.makeMessageSocket();
-socket.onmessage = e => store.dispatch('addReceivedMessage', JSON.parse(e.data));
+//let socket = api.makeMessageSocket();
+//socket.onmessage = e => store.dispatch('addReceivedMessage', JSON.parse(e.data));
 
 export default store;

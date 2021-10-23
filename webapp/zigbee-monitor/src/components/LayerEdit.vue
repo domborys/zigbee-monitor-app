@@ -116,6 +116,7 @@ export default {
                 this.$store.commit('previousMode');
                 //URL.revokeObjectURL(this.layer.imgurl);
                 this.$store.commit('setEditedLayer', null);
+                this.$store.dispatch('downloadDiscoveryResults');
             }
             catch(e){
                 console.error(e);

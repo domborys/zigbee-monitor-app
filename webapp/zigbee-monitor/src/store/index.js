@@ -390,11 +390,13 @@ const store = new Vuex.Store({
                             const actionData = {node:node, readingConfig:rc};
                             const timerId = setInterval(context.dispatch, rc.refreshPeriod*1000, 'sendMessageForReading', actionData);
                             context.commit('addReadingTimer', timerId);
+                            context.dispatch('sendMessageForReading', actionData);
                         }
                         else if(rc.mode === 'at'){
                             const actionData = {node:node, readingConfig:rc};
                             const timerId = setInterval(context.dispatch, rc.refreshPeriod*1000, 'sendAtCommandForReading', actionData);
                             context.commit('addReadingTimer', timerId);
+                            context.dispatch('sendAtCommandForReading', actionData);
                         }
                     }
                 }

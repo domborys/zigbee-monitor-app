@@ -225,7 +225,8 @@ function processReadingConfig(rc){
         messageToSend: rc.message_to_send,
         atCommand: rc.at_command,
         atCommandData: rc.at_command_data,
-        atCommandResultFormat: rc.at_command_result_format
+        atCommandResultFormat: rc.at_command_result_format,
+        lastReading:null
     };
 }
 

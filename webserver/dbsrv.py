@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta
+from typing import List
 from sqlalchemy.orm import Session
 import dbmodels, pydmodels
 from fastapi import File, UploadFile, HTTPException
 from passlib.context import CryptContext
 import secrets
+import config
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -196,12 +199,17 @@ def authenticate_user(db: Session, username: str, password: str):
         return None
     if not pwd_context.verify(password, db_user.password_hash):
         return None
+    delete_expired_user_sessions(db)
     user_session = start_user_session(db, db_user)
     return user_session
 
+def get_all_user_sessions(db: Session) -> List[dbmodels.UserSession]:
+    return db.query(dbmodels.UserSession).all()
+
 def start_user_session(db: Session, db_user: dbmodels.User) -> dbmodels.UserSession:
     session_id = secrets.token_urlsafe(32)
-    user_session = dbmodels.UserSession(session_id=session_id, user_id=db_user.id)
+    time_now = datetime.now()
+    user_session = dbmodels.UserSession(session_id=session_id, user_id=db_user.id, time_started=time_now, time_last_activity=time_now)
     db.add(user_session)
     db.commit()
     db.refresh(user_session)
@@ -212,8 +220,35 @@ def end_user_session(db: Session, session_id: str):
     db.delete(user_session)
     db.commit()
 
+def end_all_user_sessions(db: Session, db_user: dbmodels.User):
+    del db_user.sessions[:]
+    db.commit()
+
+def delete_expired_user_sessions(db: Session):
+    time_newest_expired = datetime.now() - timedelta(seconds=config.SESSION_IDLE_TIME)
+    db.query(dbmodels.UserSession).filter(dbmodels.UserSession.time_last_activity < time_newest_expired).delete()
+    db.commit()
+
+def delete_all_user_sessions(db: Session):
+    db.query(dbmodels.UserSession).delete()
+    db.commit()
+
 def get_session_by_session_id(db: Session, session_id: str):
     return db.query(dbmodels.UserSession).filter(dbmodels.UserSession.session_id == session_id).first()
+
+def get_session_and_refresh(db: Session, session_id: str):
+    user_session = get_session_by_session_id(db, session_id)
+    if user_session is None:
+        return None
+    time_now = datetime.now()
+    if time_now - user_session.time_last_activity > timedelta(seconds=config.SESSION_IDLE_TIME):
+        db.delete(user_session)
+        db.commit()
+        return None
+    user_session.time_last_activity = time_now
+    db.commit()
+    db.refresh(user_session)
+    return user_session
 
 
 

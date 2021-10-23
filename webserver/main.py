@@ -32,7 +32,7 @@ def get_db():
         db.close()
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 cookie_sid = APIKeyCookie(name="SID")
@@ -43,10 +43,10 @@ async def get_current_session(request: Request, sid: str = Depends(cookie_sid), 
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
     )
-    db_session = dbsrv.get_session_by_session_id(db, sid)
+    db_session = dbsrv.get_session_and_refresh(db, sid)
     if db_session is None:
         raise credentials_exception
-    check_csrf_token(request)
+    # check_csrf_token(request)
     return db_session
 
 def check_csrf_token(request: Request):
@@ -70,7 +70,7 @@ async def get_current_session_ws(websocket: WebSocket, sid: Optional[str] = Cook
     if sid is None:
         print("No SID cookie in websocket")
         return None
-    db_session = dbsrv.get_session_by_session_id(db, sid)
+    db_session = dbsrv.get_session_and_refresh(db, sid)
     if db_session is None:
         print("No valid session in websocket")
         return None
@@ -246,6 +246,19 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
 def logout(response: Response, db: Session = Depends(get_db), user_session: dbmodels.UserSession = Depends(get_current_session)):
     response.delete_cookie("SID")
     dbsrv.end_user_session(db, user_session.session_id)
+
+@app.post("/logout-all", response_class=Response,  status_code=status.HTTP_204_NO_CONTENT)
+def logout_all(response: Response, db: Session = Depends(get_db), user_session: dbmodels.UserSession = Depends(get_current_session)):
+    response.delete_cookie("SID")
+    dbsrv.end_all_user_sessions(db, user_session.user)
+
+@app.get("/user-sessions", response_model=List[pydmodels.UserSession], dependencies=[Depends(is_valid_admin)])
+def get_users(db: Session = Depends(get_db)):
+    return dbsrv.get_all_user_sessions(db)
+
+@app.delete("/user-sessions", response_class=Response,  status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(is_valid_admin)])
+def get_users(db: Session = Depends(get_db)):
+    dbsrv.delete_all_user_sessions(db)
 
 @app.exception_handler(xbeesrv.XBeeServerError)
 def handle_xbee_error(request: Request, err: xbeesrv.XBeeServerError):

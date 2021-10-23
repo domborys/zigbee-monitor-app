@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, LargeBinary
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.sqltypes import TIMESTAMP, DateTime
 
 from database import Base
 
@@ -13,7 +14,7 @@ class Floor(Base):
     image_media_type = Column(String(256))
     width = Column(Float)
     height = Column(Float)
-    nodes = relationship("Node", back_populates="floor", cascade="all, delete")
+    nodes = relationship("Node", back_populates="floor", cascade="all, delete-orphan")
 
 class Node(Base):
     __tablename__ = "nodes"
@@ -25,7 +26,7 @@ class Node(Base):
     y = Column(Float)
     floor_id = Column(Integer, ForeignKey("floors.id"))
     floor = relationship("Floor", back_populates="nodes")
-    reading_configs = relationship("ReadingConfig", back_populates="node", cascade="all, delete")
+    reading_configs = relationship("ReadingConfig", back_populates="node", cascade="all, delete-orphan")
 
 class User(Base):
     __tablename__ = "users"
@@ -35,7 +36,7 @@ class User(Base):
     password_hash = Column(String(128))
     role = Column(String(32))
     disabled = Column(Boolean)
-    sessions = relationship("UserSession", back_populates="user", cascade="all, delete")
+    sessions = relationship("UserSession", back_populates="user", cascade="all, delete-orphan")
 
 class ReadingConfig(Base):
     __tablename__ = "reading_configs"
@@ -59,5 +60,7 @@ class UserSession(Base):
     session_id = Column(String(43), index = True, unique=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship(User, back_populates="sessions")
+    time_started = Column(DateTime)
+    time_last_activity = Column(DateTime)
 
 

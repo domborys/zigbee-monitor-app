@@ -99,3 +99,10 @@ class AtCommandResult(BaseModel):
     status: str
     result: Optional[str]
     error: Optional[str]
+
+class UserSession(BaseModel):
+    id: str
+    user_id: Optional[str]
+
+    class Config:
+        orm_mode = True

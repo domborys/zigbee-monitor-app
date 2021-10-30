@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyCookie
-from jose import JWTError, jwt
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -17,10 +16,6 @@ from sqlalchemy.sql.functions import user
 from starlette.requests import Request
 import xbeesrv, config, dbmodels, pydmodels, dbsrv
 from database import SessionLocal, engine
-
-SECRET_KEY = "be6bae19960dae668c63c7259f1621f73760ea3c47bffeaa2bdc2c16e8969e31"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 dbmodels.Base.metadata.create_all(bind=engine)
 
@@ -34,9 +29,7 @@ def get_db():
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 cookie_sid = APIKeyCookie(name="SID")
-
 
 async def get_current_session(request: Request, sid: str = Depends(cookie_sid), db : Session = Depends(get_db)) -> dbmodels.UserSession:
     credentials_exception = HTTPException(
@@ -95,17 +88,6 @@ async def is_valid_admin(user_session: dbmodels.UserSession = Depends(get_curren
         raise HTTPException(status_code=403, detail="User account disabled")
     if current_user.role != 'admin':
         raise HTTPException(status_code=403, detail="Operation not allowed")
-
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 origins = [
     'http://localhost:8080',
@@ -224,10 +206,6 @@ async def login_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Sess
     db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
     if db_session is None:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
-    # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    # access_token = create_access_token(
-    #     data={"sub": db_user.username}, expires_delta=access_token_expires
-    # )
     return {"access_token": db_session.session_id, "token_type": "bearer"}
 
 @app.post("/login")
@@ -235,10 +213,6 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
     db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
     if db_session is None:
         raise HTTPException(status_code=401, detail="Incorrect username or password")
-    # access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    # access_token = create_access_token(
-    #     data={"sub": db_user.username}, expires_delta=access_token_expires
-    # )
     response.set_cookie("SID", db_session.session_id, httponly=True)
     response.set_cookie("XSRF-TOKEN", secrets.token_urlsafe(32))
 

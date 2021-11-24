@@ -45,15 +45,6 @@ export default {
 <style scoped>
 
 .node-item{
-    /*
-    font-size:12px;
-    margin: 8px 0;
-    padding:6px;
-    border-width: 2px;
-    border-style:solid;
-    border-radius: 5px;
-    border-color:rgb(130,68,190);
-    */
     padding:10px;
     border-bottom: 1px solid #E6E6FA;
     border-right: 1px solid #E6E6FA;
@@ -79,36 +70,21 @@ export default {
 	padding: 0;
     font-family: inherit;
     cursor:pointer;
-    /*
-	cursor: pointer;
-    
-    font-size: 35px;
-    width:30px;
-    height:30px;
-    overflow:hidden;*/
-    
 }
 
 .close-button > *{
     display:block;
 }
 
-/*
-.close-button::after{
-    content:"×";
-}*/
-
 .node-item:hover{
     background-color: #E6E6FA;
     cursor: pointer;
 }
-
 
 .node-item-header{
     margin:0 0 4px 0;
     font-size: 15px;
     font-weight:600;
 }
-
 
 </style>

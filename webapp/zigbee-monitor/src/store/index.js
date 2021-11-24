@@ -265,7 +265,7 @@ const store = new Vuex.Store({
                         node.discovered = true;
                         node.address16 = result.address16;
                         node.role = result.role;
-                        node.deviceId = result.deviceId;
+                        node.deviceId = result.id;
                     }
                     
                 }

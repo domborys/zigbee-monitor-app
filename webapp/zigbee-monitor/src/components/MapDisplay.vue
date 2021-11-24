@@ -1,55 +1,66 @@
 <template>
-    <div class="map-container" :class="{'edited-node-mode':!!editedNode}">
-        <l-map
-        ref="map"
-        :min-zoom="minZoom"
-        :crs="crs"
-        style="height: 100%; z-index:10"
-        v-if="mapVisible"
-        @click="mapClick"
-        >
-        <l-image-overlay
-            :url="layer.imgurl"
-            :bounds="layerBounds"
-        />
-        <l-marker
-            v-for="node in nodesToDisplay"
-            :key="node.name"
-            :lat-lng="{lng: node.x, lat: node.y}"
-            :icon="getIcon(node)"
-        >
-            <l-tooltip :options="{direction:'top', permanent:true, offset:[0,-23]}">
-                <b>{{node.name}}</b><br>
-                <div v-for="config in node.readingConfigs" :key="config.name">
-                    {{config.name}}: {{config.lastReading === null ? '---' : config.lastReading}}
-                </div>
-            </l-tooltip>
-            <l-popup :content="node.name" />
-        </l-marker>
-        <l-marker
-            v-if="editedNodeWasPlaced"
-            :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
-            :icon="editedNodeIcon"
-        >
-            <l-popup :content="editedNode.name" />
-        </l-marker>
-        <!--
+    <div class="map-display-container">
+        <div class="map-header">
+            <label>
+                <input type="checkbox" v-model="showTooltips">
+                Opisy czujników
+            </label>
+        </div>
+        <div class="map-container" :class="{'edited-node-mode':!!editedNode}">
+            <l-map
+            ref="map"
+            :min-zoom="minZoom"
+            :crs="crs"
+            style="height: 100%; z-index:10"
+            v-if="mapVisible"
+            @click="mapClick"
+            >
             <l-image-overlay
-                :url="url"
-                :bounds="bounds"
+                :url="layer.imgurl"
+                :bounds="layerBounds"
             />
             <l-marker
-                v-for="star in stars"
-                :key="star.name"
-                :lat-lng="star"
+                v-for="node in nodesToDisplay"
+                :key="node.name"
+                :lat-lng="{lng: node.x, lat: node.y}"
+                :icon="getIcon(node)"
             >
-            <l-popup :content="star.name" />
+                <!--
+                <l-tooltip v-if="showTooltips" :options="{direction:'top', permanent:true, offset:[0,-35], opacity:1}">
+                    <b>{{node.name}}</b><br>
+                    <div v-for="config in node.readingConfigs" :key="config.name">
+                        {{config.name}}: {{config.lastReading === null ? '---' : config.lastReading}}
+                    </div>
+                </l-tooltip>
+                -->
+                <node-tooltip :node="node" :visible="showTooltips" />
+                <!--<l-popup :content="node.name" />-->
             </l-marker>
-            <l-polyline :lat-lngs="travel" />
-        -->
-        </l-map>
-        <div class="place-node-message" v-if="!!editedNode">
-            Kliknij na mapie, aby umieścić węzeł.
+            <l-marker
+                v-if="editedNodeWasPlaced"
+                :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
+                :icon="editedNodeIcon"
+            >
+                <l-popup :content="editedNode.name" />
+            </l-marker>
+            <!--
+                <l-image-overlay
+                    :url="url"
+                    :bounds="bounds"
+                />
+                <l-marker
+                    v-for="star in stars"
+                    :key="star.name"
+                    :lat-lng="star"
+                >
+                <l-popup :content="star.name" />
+                </l-marker>
+                <l-polyline :lat-lngs="travel" />
+            -->
+            </l-map>
+            <div class="place-node-message" v-if="!!editedNode">
+                Kliknij na mapie, aby umieścić węzeł.
+            </div>
         </div>
     </div>
 </template>
@@ -58,6 +69,7 @@
 import { CRS, icon,Icon } from "leaflet";
 import { LMap, LImageOverlay, LMarker, LPopup, LPolyline, LTooltip } from "vue2-leaflet";
 import 'leaflet/dist/leaflet.css';
+import NodeTooltip from './NodeTooltip.vue';
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -100,13 +112,15 @@ export default {
         LMarker,
         LPopup,
         LPolyline,
-        LTooltip
+        LTooltip,
+        NodeTooltip,
     },
     props:{
         layer: Object
     },
     data() {
         return {
+            showTooltips:true,
             minZoom: -10,
             crs: CRS.Simple,
             
@@ -210,8 +224,32 @@ export default {
 </script>
 
 <style scoped>
+
+.map-display-container{
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-header{
+    flex:none;
+    box-sizing:border-box;
+    /*
+    display:flex;
+    justify-content: flex-end;
+    */
+    padding:8px;
+    border-bottom:1px solid #E6E6FA;
+}
+
 .map-container{
-    height: 100%;
+    flex:auto;
+    overflow:auto;
+    min-height:0;
+}
+
+.map-container{
+    /*height: 100%;*/
     position:relative;
 }
 

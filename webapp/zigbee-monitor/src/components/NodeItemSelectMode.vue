@@ -1,7 +1,7 @@
 <template>
-    <article class="node-item-select"  @click="nodeSelectClick">
+    <li class="node-item"  @click="nodeSelectClick">
         <div>
-            <b>Id urządzenia: </b>{{ node.deviceId}}
+            <b>Id urządzenia: </b>{{ node.id}}
         </div>
         <div>
             <b>Adres 16-bit: </b> {{ node.address16 }}
@@ -12,7 +12,7 @@
         <div>
             <b>Typ węzła: </b>{{ node.role }}
         </div>
-    </article>
+    </li>
 </template>
 <script>
 
@@ -50,6 +50,22 @@ export default {
     border-radius: 5px;
     border-color:rgb(130,68,190);
     cursor:pointer;
+}
+
+.node-item{
+    padding:10px;
+    border-bottom: 1px solid #E6E6FA;
+    border-right: 1px solid #E6E6FA;
+    border-left: 1px solid #E6E6FA;
+}
+
+.node-item:first-child{
+    border-top: 1px solid #E6E6FA;
+}
+
+.node-item:hover{
+    background-color: #E6E6FA;
+    cursor: pointer;
 }
 
 </style>

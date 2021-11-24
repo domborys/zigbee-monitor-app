@@ -3,11 +3,15 @@
         <h2>Wybierz węzeł</h2>
         <section>
             <h3>Nowe węzły</h3>
-            <node-item-select-mode v-for="node in nodesNotInSystem" :key="node.address64" :node="node" @select-node="selectNode(node)" />
+            <ul class="node-list-select">
+                <node-item-select-mode v-for="node in nodesNotInSystem" :key="node.address64" :node="node" @select-node="selectNode(node)" />
+            </ul>
         </section>
         <section>
             <h3>Węzły obecne w systemie</h3>
-            <node-item-select-mode v-for="node in nodesInSystem" :key="node.address64" :node="node" @select-node="selectNode(node)" />
+            <ul class="node-list-select">
+                <node-item-select-mode v-for="node in nodesInSystem" :key="node.address64" :node="node" @select-node="selectNode(node)" />
+            </ul>
         </section>
     </div>
 </template>
@@ -47,5 +51,9 @@ export default {
 
 
 <style scoped>
-
+.node-list-select{
+    list-style-type: none;
+    padding:0;
+    margin:5px 0 0 0;
+}
 </style>

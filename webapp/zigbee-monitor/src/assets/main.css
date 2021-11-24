@@ -186,7 +186,11 @@ body{
     
 }
 
-.dropdown-list-button:hover{
+.dropdown-list-button:disabled{
+    color: #777;
+}
+
+.dropdown-list-button:hover:enabled{
     background-color:#E6E6FA;
 }
 
@@ -198,8 +202,12 @@ body{
     padding:8px;
     cursor:pointer;
 }
-.header-button:hover{
+.header-button:hover:enabled{
     background-color: #E6E6FA;
+}
+
+.header-button:disabled{
+    color: #777;
 }
 
 .heading-back-group{

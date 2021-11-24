@@ -3,17 +3,35 @@
         <h1 class="page-title" tabindex="0" @click="showMainMode">Monitor sieci ZigBee</h1>
         <nav>
             <template v-if="isViewMode">
-                <button type="button" class="header-button" @click="refresh">Odśwież</button>
-                <button type="button" class="header-button" @click="editNewLayer">Dodaj mapę</button>
-                <button type="button" class="header-button" @click="editActiveLayer">Edytuj mapę</button>
-                <button type="button" class="header-button" @click="deleteActiveLayer">Usuń mapę</button>
-                <button v-if="isAdmin" type="button" class="header-button" @click="manageUsers">Użytkownicy</button>
+                <button type="button" class="header-button" @click="refresh">
+                    <img src="~@/assets/icons/arrow-repeat.svg" class="manage-users-icon" />
+                    Odśwież
+                </button>
+                <dropdown-menu>
+                    <template v-slot:toggle-button>
+                        <img src="~@/assets/icons/gear.svg" class="manage-users-icon" />
+                        Konfiguracja
+                    </template>
+                    <template v-slot:content>
+                        <button type="button" class="dropdown-list-button" @click="editNewLayer">Dodaj mapę</button>
+                        <button type="button" class="dropdown-list-button" @click="editActiveLayer" :disabled="!isActiveLayer">Edytuj mapę</button>
+                        <button type="button" class="dropdown-list-button" @click="deleteActiveLayer" :disabled="!isActiveLayer">Usuń mapę</button>
+                    </template>
+                </dropdown-menu>
+                
+                <button v-if="isAdmin" type="button" class="header-button" @click="manageUsers">
+                    <img src="~@/assets/icons/people.svg" class="manage-users-icon" />
+                    Użytkownicy
+                </button>
             </template>
-            <button v-if="isUsersManagement" type="button" class="header-button" @click="showMainMode">Mapa</button>
+            <button v-if="isUsersManagement" type="button" class="header-button" @click="showMainMode">
+                <img src="~@/assets/icons/map.svg" class="manage-users-icon" />
+                Mapa
+            </button>
             <template v-if="isLoggedIn">
                 <dropdown-menu>
                     <template v-slot:toggle-button>
-                        <img src="~@/assets/icons/person.svg" class="user-icon" />
+                        <img src="~@/assets/icons/person-circle.svg" class="user-icon" />
                         <span class="button-username">{{ user ? user.username : '' }}</span>
                     </template>
                     <template v-slot:content>
@@ -55,6 +73,9 @@ export default {
         },
         user(){
             return this.$store.state.user;
+        },
+        isActiveLayer(){
+            return !!this.$store.getters.activeLayer;
         }
     },
     methods:{
@@ -123,7 +144,15 @@ export default {
     height: 1.3em;
     vertical-align: -0.4em;
     display:inline-block;
-    margin-right:5px;
+    margin-right:8px;
+}
+
+.manage-users-icon{
+    width: 1.3em;
+    height: 1.3em;
+    vertical-align: -0.4em;
+    display:inline-block;
+    margin-right:2px;
 }
 
 .button-username{

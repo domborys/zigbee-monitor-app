@@ -1,6 +1,6 @@
 <template>
-    <div class="dropdown-menu">
-        <button type="button" class="header-button dropdown-toggle button-username" @click="toggleDropdown">
+    <div class="dropdown-menu" @focusin="dropdownFocusIn" @focusout="dropdownFocusOut">
+        <button type="button" class="header-button dropdown-toggle" @click="toggleDropdown">
             <slot name="toggle-button"></slot>
         </button>
         <div v-if="expanded" class="dropdown-content" @click="collapseDropdown">
@@ -23,7 +23,17 @@ export default {
         },
         collapseDropdown(){
             this.expanded = false;
-        }
+        },
+        dropdownFocusIn(){
+            if(this.focusOutTimer){
+                clearTimeout(this.focusOutTimer);
+            }
+        },
+        dropdownFocusOut(){
+            this.focusOutTimer = setTimeout(() => {
+                this.expanded = false;
+            }, 0);
+        },
     },
 }
 </script>

@@ -3,7 +3,8 @@ export default {
     encodeHexMessage,
     decodeMessageToText,
     decodeMessageToHex,
-    decodeToDecBigEndian
+    decodeToDecBigEndian,
+    isNumeric
 };
 
 function encodeTextMessage(message){
@@ -34,4 +35,9 @@ function decodeToDecBigEndian(base64Message){
     return [...messageBinary]
         .map(char => char.charCodeAt(0))
         .reduce((previous, current) => current + (previous << 8));
+}
+
+function isNumeric(val){
+    const goodType = typeof val === 'string' || typeof val === 'number';
+    return goodType && !isNaN(val) && !isNaN(parseFloat(val));
 }

@@ -63,6 +63,15 @@ body{
     border-radius:4px;
 }
 
+.text-input-invalid{
+    border-color:rgb(190, 39, 2);
+}
+
+.input-error-message{
+    color:rgb(190, 39, 2);
+    margin-top:2px;
+}
+
 .radio-input{
     margin-right:8px;
 }
@@ -132,7 +141,7 @@ body{
 }
 
 .error-message{
-    color:red;
+    color:rgb(190, 39, 2);
     margin-top:8px;
     margin-bottom:8px;
 }

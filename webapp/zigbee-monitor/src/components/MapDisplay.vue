@@ -3,7 +3,7 @@
         <div class="map-header">
             <label>
                 <input type="checkbox" v-model="showTooltips">
-                Opisy czujników
+                Pokaż opisy czujników
             </label>
         </div>
         <div class="map-container" :class="{'edited-node-mode':!!editedNode}">

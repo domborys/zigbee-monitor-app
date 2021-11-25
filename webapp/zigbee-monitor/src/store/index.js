@@ -275,6 +275,10 @@ const store = new Vuex.Store({
             message.tempId = tempMessageIdGenerator.next();
             state.messages.push(message);
         },
+        updateMessageStatus(state, messageData){
+            const message = state.messages.find(msg => msg.tempId === messageData.tempId);
+            message.status = messageData.status;
+        },
         setDisplayedMessagesNode(state, node){
             state.displayedMessagesNode = node;
         },
@@ -375,12 +379,25 @@ const store = new Vuex.Store({
             await context.dispatch('downloadLayers');
         },
         async sendMessage(context, message){
-            await api.sendMessage(message);
+            message.status = 'sending';
+            message.timestamp = Date.now();
             context.commit('addMessage', message);
+            try{
+                const response = await api.sendMessage(message);
+                if(response.status.toLowerCase() === 'ok')
+                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'acknowledged'});
+                else
+                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'sendingError'});
+            }
+            catch(error){
+                context.commit('updateMessageStatus', {tempId:message.tempId, status:'serverError'});
+            }
+            
         },
         addReceivedMessage(context, message){
-            store.commit('addMessage', message);
-            store.commit('updateLastReadings', message);
+            message.timestamp = Date.now();
+            context.commit('addMessage', message);
+            context.commit('updateLastReadings', message);
         },
         setReadingTimers(context){
             for(let layer of context.state.layers){
@@ -431,11 +448,22 @@ const store = new Vuex.Store({
             const message = {
                 type:'at',
                 result:null,
+                status:'sending',
+                timestamp:Date.now(),
                 ...commandData
             };
             context.commit('addMessage', message);
-            const responseData = await api.sendAtCommand(commandData);
-            message.result = responseData.result;
+            try{
+                const responseData = await api.sendAtCommand(commandData);
+                message.result = responseData.result;
+                if(responseData.status.toLowerCase() === 'ok')
+                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'acknowledged'});
+                else
+                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'sendingError'});
+            }
+            catch(error){
+                context.commit('updateMessageStatus', {tempId:message.tempId, status:'serverError'});
+            }
             return message;
         },
         openMessageSocket(context){

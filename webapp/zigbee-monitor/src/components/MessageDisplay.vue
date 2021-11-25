@@ -1,6 +1,9 @@
 <template>
     <div class="message-display-container">
         <div class="message-display-header">
+            <h2 class="node-name-header">
+                {{node.name}}
+            </h2>
             <label class="mode-radio-item">
                 Text
                 <input type="radio" v-model="displayMode" value="text" name="radioMessageDisplayMode" id="radioModeText">
@@ -9,17 +12,19 @@
                 Hex
                 <input type="radio" v-model="displayMode" value="hex" name="radioMessageDisplayMode" id="radioModeHex">
             </label>
+            <!--
             <div>
                 <button type="button" class="button" @click="showMap">Pokaż mapę</button>
             </div>
+            -->
         </div>
-        <div class="message-display-messages">
+        <div class="message-display-messages" ref="messagesContainer">
             <zigbee-message v-for="message in messagesToDisplay" :key="message.tempId" :message="message" :mode="displayMode" />
         </div>
         <div class="message-display-footer">
             <div class="writing-mode-container">
                 <label class="mode-radio-item">
-                    Wyślij komunikat
+                    Wyślij wiadomość
                     <input type="radio" v-model="writingMode" value="message" name="radioWritingMode">
                 </label>
                 <label class="mode-radio-item">
@@ -36,6 +41,14 @@
                 </label>
             </div>
             <div v-if="writingMode === 'message'" class="message-display-inputs">
+                <label class="mode-radio-item">
+                    Text
+                    <input type="radio" v-model="messageWriteFormat" value="text" name="radioMessageWriteFormat" id="radioMessageWriteFormatText">
+                </label>
+                <label class="mode-radio-item">
+                    Hex
+                    <input type="radio" v-model="messageWriteFormat" value="hex" name="radioMessageWriteFormat" id="radioMessageWriteFormatHex">
+                </label>
                 <div class="message-input-container">
                     <input type="text" class="text-input message-input" v-model="messageToSend">
                 </div>
@@ -95,6 +108,7 @@ export default {
     data() {
         return {
             writingMode:'message',
+            messageWriteFormat: 'text',
             atDataMode:'none',
             displayMode:'text',
             atCommandName:'',
@@ -105,6 +119,9 @@ export default {
     computed:{
         messagesToDisplay(){
             return this.$store.state.messages.filter(message => message.address64 === this.node.address64);
+        },
+        messagesToDisplayLength(){
+            return this.messagesToDisplay.length;
         }
     },
     methods:{
@@ -114,19 +131,21 @@ export default {
                 const message = {
                     type:'sent',
                     address64:this.node.address64,
+                    status:'sending',
                     message:encodedMessage
                 };
-                await this.$store.dispatch('sendMessage', message);
                 this.messageToSend = '';
+                await this.$store.dispatch('sendMessage', message);
+                
             }
             catch(error){
                 console.log(error);
             }
         },
         getEncodedMessage(){
-            if(this.displayMode === 'text')
+            if(this.messageWriteFormat === 'text')
                 return this.encodeTextMessage(this.messageToSend);
-            else if(this.displayMode === 'hex')
+            else if(this.messageWriteFormat === 'hex')
                 return this.encodeHexMessage(this.messageToSend);
         },
         encodeTextMessage(message){
@@ -160,7 +179,7 @@ export default {
             else
                 return '';
         },
-        sendAtCommand(){
+        async sendAtCommand(){
             try{
                 const commandData = {
                     commandType:this.getAtCommandType(),
@@ -169,7 +188,7 @@ export default {
                     value:this.getEncodedCommandValue(),
                     format:this.atDataMode,
                 };
-                this.$store.dispatch('sendAtCommand', commandData);
+                await this.$store.dispatch('sendAtCommand', commandData);
             }
             catch(error){
                 console.error(error);
@@ -178,19 +197,37 @@ export default {
         },
         showMap(){
             this.$store.commit('setMainDisplayMode', 'map');
-        }
+        },
+        scrollToBottom(){
+            const messagesContainer = this.$refs.messagesContainer;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
+        },
     },
     watch:{
         atDataMode(newMode){
             if(newMode === 'none'){
                 this.atCommandData = '';
             }
-        }
+        },
+        messagesToDisplayLength(newLength){
+            this.$nextTick(function(){
+                this.scrollToBottom();
+            });
+        },
+    },
+    mounted(){
+        this.scrollToBottom();
     }
 };
 </script>
 
 <style scoped>
+
+.node-name-header{
+    font-size:16px;
+    font-weight:600;
+    margin:0 auto 0 0;
+}
 
 .message-display-container{
     height:100%;
@@ -202,8 +239,9 @@ export default {
     flex:none;
     box-sizing:border-box;
     display:flex;
+    align-items:center;
     justify-content: flex-end;
-    padding:8px;
+    padding:4px 12px;
     border-bottom:1px solid #E6E6FA;
 }
 

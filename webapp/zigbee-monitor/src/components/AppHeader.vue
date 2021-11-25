@@ -2,7 +2,7 @@
     <header class="header">
         <h1 class="page-title" tabindex="0" @click="showMainMode">Monitor sieci ZigBee</h1>
         <nav>
-            <template v-if="isViewMode">
+            <template v-if="isViewMode && isMapView">
                 <button type="button" class="header-button" @click="refresh">
                     <img src="~@/assets/icons/arrow-repeat.svg" class="manage-users-icon" />
                     Odśwież
@@ -18,15 +18,14 @@
                         <button type="button" class="dropdown-list-button" @click="deleteActiveLayer" :disabled="!isActiveLayer">Usuń mapę</button>
                     </template>
                 </dropdown-menu>
-                
-                <button v-if="isAdmin" type="button" class="header-button" @click="manageUsers">
-                    <img src="~@/assets/icons/people.svg" class="manage-users-icon" />
-                    Użytkownicy
-                </button>
             </template>
-            <button v-if="isUsersManagement" type="button" class="header-button" @click="showMainMode">
+            <button v-if="isUsersManagement || !isMapView" type="button" class="header-button" @click="showMainMode">
                 <img src="~@/assets/icons/map.svg" class="manage-users-icon" />
                 Mapa
+            </button>
+            <button v-if="isAdmin && !isUsersManagement" type="button" class="header-button" @click="manageUsers">
+                <img src="~@/assets/icons/people.svg" class="manage-users-icon" />
+                Użytkownicy
             </button>
             <template v-if="isLoggedIn">
                 <dropdown-menu>
@@ -65,6 +64,9 @@ export default {
             const userManagementModes = ['changePassword', 'manageUsers', 'showUser', 'newUser', 'editUser']
             return userManagementModes.includes(this.$store.getters.mode);
         },
+        isMapView(){
+            return this.$store.state.mainDisplayMode === 'map';
+        },
         isLoggedIn(){
             return this.$store.state.user !== null;
         },
@@ -81,6 +83,7 @@ export default {
     methods:{
         showMainMode(){
             this.$store.commit('pushMode', 'view');
+            this.$store.commit('setMainDisplayMode', 'map');
         },
         editNewLayer(){
             this.$store.commit('prepareNewLayer');

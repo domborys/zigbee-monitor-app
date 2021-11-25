@@ -156,7 +156,6 @@ export default {
     border-right:1px solid #E6E6FA;
     overflow:auto;
     padding: 10px;
-    
 }
 
 .main{

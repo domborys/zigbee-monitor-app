@@ -4,7 +4,8 @@
             <h2 class="side-panel-h2">{{headerText}}</h2>
             <div class="input-label-group">
                 <label for="parameterNameInput" class="text-label">Nazwa parametru</label>
-                <input type="text" v-model="parameterName" class="text-input"  id="parameterNameInput">
+                <input type="text" v-model="parameterName" class="text-input" :class="{'text-input-invalid':parameterNameError !== null}"  id="parameterNameInput">
+                <div v-if="parameterNameError !== null" class="input-error-message">{{ parameterNameError }}</div>
             </div>
             <div class="radio-set-container">
                 <div class="radio-set-legend">Sposób odczytu parametru</div>
@@ -22,6 +23,7 @@
                         <label for="parameterReadModeAt">Odczytaj parametr AT</label>
                     </div>
                 </div>
+                <div v-if="readModeError !== null" class="input-error-message">{{ readModeError }}</div>
             </div>
             <div class="option-description">
                 <span v-if="readMode === 'listen'" id="modeListenDescription">
@@ -47,7 +49,8 @@
                 </div>
                 <div class="input-label-group">
                     <label for="messageRefreshPeriodInput" class="text-label">Czas odświeżania w sekundach</label>
-                    <input type="text" v-model="refreshPeriod" class="text-input refresh-time-input" id="messageRefreshPeriodInput">
+                    <input type="text" v-model="refreshPeriod" class="text-input refresh-time-input" :class="{'text-input-invalid':refreshPeriodError !== null}" id="messageRefreshPeriodInput">
+                    <div v-if="refreshPeriodError !== null" class="input-error-message">{{ refreshPeriodError }}</div>
                 </div>
                 <div class="input-label-group">
                     <label for="receivedMessagePrefixInput" class="text-label">Początek oczekiwanego komunikatu</label>
@@ -57,7 +60,8 @@
             <div v-if="readMode === 'at'">
                 <div class="input-label-group">
                     <label for="atCommandName" class="at-data-label">Nazwa komendy AT</label>
-                    <input type="text" v-model="atCommand" class="text-input at-command-input" id="atCommandName"  maxlength="2">
+                    <input type="text" v-model="atCommand" class="text-input at-command-input" id="atCommandName" :class="{'text-input-invalid':atCommandNameError !== null}"  maxlength="2">
+                    <div v-if="atCommandNameError !== null" class="input-error-message">{{ atCommandNameError }}</div>
                 </div>
                 <div>
                     <div class="radio-set-legend">Format danych komendy AT</div>
@@ -82,7 +86,8 @@
                 </div>
                 <div class="input-label-group">
                     <label for="atRefreshPeriodInput" class="text-label">Czas odświeżania w sekundach</label>
-                    <input type="text" v-model="refreshPeriod" class="text-input refresh-time-input" id="atRefreshPeriodInput">
+                    <input type="text" v-model="refreshPeriod" class="text-input refresh-time-input" :class="{'text-input-invalid':refreshPeriodError !== null}" id="atRefreshPeriodInput">
+                    <div v-if="refreshPeriodError !== null" class="input-error-message">{{ refreshPeriodError }}</div>
                 </div>
                 <div>
                     <div class="radio-set-legend">Format wyniku komendy</div>
@@ -100,12 +105,18 @@
                             <label for="atCommandResponseFormatHex">Dane w formacie heksadecymalnym</label>
                         </div>
                     </div>
+                    <div v-if="resultFormatError !== null" class="input-error-message">{{ resultFormatError }}</div>
                 </div>
             </div>
         </div>
         <div class="parameter-edit-footer">
-            <button type="button" class="button footer-button" @click="discardChanges">Anuluj</button>
-            <button type="submit" class="button footer-button">{{submitButtonText}}</button>
+            <div class="parameter-edit-footer-buttons">
+                <button type="button" class="button footer-button" @click="discardChanges">Anuluj</button>
+                <button type="submit" class="button footer-button">{{submitButtonText}}</button>
+            </div>
+            <div>
+                <div v-if="formSubmitAttempted && !isFormValid" class="input-error-message">{{ generalError }}</div>
+            </div>
         </div>
     </form>
 </template>
@@ -128,6 +139,13 @@ export default {
             rawMessagePrefix:'',
             rawMessageToSend:'',
             rawCommandData:'',
+            parameterNameError:null,
+            readModeError:null,
+            refreshPeriodError: null,
+            atCommandNameError: null,
+            resultFormatError: null,
+            generalError:null,
+            formSubmitAttempted:false,
         }
     },
     computed:{
@@ -139,6 +157,7 @@ export default {
                 return this.readingConfig.name;
             },
             set(value){
+                this.validateParameterName(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'name', value:value});
             }
         },
@@ -147,6 +166,7 @@ export default {
                 return this.readingConfig.mode;
             },
             set(value){
+                this.validateReadMode(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'mode', value:value});
             }
         },
@@ -174,6 +194,7 @@ export default {
                 return this.readingConfig.refreshPeriod;
             },
             set(value){
+                this.validateRefreshPeriod(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'refreshPeriod', value:value});
             }
         },
@@ -182,6 +203,7 @@ export default {
                 return this.readingConfig.atCommand;
             },
             set(value){
+                this.validateAtCommandName(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'atCommand', value:value});
             }
         },
@@ -208,6 +230,7 @@ export default {
                 return this.readingConfig.atCommandResultFormat;
             },
             set(value){
+                this.validateResultFormat(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'atCommandResultFormat', value:value});
             }
         },
@@ -219,6 +242,20 @@ export default {
         },
         submitButtonText(){
             return this.newConfigMode ? 'Dodaj' : 'Zapisz';
+        },
+        isFormValid(){
+            const common = this.parameterNameError === null && this.readModeError === null;
+            let modeSpecific = true;
+            if(this.readMode === 'listen'){
+                modeSpecific = true;
+            }
+            else if(this.readMode === 'send'){
+                modeSpecific = this.refreshPeriodError === null;
+            }
+            else if(this.readMode === 'at'){
+                modeSpecific = this.refreshPeriodError === null && this.atCommandNameError === null && this.resultFormatError === null;
+            }
+            return common && modeSpecific;
         }
 
         
@@ -229,8 +266,10 @@ export default {
             this.$store.commit('previousMode');
         },
         saveParameter(){
-            this.$store.commit('saveEditedReadingConfig');
-            this.$store.commit('previousMode');
+            if(this.checkIfValid()){
+                this.$store.commit('saveEditedReadingConfig');
+                this.$store.commit('previousMode');
+            }
         },
         getEncodedCommandData(commandData){
             if(this.atCommandFormat === 'text'){
@@ -241,6 +280,82 @@ export default {
             }
             else
                 return null;
+        },
+        validateParameterName(parameterName){
+            if(typeof parameterName === 'undefined')
+                parameterName = this.parameterName;
+            if(typeof parameterName === 'string' && parameterName.trim().length > 0){
+                this.parameterNameError = null;
+                return true;
+            }
+            else{
+                this.parameterNameError = 'Nazwa parametru nie może być pusta.';
+                return false;
+            }  
+        },
+        validateReadMode(readMode){
+            if(typeof readMode === 'undefined')
+                readMode = this.readMode;
+            if(readMode !== null){
+                this.readModeError = null;
+                return true;
+            }
+            else{
+                this.readModeError = 'Proszę wybrać sposób odczytu parametru';
+                return false;
+            }  
+        },
+        validateRefreshPeriod(refreshPeriod){
+            if(typeof refreshPeriod === 'undefined')
+                refreshPeriod = this.refreshPeriod;
+            if(utils.isNumeric(refreshPeriod)){
+                this.refreshPeriodError = null;
+                return true;
+            }
+            else{
+                this.refreshPeriodError = 'Czas odświeżania powinien być liczbą.';
+                return false;
+            }
+        },
+        validateAtCommandName(name){
+            if(typeof name === 'undefined')
+                name = this.atCommand;
+            if(typeof name === 'string' && name.length === 2){
+                this.atCommandNameError = null;
+                return true;
+            }
+            else{
+                this.atCommandNameError = 'Nazwa komendy AT powinna składać się z dwóch znaków';
+                return false;
+            }
+        },
+        validateResultFormat(resultFormat){
+            if(typeof resultFormat === 'undefined')
+                resultFormat = this.atCommandResultFormat;
+            if(resultFormat !== null){
+                this.resultFormatError = null;
+                return true;
+            }
+            else{
+                this.resultFormatError = 'Proszę wybrać format wyniku.';
+                return false;
+            }
+        },
+        checkIfValid(){
+            this.formSubmitAttempted = true;
+            this.validateParameterName();
+            this.validateReadMode();
+            this.validateRefreshPeriod();
+            this.validateAtCommandName();
+            this.validateResultFormat();
+            const isValid = this.isFormValid;
+            if(isValid){
+                this.generalError = null;
+            }
+            else{
+                this.generalError = 'Proszę poprawić błędy.';
+            }
+            return isValid;
         },
         setAtCommandData(newCommandData){
             this.$store.commit('setEditedReadingConfigParam', {name:'atCommandData', value:newCommandData});
@@ -297,9 +412,11 @@ export default {
 .parameter-edit-footer{
     flex:none;
     box-sizing:border-box;
-    display:flex;
-    justify-content: flex-end;
     padding-top:8px;
+}
+
+.parameter-edit-footer-buttons{
+    display:flex;
 }
 
 .footer-button{

@@ -8,7 +8,7 @@
         </div>
         
             <button type="button" class="close-button" @click.stop="deleteClick">
-                <img :src="require('@/assets/icons/x.svg')" width="35" height="35">
+                <img :src="require('@/assets/icons/trash.svg')" width="25" height="25">
 
             </button>
         

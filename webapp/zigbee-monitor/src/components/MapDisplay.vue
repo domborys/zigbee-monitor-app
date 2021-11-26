@@ -1,6 +1,6 @@
 <template>
     <div class="map-display-container">
-        <div class="map-header">
+        <div v-if="mapVisible" class="map-header">
             <label>
                 <input type="checkbox" v-model="showTooltips">
                 Pokaż opisy czujników
@@ -41,7 +41,8 @@
                 :lat-lng="{lng: editedNode.x, lat: editedNode.y}"
                 :icon="editedNodeIcon"
             >
-                <l-popup :content="editedNode.name" />
+                <node-tooltip :node="editedNode" :visible="showTooltips" />
+                <!--<l-popup :content="editedNode.name" />-->
             </l-marker>
             <!--
                 <l-image-overlay

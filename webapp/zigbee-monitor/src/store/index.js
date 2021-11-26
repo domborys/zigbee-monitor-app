@@ -275,9 +275,9 @@ const store = new Vuex.Store({
             message.tempId = tempMessageIdGenerator.next();
             state.messages.push(message);
         },
-        updateMessageStatus(state, messageData){
+        updateMessage(state, messageData){
             const message = state.messages.find(msg => msg.tempId === messageData.tempId);
-            message.status = messageData.status;
+            Object.assign(message, messageData);
         },
         setDisplayedMessagesNode(state, node){
             state.displayedMessagesNode = node;
@@ -381,16 +381,17 @@ const store = new Vuex.Store({
         async sendMessage(context, message){
             message.status = 'sending';
             message.timestamp = Date.now();
+            message.error = null;
             context.commit('addMessage', message);
             try{
                 const response = await api.sendMessage(message);
                 if(response.status.toLowerCase() === 'ok')
-                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'acknowledged'});
+                    context.commit('updateMessage', {tempId:message.tempId, status:'acknowledged'});
                 else
-                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'sendingError'});
+                    context.commit('updateMessage', {tempId:message.tempId, status:'sendingError', error:response.message});
             }
             catch(error){
-                context.commit('updateMessageStatus', {tempId:message.tempId, status:'serverError'});
+                context.commit('updateMessage', {tempId:message.tempId, status:'serverError', error:error.message});
             }
             
         },
@@ -450,6 +451,7 @@ const store = new Vuex.Store({
                 result:null,
                 status:'sending',
                 timestamp:Date.now(),
+                error:null,
                 ...commandData
             };
             context.commit('addMessage', message);
@@ -457,12 +459,12 @@ const store = new Vuex.Store({
                 const responseData = await api.sendAtCommand(commandData);
                 message.result = responseData.result;
                 if(responseData.status.toLowerCase() === 'ok')
-                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'acknowledged'});
+                    context.commit('updateMessage', {tempId:message.tempId, status:'acknowledged'});
                 else
-                    context.commit('updateMessageStatus', {tempId:message.tempId, status:'sendingError'});
+                    context.commit('updateMessage', {tempId:message.tempId, status:'sendingError', error:responseData.message});
             }
             catch(error){
-                context.commit('updateMessageStatus', {tempId:message.tempId, status:'serverError'});
+                context.commit('updateMessage', {tempId:message.tempId, status:'serverError', error:error.message});
             }
             return message;
         },

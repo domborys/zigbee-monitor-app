@@ -19,7 +19,7 @@
             -->
         </div>
         <div class="message-display-messages" ref="messagesContainer">
-            <zigbee-message v-for="message in messagesToDisplay" :key="message.tempId" :message="message" :mode="displayMode" />
+            <zigbee-message v-for="message in messagesToDisplay" :key="message.tempId" :message="message" :mode="displayMode" @size-change="scrollNextTickIfAtBottom" />
         </div>
         <div class="message-display-footer">
             <div class="writing-mode-container">
@@ -67,7 +67,7 @@
                     </div>
                     <div class="at-data-mode-container">
                         
-                        <label class="mode-radio-item">
+                        <label v-show="writingMode !== 'setParameter'" class="mode-radio-item">
                             Brak
                             <input type="radio" v-model="atDataMode" value="none" name="atDataMode">
                         </label>
@@ -202,17 +202,33 @@ export default {
             const messagesContainer = this.$refs.messagesContainer;
             messagesContainer.scrollTop = messagesContainer.scrollHeight - messagesContainer.clientHeight;
         },
+        scrollNextTickIfAtBottom(){
+            const bottomStickMargin = 200;
+            const messagesContainer = this.$refs.messagesContainer;
+            if(messagesContainer.scrollTop + messagesContainer.clientHeight > messagesContainer.scrollHeight-bottomStickMargin){
+                this.$nextTick(function(){
+                    this.scrollToBottom();
+                });
+            }
+        }
     },
     watch:{
+        writingMode(newMode){
+            if(newMode === 'setParameter'){
+                if(this.atDataMode === 'none')
+                    this.atDataMode = 'text';
+            }
+            else{
+                this.atDataMode = 'none';
+            }
+        },
         atDataMode(newMode){
             if(newMode === 'none'){
                 this.atCommandData = '';
             }
         },
         messagesToDisplayLength(newLength){
-            this.$nextTick(function(){
-                this.scrollToBottom();
-            });
+            this.scrollNextTickIfAtBottom();
         },
     },
     mounted(){

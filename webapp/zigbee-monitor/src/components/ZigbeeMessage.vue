@@ -29,6 +29,9 @@
                 <b>Wynik:</b> {{ atCommandResult }}
             </template>
         </div>
+        <div v-if="isError && message.error !== null" class="zigbee-message-error-row">
+            {{ message.error }}
+        </div>
     </div>
 </template>
 
@@ -61,14 +64,14 @@ export default {
                 'zigbee-message-left':this.message.type === 'received',
                 'zigbee-message-right':this.message.type === 'sent' || this.message.type === 'at',
                 'zigbee-message-success': this.message.status === 'acknowledged',
-                'zigbee-message-error': this.message.status === 'serverError' || this.message.status === 'sendingError',
+                'zigbee-message-error': this.isError,
                 'zigbee-message-neutral': this.message.type === 'received',
             };
         },
         statusFieldClasses(){
             return {
                 'status-success': this.message.status === 'acknowledged',
-                'status-error': this.message.status === 'serverError' || this.message.status === 'sendingError',
+                'status-error': this.isError,
                 'status-neutral': this.message.type === 'received',
             };
         },
@@ -77,6 +80,12 @@ export default {
         },
         messageAsHex(){
             return this.decodeHexMessage(this.message.message);
+        },
+        isError(){
+            return this.message.status === 'serverError' || this.message.status === 'sendingError';
+        },
+        messageError(){
+            return this.message.error;
         },
         messageTimeFormatted(){
             const date = new Date(this.message.timestamp);
@@ -130,6 +139,14 @@ export default {
         decodeHexMessage(message){
             const messageBinary = atob(message);
             return [...messageBinary].map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+        }
+    },
+    watch:{
+        atCommandResult(){
+            this.$emit('size-change');
+        },
+        messageError(){
+            this.$emit('size-change');
         }
     }
 }
@@ -207,6 +224,13 @@ export default {
 
 .zigbee-message-content{
     margin-top:2px;
+}
+
+.zigbee-message-error-row{
+    margin-top:2px;
+    border-top:1px solid #E6E6FA;
+    padding-top:2px;
+    color: rgb(190, 39, 2);
 }
 
 

@@ -1,0 +1,3 @@
+# This folder is for sqlite database, all files are ignored.
+*
+!.gitignore

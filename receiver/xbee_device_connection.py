@@ -1,4 +1,4 @@
-import threading, time, base64
+import threading, time, base64, logging, json
 from queue import Queue
 from typing import Callable, Optional
 from server_command import ServerCommand
@@ -12,33 +12,44 @@ class XBeeDeviceConnection:
         self.device = device
         self.command_queue = Queue() if command_queue is None else command_queue
         self.notify_queue = Queue() if notify_queue is None else notify_queue
+        self.configure_logger()
     
     def run(self):
         self.thread = threading.Thread(target=self.thread_func)
         self.thread.start()
     
     def thread_func(self):
+        self.logger.debug("Device connection thread started.")
         try:
             self.device.open()
+            self.logger.info("Device connection opened.")
             self.device.add_data_received_callback(self.data_received_callback)
             self.thread_loop()
+        except Exception as err:
+            self.logger.error("Error in device thread: %s", err)
         finally:
             if self.device is not None and self.device.is_open():
                 self.device.close()
+                self.logger.info("Device connection closed.")
+            self.logger.debug("Device connection thread stopped.")
     
     def thread_loop(self):
         while True:
             command = self.command_queue.get()
             if command.description["name"] == "stop":
+                self.log_command_begin(command)
                 break
             self.execute_command_and_put_result(command)
 
     def execute_command_and_put_result(self, command : ServerCommand):
         try:
+            self.log_command_begin(command)
             result = self.execute_command(command)
             command.response_queue.put({"type":"response","status":"ok","name":command.description["name"], "data":result})
+            self.log_command_successful(command, result)
         except Exception as err:
             command.response_queue.put({"type":"response","status":"error","name":command.description["name"], "message":str(err)})
+            self.log_command_error(command, err)
 
     def execute_command(self, command : ServerCommand) -> dict:
         name = command.description["name"]
@@ -128,3 +139,20 @@ class XBeeDeviceConnection:
         received_data = base64.b64encode(xbee_message.data).decode()
         message_data = {"address64":address, "message":received_data}
         self.notify_queue.put({"type":"notify", "name":"receive", "data":message_data})
+        self.log_received_message(message_data)
+
+    def configure_logger(self):
+        self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(logging.NullHandler())
+    
+    def log_command_begin(self, command : ServerCommand):
+        self.logger.debug("Started executing command %s", json.dumps(command.description))
+
+    def log_command_successful(self, command : ServerCommand, result : dict):
+        self.logger.info("Executed command %s. Result: %s", json.dumps(command.description), json.dumps(result))
+
+    def log_command_error(self, command : ServerCommand, error : str):
+        self.logger.error("Error while executing command %s: %s", json.dumps(command.description), error)
+
+    def log_received_message(self, message_data : dict):
+        self.logger.info("Received message: %s", json.dumps(message_data))

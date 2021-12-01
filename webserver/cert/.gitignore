@@ -1,0 +1,3 @@
+# This folder is meant for certs, all files are ignored.
+*
+!.gitignore

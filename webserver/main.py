@@ -89,25 +89,6 @@ async def is_valid_admin(user_session: dbmodels.UserSession = Depends(get_curren
     if current_user.role != 'admin':
         raise HTTPException(status_code=403, detail="Operation not allowed")
 
-origins = [
-    'http://localhost:8080',
-    'http://localhost:8000'
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-class MessageToXBee(BaseModel):
-    address64 : str
-    message: str
-
-class XBeeWaiting(BaseModel):
-    time : float
 
 @app.get("/")
 async def root():
@@ -246,11 +227,11 @@ async def discover_network():
     return await xbeesrv.discover_network()
 
 @app.post("/xbee-message", dependencies=[Depends(is_valid_user)])
-async def send_message(message : MessageToXBee):
+async def send_message(message : pydmodels.MessageToXBee):
     return await xbeesrv.send_b64_data(address64=message.address64, message=message.message)
 
 @app.post("/xbee-wait", dependencies=[Depends(is_valid_user)])
-async def send_message(waiting : XBeeWaiting):
+async def send_message(waiting : pydmodels.XBeeWaiting):
     return await xbeesrv.wait(waiting.time)
 
 @app.post("/xbee-get-parameter", dependencies=[Depends(is_valid_user)])

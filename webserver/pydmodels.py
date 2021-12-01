@@ -100,6 +100,13 @@ class AtCommandResult(BaseModel):
     result: Optional[str]
     error: Optional[str]
 
+class MessageToXBee(BaseModel):
+    address64 : str
+    message: str
+
+class XBeeWaiting(BaseModel):
+    time : float
+
 class UserSession(BaseModel):
     id: str
     user_id: Optional[str]

@@ -107,6 +107,24 @@ class MessageToXBee(BaseModel):
 class XBeeWaiting(BaseModel):
     time : float
 
+class XBeeWaitingResult(BaseModel):
+    status : str
+    time : float
+    message: Optional[str]
+
+class DeviceInDiscoveryResult(BaseModel):
+    address64 : str
+    address16 : str
+    id : str
+    role : str
+
+class DiscoveryResult(BaseModel):
+    devices : List[DeviceInDiscoveryResult]
+
+class XBeeMessageResult(BaseModel):
+    status: str
+    message: Optional[str]
+
 class UserSession(BaseModel):
     id: str
     user_id: Optional[str]

@@ -16,23 +16,23 @@ def unify_exceptions(func):
     return wrapper
 
 @unify_exceptions
-async def discover_network():
+async def discover_network() -> pydmodels.DiscoveryResult:
     request = {"type":"request", "name":"discover"}
     response = await request_response(request)
-    return response["data"]
+    return pydmodels.DiscoveryResult.parse_obj(response["data"])
+
+# @unify_exceptions
+# async def send_text_data(address64 : str, text : str, output_encoding : str = 'utf-8'):
+#     message = base64.b64encode(text.encode(output_encoding)).decode()
+#     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
+#     response = await request_response(request)
+#     return response
 
 @unify_exceptions
-async def send_text_data(address64 : str, text : str, output_encoding : str = 'utf-8'):
-    message = base64.b64encode(text.encode(output_encoding)).decode()
+async def send_b64_data(address64 : str, message : str) -> pydmodels.XBeeMessageResult:
     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
     response = await request_response(request)
-    return response
-
-@unify_exceptions
-async def send_b64_data(address64 : str, message : str):
-    request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
-    response = await request_response(request)
-    return response
+    return pydmodels.XBeeMessageResult(status=response["status"], message=response.get("message"))
 
 @unify_exceptions
 async def at_command(
@@ -52,9 +52,10 @@ async def at_command(
     return make_at_command_response(response)
 
 @unify_exceptions
-async def wait(time : float):
+async def wait(time : float) -> pydmodels.XBeeWaitingResult:
     request = {"type":"request", "name":"wait", "data":{"time":time}}
-    return await request_response(request)
+    response = await request_response(request)
+    return pydmodels.XBeeWaitingResult(time=time, status=response["status"], message=response.get("message"))
 
 async def request_response(request : dict) -> dict:
     reader, writer = await asyncio.open_connection(

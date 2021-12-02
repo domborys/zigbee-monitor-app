@@ -1,12 +1,10 @@
 from asyncio.streams import StreamReader
 from typing import List, Optional
-from datetime import datetime, timedelta
 from fastapi import FastAPI, WebSocket, Depends, HTTPException, status, Response, UploadFile, File
 from fastapi.params import Cookie
 from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, APIKeyCookie
+from fastapi.security import OAuth2PasswordRequestForm, APIKeyCookie
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -14,6 +12,7 @@ import asyncio, secrets
 
 from sqlalchemy.sql.functions import user
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
 import xbeesrv, config, dbmodels, pydmodels, dbsrv
 from database import SessionLocal, engine
 
@@ -92,7 +91,7 @@ async def is_valid_admin(user_session: dbmodels.UserSession = Depends(get_curren
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return RedirectResponse("/static/index.html")
 
 @app.get("/floors", response_model=List[pydmodels.Floor], dependencies=[Depends(is_valid_user)])
 def get_all_floors(db: Session = Depends(get_db)):
@@ -163,8 +162,6 @@ def get_users(user_id: int, db: Session = Depends(get_db)):
 def create_user(user: pydmodels.UserCreate, db: Session = Depends(get_db)):
     return dbsrv.create_user(db, user)
 
-
-
 @app.put("/users/{user_id}", response_model=pydmodels.User, dependencies=[Depends(is_valid_admin)])
 def modify_user(user_id: int, user: pydmodels.UserModify, db: Session = Depends(get_db)):
     db_user = dbsrv.modify_user(db, user_id, user)
@@ -182,6 +179,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 def change_password(password_change: pydmodels.PasswordChange, db: Session = Depends(get_db), current_user: dbmodels.User = Depends(get_current_active_user)):
     return dbsrv.change_password(db, password_change, current_user.username)
 
+#TODO Remove
 @app.post("/token")
 async def login_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
@@ -222,31 +220,31 @@ def handle_xbee_error(request: Request, err: xbeesrv.XBeeServerError):
         content={"detail": f"Error with XBee device connection {err}"},
     )
 
-@app.get("/network-discovery", dependencies=[Depends(is_valid_user)])
+@app.get("/network-discovery", response_model=pydmodels.DiscoveryResult, dependencies=[Depends(is_valid_user)])
 async def discover_network():
     return await xbeesrv.discover_network()
 
-@app.post("/xbee-message", dependencies=[Depends(is_valid_user)])
+@app.post("/xbee-message", response_model=pydmodels.XBeeMessageResult, dependencies=[Depends(is_valid_user)])
 async def send_message(message : pydmodels.MessageToXBee):
     return await xbeesrv.send_b64_data(address64=message.address64, message=message.message)
 
-@app.post("/xbee-wait", dependencies=[Depends(is_valid_user)])
+@app.post("/xbee-wait", response_model=pydmodels.XBeeWaitingResult, dependencies=[Depends(is_valid_user)])
 async def send_message(waiting : pydmodels.XBeeWaiting):
     return await xbeesrv.wait(waiting.time)
 
-@app.post("/xbee-get-parameter", dependencies=[Depends(is_valid_user)])
+@app.post("/xbee-get-parameter", response_model=pydmodels.AtCommandResult, dependencies=[Depends(is_valid_user)])
 async def get_parameter(command_data : pydmodels.AtCommandGetExecute):
     return await xbeesrv.at_command("get_parameter", command_data)
 
-@app.post("/xbee-set-parameter", dependencies=[Depends(is_valid_user)])
+@app.post("/xbee-set-parameter", response_model=pydmodels.AtCommandResult, dependencies=[Depends(is_valid_user)])
 async def set_parameter(command_data : pydmodels.AtCommandSet):
     return await xbeesrv.at_command("set_parameter", command_data)
 
-@app.post("/xbee-execute-command", dependencies=[Depends(is_valid_user)])
+@app.post("/xbee-execute-command", response_model=pydmodels.AtCommandResult, dependencies=[Depends(is_valid_user)])
 async def execute_command(command_data : pydmodels.AtCommandGetExecute):
     return await xbeesrv.at_command("execute_command", command_data)
 
-@app.post("/xbee-at-command", dependencies=[Depends(is_valid_user)])
+@app.post("/xbee-at-command", response_model=pydmodels.AtCommandResult, dependencies=[Depends(is_valid_user)])
 async def execute_command(command_data : pydmodels.AtCommandWithType):
     return await xbeesrv.at_command(command_data.command_type, command_data)
 

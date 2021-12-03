@@ -6,8 +6,7 @@ from fastapi import File, UploadFile, HTTPException
 from passlib.context import CryptContext
 import secrets
 import config
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from pwdcontext import pwd_context
 
 def get_floor_by_id(db: Session, floor_id: int):
     return db.query(dbmodels.Floor).filter(dbmodels.Floor.id == floor_id).first()

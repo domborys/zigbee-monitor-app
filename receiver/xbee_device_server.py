@@ -1,4 +1,4 @@
-import xbee_device_server_config as config
+import config
 import base64
 import logging
 from xbee_device_connection import XBeeDeviceConnection
@@ -59,11 +59,16 @@ def configure_loggers():
     configure_xbee_loggers()
     configure_custom_loggers()
 
+def check_device_config():
+    if(config.DEVICE_SERIAL_PORT is None):
+        raise RuntimeError("Device serial port not specified")
+
 
 
 
 def main():
     configure_loggers()
+    check_device_config()
     device = XBeeDevice(config.DEVICE_SERIAL_PORT, config.DEVICE_BAUD_RATE)
     xbee_connection = XBeeDeviceConnection(device)
     xbee_connection.run()

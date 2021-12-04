@@ -253,35 +253,5 @@ async def message_websocket(websocket : WebSocket, user_session : Optional[dbmod
     if user_session is None:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
-    async def websocket_receive(websocket : WebSocket):
-        try:
-            while True:
-                await receive_websocket_send_message(websocket)
-        except Exception as err:
-            await websocket.close()
-    try:
-        await websocket.accept()
-        # asyncio.create_task(websocket_receive(websocket))
-        reader, writer = await asyncio.open_connection(
-            config.XBEE_IP_ADDRESS, config.XBEE_PORT_NOTIFY)
-        while True:
-            await receive_message_send_websocket(websocket, reader)
-    except Exception as err:
-        print(f"websocket closing because of error {err}")
-        await websocket.close()
-
-async def receive_websocket_send_message(websocket: WebSocket):
-    try:
-        request = await websocket.receive_json()
-        await xbeesrv.send_b64_data(address64=request['address64'], message=request['message'])
-    except xbeesrv.XBeeServerError as xbee_err:
-        pass
-
-async def receive_message_send_websocket(websocket: WebSocket, reader: StreamReader):
-    try:
-        response_json = await reader.readline()
-        response_dict = xbeesrv.decode_command(response_json)
-        websocket_message = {'type':'received', 'address64':response_dict['data']['address64'], 'message':response_dict['data']['message']}
-        await websocket.send_json(websocket_message)
-    except xbeesrv.XBeeServerError as xbee_err:
-        pass
+    sender = xbeesrv.WebsocketMessageSender(websocket)
+    await sender.run()

@@ -71,7 +71,11 @@ def main():
     check_device_config()
     device = XBeeDevice(config.DEVICE_SERIAL_PORT, config.DEVICE_BAUD_RATE)
     xbee_connection = XBeeDeviceConnection(device)
-    xbee_connection.run()
+    xbee_connection.start()
+    xbee_connection.connection_startup_finished.wait()
+    if not xbee_connection.connection_startup_successful.is_set():
+        print("Couldn't connect to the device")
+        return
     # test_local()
     request_server = SocketRequestResponseServer(config.IP_ADDRESS, config.TCP_PORT_REQUEST, xbee_connection.command_queue)
     request_server.run()

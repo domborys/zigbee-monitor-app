@@ -13,8 +13,10 @@ class XBeeDeviceConnection:
         self.command_queue = Queue() if command_queue is None else command_queue
         self.notify_queue = Queue() if notify_queue is None else notify_queue
         self.configure_logger()
+        self.connection_startup_finished = threading.Event()
+        self.connection_startup_successful = threading.Event()
     
-    def run(self):
+    def start(self):
         self.thread = threading.Thread(target=self.thread_func)
         self.thread.start()
     
@@ -24,6 +26,8 @@ class XBeeDeviceConnection:
             self.device.open()
             self.logger.info("Device connection opened.")
             self.device.add_data_received_callback(self.data_received_callback)
+            self.connection_startup_successful.set()
+            self.connection_startup_finished.set()
             self.thread_loop()
         except Exception as err:
             self.logger.error("Error in device thread: %s", err)
@@ -32,6 +36,7 @@ class XBeeDeviceConnection:
                 self.device.close()
                 self.logger.info("Device connection closed.")
             self.logger.debug("Device connection thread stopped.")
+            self.connection_startup_finished.set()
     
     def thread_loop(self):
         while True:

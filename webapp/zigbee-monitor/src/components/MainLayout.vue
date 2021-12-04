@@ -19,9 +19,11 @@
                 <template v-if="mode === 'newReadingConfig' || mode === 'editReadingConfig'">
                     <parameter-edit />
                 </template>
+                <!--
                 <user-management v-if="mode === 'manageUsers'" />
                 <user-details v-if="mode === 'showUser'" />
                 <user-edit v-if="mode === 'newUser' || mode === 'editUser'" />
+                -->
             </section>
             <main class="main">
                 <map-display v-if="mainDisplayMode === 'map'" :layer="activeLayer" />
@@ -31,6 +33,9 @@
         <div v-if="isOneColumnMode" class="below-header-one-column">
             <login-form v-if="mode === 'login'" />
             <password-change-form v-if="mode === 'changePassword'" />
+            <user-management v-if="mode === 'manageUsers'" />
+            <user-details v-if="mode === 'showUser'" />
+            <user-edit v-if="mode === 'newUser' || mode === 'editUser'" />
         </div>
     </div>
 </template>

@@ -16,7 +16,7 @@ function isValidMode(mode){
     return modes.indexOf(mode) !== -1;
 }
 function isOneColumnMode(mode){
-    const oneColumnModes = ['login', 'changePassword'];
+    const oneColumnModes = ['login', 'changePassword',  'manageUsers', 'showUser', 'newUser', 'editUser'];
     return oneColumnModes.indexOf(mode) !== -1;
 }
 
@@ -435,7 +435,9 @@ const store = new Vuex.Store({
             };
             const message = await context.dispatch('sendAtCommand', commandData);
             let lastReading;
-            if(data.readingConfig.atCommandResultFormat === 'hex')
+            if(message.result === null)
+                lastReading = '---';
+            else if(data.readingConfig.atCommandResultFormat === 'hex')
                 lastReading = utils.decodeMessageToHex(message.result);
             else if(data.readingConfig.atCommandResultFormat === 'dec')
                 lastReading = utils.decodeToDecBigEndian(message.result);
@@ -461,7 +463,7 @@ const store = new Vuex.Store({
                 if(responseData.status.toLowerCase() === 'ok')
                     context.commit('updateMessage', {tempId:message.tempId, status:'acknowledged'});
                 else
-                    context.commit('updateMessage', {tempId:message.tempId, status:'sendingError', error:responseData.message});
+                    context.commit('updateMessage', {tempId:message.tempId, status:'sendingError', error:responseData.error});
             }
             catch(error){
                 context.commit('updateMessage', {tempId:message.tempId, status:'serverError', error:error.message});

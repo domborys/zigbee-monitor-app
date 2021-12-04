@@ -253,3 +253,9 @@ body{
     margin-top:12px;
     color:#444444;
 }
+
+.one-column-container{
+    border-left: 1px solid #E6E6FA;
+    border-right: 1px solid #E6E6FA;
+    flex:0 500px;
+}

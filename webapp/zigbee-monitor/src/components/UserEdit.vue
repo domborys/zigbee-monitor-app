@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div class="one-column-container">
         <div class="heading-back-group">
             <button type="button" class="heading-back-button" @click="back"></button>
             <h2 class="heading-back-heading">{{ headerText }}</h2>
         </div>
-        <form @submit.prevent="saveUser">
+        <form @submit.prevent="saveUser" class="user-edit-main">
             <div class="input-label-group">
                 <label for="userNameInput" class="text-label">Nazwa użytkownika</label>
                 <input type="text" class="text-input" v-model="username" id="userNameInput">
@@ -150,5 +150,8 @@ export default {
 
 <style scoped>
 
+.user-edit-main{
+    padding:0 8px;
+}
 
 </style>

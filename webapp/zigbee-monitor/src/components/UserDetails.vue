@@ -1,19 +1,21 @@
 <template>
-    <div>
+    <div class="one-column-container">
         <div class="heading-back-group">
             <button type="button" class="heading-back-button" @click="back"></button>
             <h2 class="heading-back-heading">Użytkownik {{ user.username }}</h2>
         </div>
-        <dl class="dl-inline">
-            <dt>Nazwa użytkownika: </dt>
-            <dd>{{ user.username }}</dd>
-            <dt>Rola: </dt>
-            <dd>{{ role }}</dd>
-            <dt>Zablokowany: </dt>
-            <dd>{{ disabledText }}</dd>
-        </dl>
-        <button type="button" class="button" @click="deleteUser">Usuń użytkownika</button>
-        <button type="button" class="button" @click="editUser">Edytuj użytkownika</button>
+        <div class="user-details-main">
+            <dl class="dl-inline">
+                <dt>Nazwa użytkownika: </dt>
+                <dd>{{ user.username }}</dd>
+                <dt>Rola: </dt>
+                <dd>{{ role }}</dd>
+                <dt>Zablokowany: </dt>
+                <dd>{{ disabledText }}</dd>
+            </dl>
+            <button type="button" class="button" @click="deleteUser">Usuń użytkownika</button>
+            <button type="button" class="button" @click="editUser">Edytuj użytkownika</button>
+        </div>
     </div> 
 </template>
 
@@ -67,6 +69,10 @@ export default {
     list-style-type: none;
     padding:0;
     margin:0;
+}
+
+.user-details-main{
+    padding:0 8px;
 }
 
 </style>

@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 def configure_custom_config(config_path, contents):
     if not os.path.exists(config_path):
@@ -11,6 +11,8 @@ def configure_custom_config(config_path, contents):
 configure_custom_config(config_path='webserver/custom_config.py', contents='# This is a file for custom configuration')
 configure_custom_config(config_path='receiver/custom_config.py', contents='# This is a file for custom configuration')
 
+os.chdir('./webserver')
+sys.path.append('.')
 
 from webserver.database import SessionLocal, engine
 import webserver.dbmodels as dbmodels
@@ -37,4 +39,4 @@ def create_admin_if_not_present(db : Session):
 dbmodels.Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
-create_admin_if_not_present()
+create_admin_if_not_present(db)

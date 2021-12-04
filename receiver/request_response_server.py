@@ -1,7 +1,7 @@
 import threading
-from queue import Queue
+from queue import Queue, Empty
 from server_command import ServerCommand
-
+import config
 import socket, threading
 import socket_common
 
@@ -10,6 +10,7 @@ class SocketRequestResponseServer:
         self.address = address
         self.port = port
         self.command_queue = command_queue
+        self.queue_timeout = config.REQUEST_TIMEOUT
 
     def run(self):
         accepting_thread = threading.Thread(target=self.accepting_thread_func)
@@ -41,7 +42,24 @@ class SocketRequestResponseServer:
             obj, remaining = socket_common.recv_json(conn, remaining)
             print(f"Message from {addr}")
             print(obj)
+            # command = ServerCommand(description=obj, response_queue=Queue())
+            # self.command_queue.put(command)
+            # response = command.response_queue.get(timeout=self.queue_timeout)
+            response = self.execute_command(obj)
+            socket_common.send_json(conn, response)
+
+    def execute_command(self, obj):
+        try:
             command = ServerCommand(description=obj, response_queue=Queue())
             self.command_queue.put(command)
-            response = command.response_queue.get()
-            socket_common.send_json(conn, response)
+            response = command.response_queue.get(timeout=self.queue_timeout)
+            return response
+        except Empty:
+            print("Queue timeout!")
+            return self.timeout_error_response(command)
+
+    def timeout_error_response(self, command : ServerCommand):
+        response = {"type":"response","status":"error", "message":"Operation timed out"}
+        if "name" in command.description:
+            response["name"] = command.description["name"]
+        return response

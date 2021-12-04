@@ -253,7 +253,6 @@ async def message_websocket(websocket : WebSocket, user_session : Optional[dbmod
     if user_session is None:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
-    print("websocket started")
     async def websocket_receive(websocket : WebSocket):
         try:
             while True:

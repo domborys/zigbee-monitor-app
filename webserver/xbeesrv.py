@@ -1,4 +1,4 @@
-import asyncio, json, base64
+import asyncio, json
 from typing import Union
 
 from fastapi.exceptions import HTTPException
@@ -11,6 +11,8 @@ def unify_exceptions(func):
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
+        except XBeeServerError as err:
+            raise err
         except Exception as err:
             raise XBeeServerError(err)
     return wrapper
@@ -20,13 +22,6 @@ async def discover_network() -> pydmodels.DiscoveryResult:
     request = {"type":"request", "name":"discover"}
     response = await request_response(request)
     return pydmodels.DiscoveryResult.parse_obj(response["data"])
-
-# @unify_exceptions
-# async def send_text_data(address64 : str, text : str, output_encoding : str = 'utf-8'):
-#     message = base64.b64encode(text.encode(output_encoding)).decode()
-#     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
-#     response = await request_response(request)
-#     return response
 
 @unify_exceptions
 async def send_b64_data(address64 : str, message : str) -> pydmodels.XBeeMessageResult:
@@ -58,6 +53,10 @@ async def wait(time : float) -> pydmodels.XBeeWaitingResult:
     return pydmodels.XBeeWaitingResult(time=time, status=response["status"], message=response.get("message"))
 
 async def request_response(request : dict) -> dict:
+    return await asyncio.wait_for(request_response_no_timeout(request), timeout=config.DEVICE_TIMEOUT)
+
+
+async def request_response_no_timeout(request : dict) -> dict:
     reader, writer = await asyncio.open_connection(
         config.XBEE_IP_ADDRESS, config.XBEE_PORT_REQUEST)
     request_json = encode_command(request)

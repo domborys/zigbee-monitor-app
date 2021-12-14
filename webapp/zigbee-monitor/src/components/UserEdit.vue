@@ -1,23 +1,25 @@
 <template>
-    <div class="one-column-container">
+    <form @submit.prevent="saveUser" class="one-column-container user-edit-container">
         <div class="heading-back-group">
             <button type="button" class="heading-back-button" @click="back"></button>
             <h2 class="heading-back-heading">{{ headerText }}</h2>
         </div>
-        <form @submit.prevent="saveUser" class="user-edit-main">
+        <div class="user-edit-main">
             <div class="input-label-group">
                 <label for="userNameInput" class="text-label">Nazwa użytkownika</label>
                 <input type="text" class="text-input" v-model="username" id="userNameInput">
+                <div v-if="usernameError !== null" class="input-error-message">{{ usernameError }}</div>
             </div>
             <div v-if="!newUserMode" class="radio-set-container">
                 <div class="radio-item-container">
                     <input type="checkbox" v-model="isPasswordChanged" class="checkbox-input" id="checkboxChangePassword">
-                    <label for="checkboxChangePassword">Zmień hasło</label>
+                    <label for="checkboxChangePassword">Zmień hasło</label>    
                 </div>
             </div>
             <div class="input-label-group">
                 <label for="passwordInput" class="text-label">Hasło</label>
                 <input type="password" class="text-input" v-model="password" id="passwordInput" :disabled="passwordFieldDisabled">
+                <div v-if="passwordError !== null" class="input-error-message">{{ passwordError }}</div>
             </div>
             <div class="radio-set-container">
                 <div class="radio-set-legend">Rola</div>
@@ -46,11 +48,15 @@
                     <label for="checkboxUserDisabled">Zablokuj użytkownika</label>
                 </div>
             </div>
-            <div>
-                <button type="submit" class="button">{{ submitButtonText }}</button>
+        </div>
+        <div class="layer-edit-footer">
+            <div class="buttons-container">
+                <button type="button" @click="back" class="button flex-button">Anuluj</button>
+                <button type="submit" class="button flex-button">{{ submitButtonText }}</button>
             </div>
-        </form>
-    </div> 
+            <div v-if="formSubmitAttempted && !isFormValid" class="input-error-message">{{ generalError }}</div>
+        </div>
+    </form> 
 </template>
 
 <script>
@@ -60,6 +66,10 @@ export default {
     data(){
         return{
             isPasswordChanged:false,
+            usernameError: null,
+            passwordError: null,
+            generalError:null,
+            formSubmitAttempted:false,
         }
     },
     components:{
@@ -86,11 +96,15 @@ export default {
         submitButtonText(){
             return this.newNodeMode ? 'Dodaj' : 'Zapisz';
         },
+        isFormValid(){
+            return this.usernameError === null && this.passwordError === null;
+        },
         username:{
             get(){
                 return this.user.username;
             },
             set(value){
+                this.validateUsername(value);
                 this.$store.commit('setSelectedUserParam', {name:'username', value:value});
             }
         },
@@ -99,6 +113,7 @@ export default {
                 return this.user.password;
             },
             set(value){
+                this.validatePassword(value);
                 this.$store.commit('setSelectedUserParam', {name:'password', value:value});
             }
         },
@@ -120,11 +135,55 @@ export default {
         }
     },
     methods:{
+        validateUsername(username){
+            if(typeof username === 'undefined')
+                username = this.username;
+            if(typeof username === 'string' && username.trim().length > 0){
+                this.usernameError = null;
+                return true;
+            }
+            else{
+                this.usernameError = 'Nazwa użytkownika nie może być pusta.';
+                return false;
+            }
+        },
+        validatePassword(password){
+            if(typeof password === 'undefined')
+                password = this.password;
+            if(this.passwordFieldDisabled){
+                this.passwordError = null;
+                return true;
+            }
+            if(typeof password === 'string' && password.trim().length > 0){
+                this.passwordError = null;
+                return true;
+            }
+            else{
+                this.passwordError = 'Hasło nie może być puste.';
+                return false;
+            }
+        },
+        checkIfValid(){
+            this.formSubmitAttempted = true;
+            this.validateUsername();
+            this.validatePassword();
+            const isValid = this.isFormValid;
+            if(isValid){
+                this.generalError = null;
+            }
+            else{
+                this.generalError = 'Proszę poprawić błędy.';
+            }
+            return isValid;
+        },
         back(){
             this.$store.commit('reselectUser');
             this.$store.commit('previousMode');
         },
         async saveUser(){
+            if(!this.checkIfValid()){
+                return;
+            }
             if(this.passwordFieldDisabled){
                 this.password = null;
             }
@@ -151,7 +210,31 @@ export default {
 <style scoped>
 
 .user-edit-main{
-    padding:0 8px;
+    padding:0 8px 15px 8px;
+    flex:auto;
+    overflow:auto;
+    min-height:0;
+    border-bottom:1px solid #E6E6FA;
+}
+
+.buttons-container{
+    text-align:right;
+    display:flex;
+}
+
+.user-edit-container{
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-button{
+    flex:1;
+    margin:2px;
+}
+
+.layer-edit-footer{
+    padding:3px;
 }
 
 </style>

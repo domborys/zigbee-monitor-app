@@ -13,8 +13,10 @@
                 <dt>Zablokowany: </dt>
                 <dd>{{ disabledText }}</dd>
             </dl>
-            <button type="button" class="button" @click="deleteUser">Usuń użytkownika</button>
-            <button type="button" class="button" @click="editUser">Edytuj użytkownika</button>
+            <div class="buttons-container">
+                <button type="button" class="button" @click="deleteUser">Usuń użytkownika</button>
+                <button type="button" class="button" @click="editUser">Edytuj użytkownika</button>
+            </div>
         </div>
     </div> 
 </template>

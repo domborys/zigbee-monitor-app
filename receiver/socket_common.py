@@ -1,5 +1,4 @@
 import socket, json
-from typing import Any
 
 class ConnectionBrokenError(Exception):
     pass

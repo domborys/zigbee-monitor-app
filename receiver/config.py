@@ -6,6 +6,6 @@ DEVICE_BAUD_RATE = 9600
 REQUEST_TIMEOUT = 25
 
 try:
-    from custom_config import *
+    from .custom_config import *
 except ImportError:
     pass

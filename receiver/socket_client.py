@@ -1,5 +1,5 @@
 import socket
-import socket_common
+from . import socket_common
 import time
 
 ADDRESS = '127.0.0.1'

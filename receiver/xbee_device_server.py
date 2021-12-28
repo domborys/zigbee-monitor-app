@@ -1,13 +1,16 @@
-import config
+
 import base64
 import logging
-from xbee_device_connection import XBeeDeviceConnection
-from request_response_server import SocketRequestResponseServer
-from notify_server import SocketNotifyServer
-from server_command import ServerCommand
+from pathlib import Path
 from queue import Queue
-import xbee_device_connection
-from digi.xbee.devices import XBeeDevice              
+from digi.xbee.devices import XBeeDevice   
+from . import config, xbee_device_connection
+from .xbee_device_connection import XBeeDeviceConnection
+from .request_response_server import SocketRequestResponseServer
+from .notify_server import SocketNotifyServer
+from .server_command import ServerCommand
+
+           
 
 def test_local(xbee_connection):
     command_queue = xbee_connection.command_queue
@@ -37,7 +40,7 @@ def configure_xbee_logger(logger_name, file_name):
     dev_logger.addHandler(handler)
 
 def configure_xbee_loggers():
-    log_file_name = "../log/xbee_lib.log"
+    log_file_name = str(Path(__file__).parent.parent / "log" / "xbee_lib.log")
     configure_xbee_logger("digi.xbee.devices", log_file_name)
     configure_xbee_logger("digi.xbee.sender", log_file_name)
     configure_xbee_logger("digi.xbee.reader", log_file_name)
@@ -49,7 +52,8 @@ def configure_xbee_loggers():
 def configure_custom_loggers():
     conn_logger = logging.getLogger(xbee_device_connection.__name__)
     conn_logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler("../log/device.log")
+    logger_file_path = str(Path(__file__).parent.parent / "log" / "device.log")
+    handler = logging.FileHandler(logger_file_path)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     handler.setLevel(logging.DEBUG)

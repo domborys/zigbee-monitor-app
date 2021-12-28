@@ -1,9 +1,8 @@
 import threading
 from queue import Queue, Empty
-from server_command import ServerCommand
-import config
+from .server_command import ServerCommand
+from . import config, socket_common
 import socket, threading
-import socket_common
 
 class SocketRequestResponseServer:
     def __init__(self, address : str, port : int, command_queue : Queue) -> None:

@@ -1,5 +1,5 @@
 import socket, threading
-import socket_common
+from . import socket_common
 
 ADDRESS = '127.0.0.1'
 PORT = 34567

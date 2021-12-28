@@ -1,10 +1,9 @@
 import threading, time, base64, logging, json
 from queue import Queue
 from typing import Callable, Optional
-from server_command import ServerCommand
+from .server_command import ServerCommand
 from digi.xbee.devices import XBeeDevice, XBeeNetwork, RemoteXBeeDevice
-from digi.xbee.exception import XBeeException
-from digi.xbee.models.address import XBee16BitAddress, XBee64BitAddress
+from digi.xbee.models.address import XBee64BitAddress
 
 class XBeeDeviceConnection:
     

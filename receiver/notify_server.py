@@ -1,6 +1,6 @@
 import socket, threading
 from queue import Queue
-import socket_common
+from . import socket_common
 
 class SocketNotifyServer:
     def __init__(self, address : str, port : int, notify_queue : Queue) -> None:

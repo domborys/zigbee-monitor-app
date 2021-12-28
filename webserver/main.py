@@ -13,8 +13,8 @@ import asyncio, secrets
 from sqlalchemy.sql.functions import user
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-import xbeesrv, config, dbmodels, pydmodels, dbsrv
-from database import SessionLocal, engine
+from . import xbeesrv, config, dbmodels, pydmodels, dbsrv
+from .database import SessionLocal, engine
 
 dbmodels.Base.metadata.create_all(bind=engine)
 
@@ -26,7 +26,7 @@ def get_db():
         db.close()
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory=config.STATIC_FILES_DIR, html=True), name="static")
 
 cookie_sid = APIKeyCookie(name="SID")
 

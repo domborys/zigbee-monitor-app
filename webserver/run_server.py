@@ -1,4 +1,5 @@
-import uvicorn
+import uvicorn, sys
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    sys.path.append("..")
+    uvicorn.run("webserver.main:app", reload=True)

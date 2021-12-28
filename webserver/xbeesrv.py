@@ -4,7 +4,7 @@ from typing import Union
 
 from fastapi.exceptions import HTTPException
 from starlette.websockets import WebSocket, WebSocketDisconnect
-import config, pydmodels
+from . import config, pydmodels
 
 class XBeeServerError(Exception):
     pass

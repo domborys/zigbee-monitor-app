@@ -1,8 +1,8 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, LargeBinary
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.sqltypes import TIMESTAMP, DateTime
+from sqlalchemy.sql.sqltypes import DateTime
 
-from database import Base
+from .database import Base
 
 class Floor(Base):
     __tablename__ = "floors"

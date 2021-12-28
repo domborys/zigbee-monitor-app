@@ -1,12 +1,10 @@
 from datetime import datetime, timedelta
 from typing import List
 from sqlalchemy.orm import Session
-import dbmodels, pydmodels
 from fastapi import File, UploadFile, HTTPException
-from passlib.context import CryptContext
 import secrets
-import config
-from pwdcontext import pwd_context
+from . import config, dbmodels, pydmodels
+from .pwdcontext import pwd_context
 
 def get_floor_by_id(db: Session, floor_id: int):
     return db.query(dbmodels.Floor).filter(dbmodels.Floor.id == floor_id).first()

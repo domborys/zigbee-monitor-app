@@ -1,4 +1,9 @@
-import os, sys
+import os
+from webserver.database import SessionLocal, engine
+import webserver.dbmodels as dbmodels
+from webserver.pwdcontext import pwd_context
+from sqlalchemy.orm import Session
+import secrets
 
 def configure_custom_config(config_path, contents):
     if not os.path.exists(config_path):
@@ -7,18 +12,6 @@ def configure_custom_config(config_path, contents):
             print(f'Created file {config_path}')
     else:
         print(f'File {config_path} already exists.')
-
-configure_custom_config(config_path='webserver/custom_config.py', contents='# This is a file for custom configuration')
-configure_custom_config(config_path='receiver/custom_config.py', contents='# This is a file for custom configuration')
-
-#os.chdir('./webserver')
-#sys.path.append('.')
-
-from webserver.database import SessionLocal, engine
-import webserver.dbmodels as dbmodels
-from webserver.pwdcontext import pwd_context
-from sqlalchemy.orm import Session
-import secrets
 
 def create_admin(db : Session, username, password):
     password_hash = pwd_context.hash(password)
@@ -36,7 +29,11 @@ def create_admin_if_not_present(db : Session):
     else:
         print('The database already has an admin user. No new admin account was created.')
 
-dbmodels.Base.metadata.create_all(bind=engine)
-db = SessionLocal()
+if __name__ == '__main__':
+    configure_custom_config(config_path='webserver/custom_config.py', contents='# This is a file for custom configuration')
+    configure_custom_config(config_path='receiver/custom_config.py', contents='# This is a file for custom configuration')
 
-create_admin_if_not_present(db)
+    dbmodels.Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+
+    create_admin_if_not_present(db)

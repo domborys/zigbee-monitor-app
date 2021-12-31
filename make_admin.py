@@ -25,7 +25,7 @@ def make_admin_or_change_password(db: Session, username: str, password: str):
         print(f'Created new admin account with username "{username}" and password "{password}"')
     else:
         change_password(db, user, password)
-        print(f'Created the password of user "{username}" to "{password}"')
+        print(f'Changed the password of user "{username}" to "{password}"')
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:

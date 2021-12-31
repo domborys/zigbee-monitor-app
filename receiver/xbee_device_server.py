@@ -1,6 +1,5 @@
 
-import base64
-import logging
+import base64, logging, signal, sys
 from pathlib import Path
 from queue import Queue
 from digi.xbee.devices import XBeeDevice   
@@ -67,10 +66,12 @@ def check_device_config():
     if(config.DEVICE_SERIAL_PORT is None):
         raise RuntimeError("Device serial port not specified")
 
-
-
+def sigint_handler(signum, frame):
+    print("XBee server exits.")
+    sys.exit(0)
 
 def main():
+    signal.signal(signal.SIGINT, sigint_handler)
     configure_loggers()
     check_device_config()
     device = XBeeDevice(config.DEVICE_SERIAL_PORT, config.DEVICE_BAUD_RATE)
@@ -85,7 +86,6 @@ def main():
     request_server.run()
     notification_server = SocketNotifyServer(config.IP_ADDRESS, config.TCP_PORT_NOTIFY, xbee_connection.notify_queue)
     notification_server.run()
-
     input()
 
 

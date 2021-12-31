@@ -6,4 +6,7 @@ cd ..
 python3 -m receiver.xbee_device_server &
 deactivate
 echo "Everything started successfully."
+wait
+
+
 

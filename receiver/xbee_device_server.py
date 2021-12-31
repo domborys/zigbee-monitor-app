@@ -1,5 +1,5 @@
 
-import base64, logging, signal, sys
+import base64, logging, signal, sys, time
 from pathlib import Path
 from queue import Queue
 from digi.xbee.devices import XBeeDevice   
@@ -84,7 +84,8 @@ def main():
     request_server.run()
     notification_server = SocketNotifyServer(config.IP_ADDRESS, config.TCP_PORT_NOTIFY, xbee_connection.notify_queue)
     notification_server.run()
-    input()
+    while True:
+        time.sleep(1)
 
 
 if __name__ == "__main__":

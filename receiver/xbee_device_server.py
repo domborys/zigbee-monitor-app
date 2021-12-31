@@ -9,8 +9,6 @@ from .request_response_server import SocketRequestResponseServer
 from .notify_server import SocketNotifyServer
 from .server_command import ServerCommand
 
-           
-
 def test_local(xbee_connection):
     command_queue = xbee_connection.command_queue
     message = base64.b64encode(b"Lubie placki").decode()

@@ -12,14 +12,14 @@ class SocketNotifyServer:
 
     def run(self):
         print("Notify server: starting")
-        accepting_thread = threading.Thread(target=self.accepting_thread_func)
+        accepting_thread = threading.Thread(target=self.accepting_thread_func, daemon=True)
         accepting_thread.start()
     
     def accepting_thread_func(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.address, self.port))
             s.listen(5)
-            notify_thread = threading.Thread(target=self.notify_thread_func)
+            notify_thread = threading.Thread(target=self.notify_thread_func, daemon=True)
             notify_thread.start()
             while True:
                 print("Notify server: waiting for accept")

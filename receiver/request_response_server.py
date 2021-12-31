@@ -12,7 +12,7 @@ class SocketRequestResponseServer:
         self.queue_timeout = config.REQUEST_TIMEOUT
 
     def run(self):
-        accepting_thread = threading.Thread(target=self.accepting_thread_func)
+        accepting_thread = threading.Thread(target=self.accepting_thread_func, daemon=True)
         accepting_thread.start()
 
     def accepting_thread_func(self):
@@ -21,7 +21,7 @@ class SocketRequestResponseServer:
             s.listen(5)
             while True:
                 conn, addr = s.accept()
-                conn_thread = threading.Thread(target=self.conn_thread_func, args=(conn, addr))
+                conn_thread = threading.Thread(target=self.conn_thread_func, args=(conn, addr), daemon=True)
                 conn_thread.start()
     
     def conn_thread_func(self, conn, addr):

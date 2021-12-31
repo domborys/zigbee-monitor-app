@@ -16,7 +16,7 @@ class XBeeDeviceConnection:
         self.connection_startup_successful = threading.Event()
     
     def start(self):
-        self.thread = threading.Thread(target=self.thread_func)
+        self.thread = threading.Thread(target=self.thread_func, daemon=True)
         self.thread.start()
     
     def thread_func(self):

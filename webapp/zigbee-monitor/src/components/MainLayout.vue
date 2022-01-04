@@ -19,11 +19,6 @@
                 <template v-if="mode === 'newReadingConfig' || mode === 'editReadingConfig'">
                     <parameter-edit />
                 </template>
-                <!--
-                <user-management v-if="mode === 'manageUsers'" />
-                <user-details v-if="mode === 'showUser'" />
-                <user-edit v-if="mode === 'newUser' || mode === 'editUser'" />
-                -->
             </section>
             <main class="main">
                 <map-display v-if="mainDisplayMode === 'map'" :layer="activeLayer" />
@@ -76,14 +71,7 @@ export default {
         UserEdit
     },
     data(){
-        return{
-            nodes:[
-                {name:'Lodówka', deviceId:'lodowka', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'router', discovered:true},
-                {name:'Żarówka nr 8 w żyrandolu', deviceId:'zar8', address16:'BACA', address64:'0000111122223333', nodeType:'router', discovered:false},
-                {name:'Czujnik dymu', deviceId:'czujnik dymu', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'end', discovered:false},
-                {name:'Termometr', deviceId:'termo', address16:'ABCD', address64:'DEADBEEF12345678', nodeType:'end', discovered:true},
-            ],
-        }
+        return{}
     },
     computed:{
         mode(){

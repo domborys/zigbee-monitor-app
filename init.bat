@@ -2,9 +2,9 @@ if not exist .\venv (
     md venv
 )
 if not exist .\venv\Scripts\activate.bat (
-    python -m venv .\venv
+    py -m venv .\venv
 )
 call .\venv\Scripts\activate.bat
-pip install -r requirements.txt
-python prepare.py
+py -m pip install -r requirements.txt
+py prepare.py
 deactivate

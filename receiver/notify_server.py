@@ -53,6 +53,7 @@ class SocketNotifyServer:
                 self.connections.pop(i)
     
     def notify_all(self, notification):
+        print(f"Sending notification {notification}")
         with self.connection_list_lock:
             connections_to_remove = []
             for conn in self.connections:
@@ -63,7 +64,9 @@ class SocketNotifyServer:
 
     def send_notification_to_connection(self, notification, connection) -> bool:
         try:
+            print(f"\t to {connection.getpeername()}")
             socket_common.send_json(connection, notification)
+            print(f"\t(sent successfully)")
             return True
         except Exception as err:
             print(err)

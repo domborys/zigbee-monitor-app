@@ -1,10 +1,12 @@
 <template>
     <section>
         <h2 class="node-list-header">Węzły</h2>
-        <ul class="node-list">
+        <ul v-if="nodes.length > 0" class="node-list">
             <node-item v-for="node in nodes" :key="node.id" :node="node" @click.native="showMessages(node)" />
         </ul>
-        
+        <div v-else>
+            Na wybranej mapie nie znajdują się żadne węzły.
+        </div>
     </section>
 </template>
 

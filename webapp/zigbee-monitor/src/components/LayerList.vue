@@ -1,11 +1,14 @@
 <template>
     <section>
         <h2 class="layer-list-header">Mapy</h2>
-        <ul class="layer-list">
+        <ul v-if="layers.length > 0" class="layer-list">
             <li v-for="layer in layers" :key="layer" @click="layerClick(layer)" :class="{'layer-list-item-selected':layer === selectedLayer}">
                 {{ layer }}
             </li>
         </ul>
+        <div v-else>
+            W systemie nie znajdują się żadne mapy.
+        </div>
     </section>
 </template>
 

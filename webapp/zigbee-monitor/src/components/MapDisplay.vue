@@ -25,16 +25,7 @@
                 :lat-lng="{lng: node.x, lat: node.y}"
                 :icon="getIcon(node)"
             >
-                <!--
-                <l-tooltip v-if="showTooltips" :options="{direction:'top', permanent:true, offset:[0,-35], opacity:1}">
-                    <b>{{node.name}}</b><br>
-                    <div v-for="config in node.readingConfigs" :key="config.name">
-                        {{config.name}}: {{config.lastReading === null ? '---' : config.lastReading}}
-                    </div>
-                </l-tooltip>
-                -->
                 <node-tooltip :node="node" :visible="showTooltips" />
-                <!--<l-popup :content="node.name" />-->
             </l-marker>
             <l-marker
                 v-if="editedNodeWasPlaced"
@@ -42,22 +33,7 @@
                 :icon="editedNodeIcon"
             >
                 <node-tooltip :node="editedNode" :visible="showTooltips" />
-                <!--<l-popup :content="editedNode.name" />-->
             </l-marker>
-            <!--
-                <l-image-overlay
-                    :url="url"
-                    :bounds="bounds"
-                />
-                <l-marker
-                    v-for="star in stars"
-                    :key="star.name"
-                    :lat-lng="star"
-                >
-                <l-popup :content="star.name" />
-                </l-marker>
-                <l-polyline :lat-lngs="travel" />
-            -->
             </l-map>
             <div class="place-node-message" v-if="!!editedNode">
                 Kliknij na mapie, aby umieścić węzeł.
@@ -135,13 +111,6 @@ export default {
         };
     },
     computed:{
-        /*
-        isActiveLayer(){
-            return this.layers && (typeof this.activeLayer !== 'undefined');
-        },
-        activeLayer(){
-            return this.layers.find(l => l.active);
-        },*/
         mode(){
             return this.$store.getters.mode;
         },
@@ -235,10 +204,6 @@ export default {
 .map-header{
     flex:none;
     box-sizing:border-box;
-    /*
-    display:flex;
-    justify-content: flex-end;
-    */
     padding:8px;
     border-bottom:1px solid #E6E6FA;
 }
@@ -250,7 +215,6 @@ export default {
 }
 
 .map-container{
-    /*height: 100%;*/
     position:relative;
 }
 

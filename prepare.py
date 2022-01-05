@@ -49,8 +49,8 @@ def create_admin_if_not_present(db : Session):
 
 if __name__ == '__main__':
 
-    configure_custom_config(config_path='webserver/custom_config.py', contents=COORDINATOR_CUSTOM_CONFIG)
-    configure_custom_config(config_path='receiver/custom_config.py', contents=WEBSERVER_CUSTOM_CONFIG)
+    configure_custom_config(config_path='webserver/custom_config.py', contents=WEBSERVER_CUSTOM_CONFIG)
+    configure_custom_config(config_path='receiver/custom_config.py', contents=COORDINATOR_CUSTOM_CONFIG)
 
     dbmodels.Base.metadata.create_all(bind=engine)
     db = SessionLocal()

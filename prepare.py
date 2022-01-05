@@ -5,6 +5,23 @@ from webserver.pwdcontext import pwd_context
 from sqlalchemy.orm import Session
 import secrets
 
+COORDINATOR_CUSTOM_CONFIG = """# This is a file for custom configuration.
+
+# Serial port used for communication with the coordinator.
+# Please specify the serial port, e.g. "COM2" (Windows) or "/dev/ttyUSB0" (Linux).
+# The default value (None) will cause an error on startup.
+DEVICE_SERIAL_PORT = None
+"""
+
+WEBSERVER_CUSTOM_CONFIG = """# This is a file for custom configuration.
+
+# Configuration of the Uvicorn server.
+# See https://www.uvicorn.org/settings/
+UVICORN_CONFIG = dict(
+    
+)
+"""
+
 def configure_custom_config(config_path, contents):
     if not os.path.exists(config_path):
         with open(config_path, 'w') as web_conf:
@@ -30,6 +47,7 @@ def create_admin_if_not_present(db : Session):
         print('The database already has an admin user. No new admin account was created.')
 
 if __name__ == '__main__':
+
     configure_custom_config(config_path='webserver/custom_config.py', contents='# This is a file for custom configuration')
     configure_custom_config(config_path='receiver/custom_config.py', contents='# This is a file for custom configuration')
 

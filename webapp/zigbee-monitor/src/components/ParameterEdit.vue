@@ -3,20 +3,20 @@
         <div class="parameter-edit-main">
             <h2 class="side-panel-h2">{{headerText}}</h2>
             <div class="input-label-group">
-                <label for="parameterNameInput" class="text-label">Nazwa parametru</label>
+                <label for="parameterNameInput" class="text-label">Nazwa wartości</label>
                 <input type="text" v-model="parameterName" class="text-input" :class="{'text-input-invalid':parameterNameError !== null}"  id="parameterNameInput">
                 <div v-if="parameterNameError !== null" class="input-error-message">{{ parameterNameError }}</div>
             </div>
             <div class="radio-set-container">
-                <div class="radio-set-legend">Sposób odczytu parametru</div>
+                <div class="radio-set-legend">Sposób odczytu wartości</div>
                 <div class="radio-set-content">
                     <div class="radio-item-container">
                         <input type="radio" v-model="readMode" class="radio-input" value="listen" name="parameterReadMode" id="parameterReadModeListen" aria-describedby="modeListenDescription">
-                        <label for="parameterReadModeListen">Oczekuj na komunikat</label>
+                        <label for="parameterReadModeListen">Oczekuj na wiadomość</label>
                     </div>
                     <div class="radio-item-container">
                         <input type="radio" v-model="readMode" class="radio-input" value="send" name="parameterReadMode" id="parameterReadModeSend" aria-describedby="modeSendDescription">
-                        <label for="parameterReadModeSend">Wyślij komunikat i oczekuj na odpowiedź</label>
+                        <label for="parameterReadModeSend">Wyślij wiadomość i oczekuj na odpowiedź</label>
                     </div>
                     <div class="radio-item-container">
                         <input type="radio" v-model="readMode" class="radio-input" value="at" name="parameterReadMode" id="parameterReadModeAt" aria-describedby="modeAtDescription">
@@ -27,24 +27,24 @@
             </div>
             <div class="option-description">
                 <span v-if="readMode === 'listen'" id="modeListenDescription">
-                    Aplikacja będzie oczekiwać na komunikaty przysłane z urządzenia o zadanym formacie.
+                    Aplikacja będzie oczekiwać na wiadomości przysłane z urządzenia o zadanym formacie.
                 </span>
                 <span v-if="readMode === 'send'" id="modeSendDescription">
-                    Aplikacja będzie wysyłać co określony czas komunikat od urządzenia a następnie oczekiwał na odpowiedź o zadanym formacie.
+                    Aplikacja będzie wysyłać co określony czas wiadomość od urządzenia a następnie oczekiwał na odpowiedź o zadanym formacie.
                 </span>
                 <span v-if="readMode === 'at'" id="modeAtDescription">
-                    Aplikacja będzie wysyłać komentę AT do urządzenia i wyświetlać jej wynik. 
+                    Aplikacja będzie wysyłać komendę AT do urządzenia i wyświetlać jej wynik. 
                 </span>
             </div>
             <div v-if="readMode === 'listen'">
                 <div class="input-label-group">
-                    <label for="messagePrefixInput" class="text-label">Początek oczekiwanego komunikatu</label>
+                    <label for="messagePrefixInput" class="text-label">Początek oczekiwanej wiadomości</label>
                     <input type="text" v-model="messagePrefix" class="text-input" id="messagePrefixInput">
                 </div>
             </div>
             <div v-if="readMode === 'send'">
                 <div class="input-label-group">
-                    <label for="messageToSendInput" class="text-label">Komunikat do wysłania w celu odczytu wiadomości</label>
+                    <label for="messageToSendInput" class="text-label">Wiadomość do wysłania w celu odczytu wartości</label>
                     <input type="text" v-model="messageToSend" class="text-input" id="messageToSendInput">
                 </div>
                 <div class="input-label-group">
@@ -53,7 +53,7 @@
                     <div v-if="refreshPeriodError !== null" class="input-error-message">{{ refreshPeriodError }}</div>
                 </div>
                 <div class="input-label-group">
-                    <label for="receivedMessagePrefixInput" class="text-label">Początek oczekiwanego komunikatu</label>
+                    <label for="receivedMessagePrefixInput" class="text-label">Początek oczekiwanej wiadomości</label>
                     <input type="text" v-model="messagePrefix" class="text-input" id="receivedMessagePrefixInput">
                 </div>
             </div>
@@ -238,7 +238,7 @@ export default {
             return this.$store.getters.mode === 'newReadingConfig';
         },
         headerText(){
-            return this.newConfigMode ? 'Nowy parametr' : 'Edycja parametru';
+            return this.newConfigMode ? 'Nowa wartość' : 'Edycja wartości';
         },
         submitButtonText(){
             return this.newConfigMode ? 'Dodaj' : 'Zapisz';

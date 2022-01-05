@@ -137,9 +137,8 @@ export default {
                 await this.$store.dispatch('saveEditedLayer');
                 this.$store.commit('setActiveLayer', this.layer.name);
                 this.$store.commit('previousMode');
-                //URL.revokeObjectURL(this.layer.imgurl);
                 this.$store.commit('setEditedLayer', null);
-                this.$store.dispatch('downloadDiscoveryResults');
+                //this.$store.dispatch('downloadDiscoveryResults');
             }
             catch(e){
                 console.error(e);

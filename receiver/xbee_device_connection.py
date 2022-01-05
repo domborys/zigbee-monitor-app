@@ -81,6 +81,7 @@ class XBeeDeviceConnection:
 
     def discover_network(self) -> XBeeNetwork:
         xnet = self.device.get_network()
+        xnet.set_deep_discovery_options(del_not_discovered_nodes_in_last_scan=True)
         xnet.start_discovery_process(deep=True, n_deep_scans=1)
         while xnet.is_discovery_running():
             time.sleep(0.2)

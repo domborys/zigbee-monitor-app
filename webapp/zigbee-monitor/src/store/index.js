@@ -34,12 +34,7 @@ const store = new Vuex.Store({
         discoveryResults:null,
         displayedMessagesNode:null,
         readingTimers:[],
-        messages:[
-            {type:'sent', address64:'DEADBEEF12345678', message:btoa('ledon'), tempId:tempMessageIdGenerator.next()},
-            {type:'received', address64:'DEADBEEF12345678', message:btoa('temp 31'), tempId:tempMessageIdGenerator.next()},
-            {type:'received', address64:'DEADBEEF12345678', message:btoa('result 234'), tempId:tempMessageIdGenerator.next()},
-            {type:'sent', address64:'DEADBEEF12345678', message:btoa('freeze'), tempId:tempMessageIdGenerator.next()},
-        ],
+        messages:[],
         messageSocket:null,
     },
     getters:{
@@ -84,13 +79,6 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
-        /*
-        setMode(state, mode){
-            
-            if(modes.indexOf(mode) === -1)
-                throw new Error("Invalid mode");
-            state.mode = mode;
-        },*/
         setUser(state, user){
             state.user = user;
         },
@@ -142,18 +130,6 @@ const store = new Vuex.Store({
             state.editedLayer = cloneDeep(layer);
             state.editedLayer.isNewImage = false;
         },
-        
-        /*
-        prepareNewNode(state){
-            state.editedNodeCopy = null;
-            const newNode = {id:null, name:null, address64:null,  x:null, y:null, edited:true};
-            state.editedLayer.nodes.push(newNode);
-        },
-        prepareNodeForEdit(state, node){
-            state.editedNodeCopy = cloneDeep(node);
-            node.edited = true;
-            state.editedLayer.nodes.push(newNode);
-        },*/
         
         prepareNewNode(state){
             state.editedNode = {id:null, tempId:null, name:null, address64:null,  x:null, y:null, readingConfigs:[]};
@@ -335,7 +311,7 @@ const store = new Vuex.Store({
             context.commit('replaceMode', 'view');
             context.dispatch('openMessageSocket');
             await context.dispatch('downloadLayers');
-            await context.dispatch('downloadDiscoveryResults');
+            //await context.dispatch('downloadDiscoveryResults');
         },
         async login(context, credentials){
             await api.login(credentials);
@@ -419,6 +395,10 @@ const store = new Vuex.Store({
                     }
                 }
             }
+            const dixcoveryTimerId = setInterval(context.dispatch, 120*1000, 'downloadDiscoveryResults');
+            context.commit('addReadingTimer', dixcoveryTimerId);
+            context.dispatch('downloadDiscoveryResults');
+
         },
         async sendMessageForReading(context, data){
             const message = {type:'sent', address64:data.node.address64, message:data.readingConfig.messageToSend};
@@ -431,7 +411,6 @@ const store = new Vuex.Store({
                 address64:data.node.address64,
                 atCommand:data.readingConfig.atCommand,
                 value:data.readingConfig.atCommandData,
-                //format:???,
             };
             const message = await context.dispatch('sendAtCommand', commandData);
             let lastReading;

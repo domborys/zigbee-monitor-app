@@ -8,7 +8,7 @@ import secrets
 COORDINATOR_CUSTOM_CONFIG = """# This is a file for custom configuration.
 
 # Serial port used for communication with the coordinator.
-# Please specify the serial port, e.g. "COM2" (Windows) or "/dev/ttyUSB0" (Linux).
+# Please specify the serial port, e.g. "COM3" (Windows) or "/dev/ttyUSB0" (Linux).
 # The default value (None) will cause an error on startup.
 DEVICE_SERIAL_PORT = None
 """
@@ -17,6 +17,7 @@ WEBSERVER_CUSTOM_CONFIG = """# This is a file for custom configuration.
 
 # Configuration of the Uvicorn server.
 # See https://www.uvicorn.org/settings/
+# The items of UVICORN_CONFIG are passed as arguments for uvicorn.run()
 UVICORN_CONFIG = dict(
     
 )
@@ -48,8 +49,8 @@ def create_admin_if_not_present(db : Session):
 
 if __name__ == '__main__':
 
-    configure_custom_config(config_path='webserver/custom_config.py', contents='# This is a file for custom configuration')
-    configure_custom_config(config_path='receiver/custom_config.py', contents='# This is a file for custom configuration')
+    configure_custom_config(config_path='webserver/custom_config.py', contents=COORDINATOR_CUSTOM_CONFIG)
+    configure_custom_config(config_path='receiver/custom_config.py', contents=WEBSERVER_CUSTOM_CONFIG)
 
     dbmodels.Base.metadata.create_all(bind=engine)
     db = SessionLocal()

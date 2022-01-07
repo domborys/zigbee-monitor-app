@@ -1,5 +1,5 @@
 import socket, base64, threading
-import socket_common, xbee_device_server_config as config
+from . import socket_common, config
 
 def main():
     threading.Thread(target=notifications_thread_func).start()

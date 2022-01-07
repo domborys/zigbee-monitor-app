@@ -179,8 +179,8 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 def change_password(password_change: pydmodels.PasswordChange, db: Session = Depends(get_db), current_user: dbmodels.User = Depends(get_current_active_user)):
     return dbsrv.change_password(db, password_change, current_user.username)
 
-@app.post("/login")
-async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db), response_class=Response,  status_code=status.HTTP_204_NO_CONTENT):
+@app.post("/login", response_class=Response,  status_code=status.HTTP_204_NO_CONTENT)
+async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
     if db_session is None:
         raise HTTPException(status_code=401, detail="Incorrect username or password")

@@ -89,9 +89,9 @@ async def is_valid_admin(user_session: dbmodels.UserSession = Depends(get_curren
         raise HTTPException(status_code=403, detail="Operation not allowed")
 
 
-@app.get("/")
+@app.get("/", response_class=RedirectResponse)
 async def root():
-    return RedirectResponse("/static/index.html")
+    return "/static/index.html"
 
 @app.get("/floors", response_model=List[pydmodels.Floor], dependencies=[Depends(is_valid_user)])
 def get_all_floors(db: Session = Depends(get_db)):
@@ -115,7 +115,7 @@ def modify_floor(floor_id: int,floor: pydmodels.FloorCreate, db: Session = Depen
         raise HTTPException(status_code=404, detail="Floor not found")
     return floor
 
-@app.delete("/floors/{floor_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(is_valid_user)])
+@app.delete("/floors/{floor_id}", response_class=Response, status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(is_valid_user)])
 def delete_floor(floor_id : int, db: Session = Depends(get_db)):
     existed_before = dbsrv.delete_floor(db, floor_id)
     if not existed_before:
@@ -178,14 +178,6 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 @app.post("/password-change", response_model=pydmodels.User)
 def change_password(password_change: pydmodels.PasswordChange, db: Session = Depends(get_db), current_user: dbmodels.User = Depends(get_current_active_user)):
     return dbsrv.change_password(db, password_change, current_user.username)
-
-#TODO Remove
-@app.post("/token")
-async def login_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    db_session = dbsrv.authenticate_user(db, form_data.username, form_data.password)
-    if db_session is None:
-        raise HTTPException(status_code=401, detail="Incorrect username or password")
-    return {"access_token": db_session.session_id, "token_type": "bearer"}
 
 @app.post("/login")
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db), response_class=Response,  status_code=status.HTTP_204_NO_CONTENT):

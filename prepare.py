@@ -15,6 +15,8 @@ DEVICE_SERIAL_PORT = None
 
 WEBSERVER_CUSTOM_CONFIG = """# This is a file for custom configuration.
 
+from .config import PROJECT_DIR 
+
 # Configuration of the Uvicorn server.
 # See https://www.uvicorn.org/settings/
 # The items of UVICORN_CONFIG are passed as arguments for uvicorn.run()

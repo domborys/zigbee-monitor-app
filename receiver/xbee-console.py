@@ -3,7 +3,7 @@ import time
 from queue import Queue
 from digi.xbee.devices import XBeeDevice, XBeeNetwork, RemoteXBeeDevice
 from digi.xbee.exception import XBeeException
-from digi.xbee.models.address import XBee16BitAddress, XBee64BitAddress
+from digi.xbee.models.address import XBee64BitAddress
 
 class ConsoleCommand:
     def __init__(self, command : str):

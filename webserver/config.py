@@ -1,3 +1,8 @@
+"""The default configuration of the server.
+
+This module file should not be modified by users. Custom values should be provided in the custom_config.py file.
+"""
+
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent

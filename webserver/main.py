@@ -135,16 +135,16 @@ async def get_floor_by_id(floor_id : int, file: UploadFile = File(...), db: Sess
     await dbsrv.set_floor_image(db, floor_id, file)
     
 
-@app.get("/nodes/{node_id}", response_model=pydmodels.Node, dependencies=[Depends(is_valid_user)])
-def get_node_by_id(node_id: int, db: Session = Depends(get_db)):
-    node = dbsrv.get_node_by_id(db, node_id)
-    if node is None:
-        raise HTTPException(status_code=404, detail="Node not found")
-    return node
+# @app.get("/nodes/{node_id}", response_model=pydmodels.Node, dependencies=[Depends(is_valid_user)])
+# def get_node_by_id(node_id: int, db: Session = Depends(get_db)):
+#     node = dbsrv.get_node_by_id(db, node_id)
+#     if node is None:
+#         raise HTTPException(status_code=404, detail="Node not found")
+#     return node
 
-@app.post("/nodes", response_model=pydmodels.Node, dependencies=[Depends(is_valid_user)])
-def create_node(node: pydmodels.NodeCreate, db: Session = Depends(get_db)):
-    return dbsrv.create_node(db, node)
+# @app.post("/nodes", response_model=pydmodels.Node, dependencies=[Depends(is_valid_user)])
+# def create_node(node: pydmodels.NodeCreate, db: Session = Depends(get_db)):
+#     return dbsrv.create_node(db, node)
 
 @app.get("/users", response_model=List[pydmodels.User], dependencies=[Depends(is_valid_admin)])
 def get_users(db: Session = Depends(get_db)):

@@ -1,3 +1,5 @@
+"""Functions for communication with the coordinator handler."""
+
 import asyncio, json
 from asyncio.streams import StreamReader, StreamWriter
 from typing import Union
@@ -7,12 +9,15 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from . import config, pydmodels
 
 class XBeeServerError(Exception):
+    """An error raised by the functions in the module whenever the communication with the coordinator handler fails."""
     pass
 
 class MessageParseError(Exception):
+    """An error raised when the message received from the coordinator handler is invalid."""
     pass
 
 def unify_exceptions(func):
+    """Decorator which catches all the exceptions and re-raises them as :class:`~webserver.xbeesrv.MessageParseError`"""
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
@@ -24,12 +29,32 @@ def unify_exceptions(func):
 
 @unify_exceptions
 async def discover_network() -> pydmodels.DiscoveryResult:
+    """Makes a discovery request to the coordinator handler.
+    
+    Returns:
+        ZigBee network discovery results received from the coordinator handler.
+
+    Raises:
+        XBeeServerError: when an error occurs while communicating with the coordinator handler.
+    """
     request = {"type":"request", "name":"discover"}
     response = await request_response(request)
     return pydmodels.DiscoveryResult.parse_obj(response["data"])
 
 @unify_exceptions
 async def send_b64_data(address64 : str, message : str) -> pydmodels.XBeeMessageResult:
+    """Makes a request to the coordinator handler to send a message to the given node in the ZigBee network.
+
+    Args:
+        address64: 64-bit addres of the node as hexadecimal string.
+        message: base64-encoded message to send.
+    
+    Returns:
+        An object describing if the message was successfuly sent.
+
+    Raises:
+        XBeeServerError: when an error occurs while communicating with the coordinator handler.
+    """
     request = {"type":"request", "name":"send", "data":{"address64":address64, "message":message}}
     response = await request_response(request)
     return pydmodels.XBeeMessageResult(status=response["status"], message=response.get("message"))

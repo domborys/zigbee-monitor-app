@@ -47,7 +47,7 @@ class Node(Base):
     """Node name."""
 
     address64 = Column(String(16))
-    """64-bit address of the node."""
+    """64-bit address of the node as a hexadecimal string."""
 
     x = Column(Float)
     """x coordinate of the node on the map."""
@@ -62,7 +62,7 @@ class Node(Base):
     """The map on which the node is placed."""
 
     reading_configs = relationship("ReadingConfig", back_populates="node", cascade="all, delete-orphan")
-    """The configuration of readings related to the node."""
+    """The readings related to the node."""
 
 class ReadingConfig(Base):
     """Configuration of a reading provided by a node."""
@@ -79,7 +79,7 @@ class ReadingConfig(Base):
     """The mode of obtaining the reading."""
 
     refresh_period = Column(Float)
-    """The peariod in which the reading is refreshed."""
+    """The period in which the reading is refreshed."""
 
     message_prefix = Column(String(256))
     """Prefix of the message containing the reading value."""
@@ -117,7 +117,7 @@ class User(Base):
     """Hash of user's password"""
 
     role = Column(String(32))
-    """Role of the user. Can be either "user" or "password"."""
+    """Role of the user. Can be either "user" or "admin"."""
 
     disabled = Column(Boolean)
     """True if the user is disabled."""

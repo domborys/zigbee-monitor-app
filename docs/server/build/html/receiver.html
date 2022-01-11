@@ -44,31 +44,84 @@
 </section>
 <section id="module-receiver.example_client">
 <span id="receiver-example-client-module"></span><h2>receiver.example_client module<a class="headerlink" href="#module-receiver.example_client" title="Permalink to this headline">¶</a></h2>
-<p>An example client of the coordinator controller</p>
-<p>It demonstrates the method of making requests to the server, receiving responses and notifications.</p>
+<p>An example client of the coordinator controller used for testing and debugging purposes.</p>
+<p>Usage: From the main directory of the project activate the venv and call
+<cite>py -m receiver.example_client</cite> (Windows) or <cite>python3 -m receiver.example_client</cite> (Linux)
+At the end -p switch may be added. If it’s present the script will execute requests from the <a class="reference internal" href="#receiver.example_client.prepare_parallel_requests" title="receiver.example_client.prepare_parallel_requests"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_parallel_requests()</span></code></a> function,
+otherwise it will execute the requests from <a class="reference internal" href="#receiver.example_client.prepare_sequential_requests" title="receiver.example_client.prepare_sequential_requests"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_sequential_requests()</span></code></a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="receiver.example_client.execute_one_request">
+<span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">execute_one_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#receiver.example_client.execute_one_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes one request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – the request to execute.</p></li>
+<li><p><strong>id</strong> – id of the request.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="receiver.example_client.execute_parallel_requests">
+<span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">execute_parallel_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#receiver.example_client.execute_parallel_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the requests in a sequential-parallel way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>requests</strong> – A list with a list of requests.
+The items of the outer lists are called groups. All requests from the previous group are executed before the requests from the next group.
+Inside each group there is a list of requests. Requests from one group are exetuted parallelly.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="receiver.example_client.execute_sequential_requests">
+<span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">execute_sequential_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#receiver.example_client.execute_sequential_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the requests sequentially.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>requests</strong> – the requests to execute</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="receiver.example_client.main">
 <span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#receiver.example_client.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>The main function of the client</p>
 <p>It sets up the thread for receiving notifications,
-then it sequentially makes a requests and waits for response
-for every requests returned by the <a class="reference internal" href="#receiver.example_client.prepare_some_requests" title="receiver.example_client.prepare_some_requests"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_some_requests()</span></code></a></p>
+then it makes some requests sequentially or in sequential-parallel way depending on the presence of -p switch.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="receiver.example_client.notifications_thread_func">
 <span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">notifications_thread_func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#receiver.example_client.notifications_thread_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>The function for receiving notificatione, i.e. received messages from the coordinator controller.
+<dd><p>The function for receiving notifications, i.e. received messages from the coordinator controller.
 It should run in a separate thread.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="receiver.example_client.prepare_some_requests">
-<span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">prepare_some_requests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#receiver.example_client.prepare_some_requests" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="receiver.example_client.prepare_parallel_requests">
+<span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">prepare_parallel_requests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#receiver.example_client.prepare_parallel_requests" title="Permalink to this definition">¶</a></dt>
 <dd><p>The function returns some example requests to the coordinator controller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A list of three request dicts.</p>
+<dd class="field-odd"><p>A list with a list of requests.
+The items of the outer lists are called groups. All requests from the previous group should be executed before the requests from the next group.
+Inside each group there is a list of requests. Requests from one group should be exetuted parallelly.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="receiver.example_client.prepare_sequential_requests">
+<span class="sig-prename descclassname"><span class="pre">receiver.example_client.</span></span><span class="sig-name descname"><span class="pre">prepare_sequential_requests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#receiver.example_client.prepare_sequential_requests" title="Permalink to this definition">¶</a></dt>
+<dd><p>The function returns some example requests to the coordinator controller which should be executed sequentially.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of requests.</p>
 </dd>
 </dl>
 </dd></dl>

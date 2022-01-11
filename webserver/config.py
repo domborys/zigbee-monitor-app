@@ -8,10 +8,10 @@ from pathlib import Path
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
 # TCP port uset for making requests to the coordinator handler.
-XBEE_PORT_REQUEST = 60001
+XBEE_PORT_REQUEST = 9020
 
 # TCP port uset for getting notifications from the coordinator handler.
-XBEE_PORT_NOTIFY = 60002
+XBEE_PORT_NOTIFY = 9021
 
 # IP address of the coordinator handler.
 XBEE_IP_ADDRESS = '127.0.0.1'

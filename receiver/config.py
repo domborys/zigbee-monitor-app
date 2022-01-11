@@ -2,10 +2,10 @@
 # Instead, copy the setting you want to change to custom_config.py and edit it.
  
 # TCP port for the socket used for making request to the coordinator handler.
-TCP_PORT_REQUEST = 60001
+TCP_PORT_REQUEST = 9020
 
 # TCP port for the socket used for sending notifications from coordinator handler
-TCP_PORT_NOTIFY = 60002
+TCP_PORT_NOTIFY = 9021
 
 # IP address on which the sockets are listening
 IP_ADDRESS = '127.0.0.1'

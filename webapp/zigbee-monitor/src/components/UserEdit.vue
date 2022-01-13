@@ -61,6 +61,9 @@
 
 <script>
 
+/**
+ * Component used for creating or editing user's account.
+ */
 export default {
     name:"UserEdit",
     data(){

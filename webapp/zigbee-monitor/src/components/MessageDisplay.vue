@@ -95,12 +95,18 @@
 
 import ZigbeeMessage from './ZigbeeMessage.vue';
 
+/**
+ * Component used for displaying the messages which where sent or received by the coordinator.
+ */
 export default {
     name:"MessageDisplay",
     components: {
         ZigbeeMessage
     },
     props:{
+        /**
+         * The node whose messages will be displayed.
+         */
         node:Object
     },
     data() {

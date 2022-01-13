@@ -7,37 +7,26 @@
         <div :class="{'status-text-recognized': isGood, 'status-text-unrecognized': isBad}">
             {{ status }}
         </div>
-        <!--
-        <div>
-            <b>Id urządzenia: </b>{{ node.deviceId}}
-        </div>
-        <div>
-            <b>Adres 16-bit: </b> {{ node.address16 }}
-        </div>
-        <div>
-            <b>Adres 64-bit: </b> {{ node.address64 }}
-        </div>
-        <div>
-            <b>Typ węzła: </b>{{ node.role}}
-        </div>
-        <div>
-            <b>Status: </b> {{ status }}
-        </div>
-        -->
     </li>
 </template>
 
 <script>
 
+/**
+ * Component used for displaying one node in the NodeList.
+ * 
+ * As the root element of this component is HTML li element, this component must be used inside a list.
+ */
 export default {
     name:"NodeItem",
     props:{
+        /**
+         * The node to display.
+         */
         node: Object,
     },
     data(){
-        return{
-            
-        }
+        return {}
     },
     computed:{
         status(){
@@ -55,18 +44,9 @@ export default {
 }
 </script>
 
-
 <style scoped>
 
 .node-item{
-    /*
-    font-size:12px;
-    margin: 8px 0;
-    padding:8px;
-    border-width: 2px 6px 2px 2px;
-    border-style:solid;
-    border-radius: 5px;
-    */
     padding:10px;
     border-bottom: 1px solid #E6E6FA;
     border-right: 1px solid #E6E6FA;
@@ -81,7 +61,6 @@ export default {
     background-color: #E6E6FA;
     cursor: pointer;
 }
-
 
 .node-item-good{
     border-left-color: rgb(90, 146, 0);
@@ -104,6 +83,5 @@ export default {
     font-size: 15px;
     font-weight:600;
 }
-
 
 </style>

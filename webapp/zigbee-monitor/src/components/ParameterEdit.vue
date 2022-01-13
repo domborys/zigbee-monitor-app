@@ -125,6 +125,11 @@
 
 import utils from '../utils';
 
+/**
+ * Component used for adding or edditing a configuration of sensor readings which will be displayed on the map.
+ * 
+ * It should be used inside the left pane.
+ */
 export default {
     name:"ParameterEdit",
     components:{
@@ -176,7 +181,6 @@ export default {
                 return this.readingConfig.messagePrefix === null ? '' : atob(this.readingConfig.messagePrefix);
             },
             set(value){
-                //this.rawMessagePrefix = value;
                 this.$store.commit('setEditedReadingConfigParam', {name:'messagePrefix', value:btoa(value)});
             }
         },
@@ -185,7 +189,6 @@ export default {
                 return this.readingConfig.messageToSend === null ? '' : atob(this.readingConfig.messageToSend);
             },
             set(value){
-                //this.rawMessageToSend = value;
                 this.$store.commit('setEditedReadingConfigParam', {name:'messageToSend', value:btoa(value)});
             }
         },
@@ -220,7 +223,6 @@ export default {
                 }
             },
             set(value){
-                //this.rawCommandData = value;
                 let commandBase64 = this.getEncodedCommandData(value);
                 this.$store.commit('setEditedReadingConfigParam', {name:'atCommandData', value:commandBase64});
             }
@@ -360,28 +362,6 @@ export default {
         setAtCommandData(newCommandData){
             this.$store.commit('setEditedReadingConfigParam', {name:'atCommandData', value:newCommandData});
         }
-    },
-    watch:{
-        /*
-        messagePrefix(newValue){
-
-        }*/
-        /*
-        messagePrefix(newMessage){
-            this.$store.commit('setEditedReadingConfigParam', {name:'messagePrefix', value:btoa(newMessage)});
-        },
-        messageToSend(newMessage){
-            this.$store.commit('setEditedReadingConfigParam', {name:'messageToSend', value:btoa(newMessage)});
-        }*/
-        /*
-        atCommandFormat(newFormat, oldFormat){
-            if(newFormat === 'none'){
-                this.setAtCommandData(null);
-            }
-            else if(newFormat === 'text'){
-                this.setAtCommandData(null);
-            }
-        }*/
     },
     mounted(){
         if(this.readingConfig.atCommandData === null)

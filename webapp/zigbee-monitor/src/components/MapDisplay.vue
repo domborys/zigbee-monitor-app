@@ -81,7 +81,9 @@ const icons = {
     }),
 }
 
-
+/**
+ * The component used for displaying maps. It should be used inside the right pane of MainLayout.
+ */
 export default {
     components: {
         LMap,
@@ -93,21 +95,16 @@ export default {
         NodeTooltip,
     },
     props:{
+        /**
+         * The currently displayed map.
+         */
         layer: Object
     },
     data() {
         return {
             showTooltips:true,
-            minZoom: -10,
+            minZoom: -50,
             crs: CRS.Simple,
-            
-            stars: [
-            { name: "Sol", lng: 1, lat: 1},
-            { name: "Mizar", lng: 2, lat: 1 },
-            { name: "Krueger-Z", lng: 7, lat: 1 },
-            { name: "Deneb", lng: 5, lat: 9 }
-            ],
-            travel: [[1, 1], [9, 5]]
         };
     },
     computed:{
@@ -230,7 +227,9 @@ export default {
     background-color: rgb(130,68,190);
     color:white;
 }
+
 .edited-node-mode .vue2leaflet-map{
     cursor:crosshair;
 }
+
 </style>

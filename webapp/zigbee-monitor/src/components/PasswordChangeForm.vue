@@ -24,7 +24,9 @@
 
 <script>
 
-
+/**
+ * Component with a form used for changing the password of currently logged in user.
+ */
 export default {
     name:"PasswordChangeForm",
     data(){

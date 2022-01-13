@@ -24,6 +24,9 @@
 <script>
 import UserItem from './UserItem.vue'
 
+/**
+ * Component for displaying detailed information about a user.
+ */
 export default {
     name:"UserManagement",
     components:{

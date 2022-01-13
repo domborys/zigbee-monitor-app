@@ -11,6 +11,9 @@
 <script>
 import UserItem from './UserItem.vue'
 
+/**
+ * Component used for managing users.
+ */
 export default {
     name:"UserManagement",
     components:{

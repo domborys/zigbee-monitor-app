@@ -50,6 +50,10 @@ function isValid64Address(address){
     return regex.test(address);
 }
 
+/**
+ * Component used for creating new nodes or editing the existing ones.
+ * It should be used inside the left pane.
+ */
 export default {
     name:"NodeEdit",
     components:{

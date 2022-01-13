@@ -47,6 +47,9 @@
 
 import DropdownMenu from './DropdownMenu.vue';
 
+/**
+ * Application header and horizontal menu. The buttons available in the menu depend on application state.
+ */
 export default {
     name:"AppHeader",
     components:{
@@ -162,5 +165,5 @@ export default {
     font-weight:600;
 }
 
-
 </style>
+

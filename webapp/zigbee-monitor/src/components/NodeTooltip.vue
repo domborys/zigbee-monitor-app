@@ -10,6 +10,9 @@
 <script>
 import { LTooltip } from "vue2-leaflet";
 
+/**
+ * Leaflet's Tooltip adapted to display Information about a node on the map.
+ */
 export default {
     name:"NodeTooltip",
     components: {
@@ -21,7 +24,14 @@ export default {
         }
     },
     props:{
+        /**
+         * The node whose information willl be displayed on the tooltip.
+         */
         node: Object,
+        
+        /**
+         * When true the tooltip will be visible, when false it will be hidden.
+         */
         visible:{
             type: Boolean,
             default:true,

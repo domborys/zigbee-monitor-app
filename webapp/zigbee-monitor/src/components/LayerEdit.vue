@@ -43,6 +43,11 @@
 import NodeItemEditMode from './NodeItemEditMode.vue';
 import utils from '../utils';
 
+/**
+ * Component used for editing maps. It lets the user type the name of the map, the floor number, upload map image and add nodes.
+ * 
+ *  This component should be used in the left pane of MainLayout.
+ */
 export default {
     name:"LayerEdit",
     components:{

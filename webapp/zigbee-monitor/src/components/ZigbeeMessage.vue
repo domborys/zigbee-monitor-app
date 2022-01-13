@@ -37,10 +37,21 @@
 
 <script>
 
+/**
+ * Component used for displaying one ZigBee message.
+ */
 export default {
     name:"ZigbeeMessage",
     props:{
+        /**
+         * The message to display.
+         */
         message: Object,
+
+        /**
+         * The mode in which the message will be displayed.
+         * @values text, hex
+         */
         mode: {
             type: String,
             default: 'text',
@@ -48,6 +59,10 @@ export default {
                 return ['text', 'hex'].indexOf(value) !== -1;
             }
         },
+
+        /**
+         * If true, the name and 64-bit address of the node will be shown.
+         */
         showNodeInfo:{
             type: Boolean,
             default: false
@@ -143,6 +158,9 @@ export default {
     },
     watch:{
         atCommandResult(){
+            /**
+             * Emitted when the size of the message container may have changed.
+             */
             this.$emit('size-change');
         },
         messageError(){
@@ -152,27 +170,21 @@ export default {
 }
 </script>
 
-
 <style scoped>
 
 .zigbee-message{
     margin: 8px 0;
     padding:4px;
-    /*border: 1px solid rgb(130,68,190);*/
     border: 1px solid #888;
     border-radius: 5px;
 }
 
 .zigbee-message-left{
-    /*margin-right:20%;*/
-    
     text-align:left;
 }
 
 .zigbee-message-right{
-    /*margin-left:20%;*/
     align-self: flex-end;
-    /*text-align:right;*/
 }
 
 .message-field-time{
@@ -215,8 +227,6 @@ export default {
     justify-content: space-between;
 }
 
-
-
 .zigbee-message-header{
     border-bottom: 1px solid #E6E6FA;
     padding:5px;
@@ -232,7 +242,5 @@ export default {
     padding-top:2px;
     color: rgb(190, 39, 2);
 }
-
-
 
 </style>

@@ -13,12 +13,18 @@
 <script>
 import NodeItem from './NodeItem.vue'
 
+/**
+ * A list of nodes on a map.
+ */
 export default {
     name:"NodeList",
     components:{
         NodeItem
     },
     props:{
+        /**
+         * The nodes to display.
+         */
         nodes: Array,
     },
     methods:{

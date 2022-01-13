@@ -20,7 +20,9 @@
 
 <script>
 
-
+/**
+ * Component used for logging in. Should be used in a single-column mode in MainLayout.
+ */
 export default {
     name:"LoginForm",
     components:{
@@ -55,8 +57,6 @@ export default {
             this.isError = true;
         }
     },
-
-    
 }
 </script>
 

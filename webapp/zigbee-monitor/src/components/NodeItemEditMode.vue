@@ -6,35 +6,44 @@
                 {{ node.address64 }}
             </div>
         </div>
-        
-            <button type="button" class="close-button" @click.stop="deleteClick">
-                <img :src="require('@/assets/icons/trash.svg')" width="25" height="25">
-
-            </button>
-        
+        <button type="button" class="close-button" @click.stop="deleteClick">
+            <img :src="require('@/assets/icons/trash.svg')" width="25" height="25">
+        </button>
     </li>
 </template>
 
 <script>
 
+/**
+ * Component used for displaying one node on the list of nodes in the LayerEdit component.
+ * 
+ * As the root element of this component is HTML li element, this component must be used inside a list.
+ */
 export default {
     name:"NodeItemEditMode",
     props:{
+        /**
+         * The node to display.
+         */
         node: Object,
     },
     data(){
-        return{
-            
-        }
+        return{}
     },
     computed:{
         
     },
     methods:{
         editClick(){
+            /**
+             * Emitted when the user clicks on the item outside the garbage can icon.
+             */
             this.$emit('edit-node');
         },
         deleteClick(){
+            /**
+             * Emitted when the user clicks on the garbage can icon.
+             */
             this.$emit('delete-node');
         }
     }

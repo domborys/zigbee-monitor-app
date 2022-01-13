@@ -36,7 +36,6 @@
 </template>
 <script>
 import LayerList from './LayerList.vue';
-import LayerDetails from './LayerDetails.vue';
 import NodeList from './NodeList.vue';
 import MapDisplay from './MapDisplay.vue';
 import LayerEdit from './LayerEdit.vue';
@@ -51,11 +50,19 @@ import UserManagement from './UserManagement.vue';
 import UserDetails from './UserDetails.vue';
 import UserEdit from './UserEdit.vue'
 
+/**
+ * The component providing the main layout of the application.
+ * 
+ * The layout consists of a header (AppHeader) and the main part.
+ * The main part may be either single-column or two-column, depending on the currently displayed part of the application.
+ * Single-column parts are centered horizontally.
+ * Two-column parts consist of two parts: left pane and right pane.
+ * Left pane is used for configuration and navigation, the right pane is used for displaying maps or messages.
+ */
 export default {
     name:"MainLayout",
     components:{
         LayerList,
-        LayerDetails,
         NodeList,
         MapDisplay,
         LayerEdit,
@@ -127,8 +134,6 @@ export default {
     display:flex;
     flex-direction: column;
 }
-
-
 
 .below-header{
     display:flex;

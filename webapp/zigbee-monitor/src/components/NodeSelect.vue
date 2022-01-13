@@ -28,6 +28,9 @@
 <script>
 import NodeItemSelectMode from './NodeItemSelectMode.vue';
 
+/**
+ * Component allowing the user to select a node from the list of the discovered nodes.
+ */
 export default {
     name:"NodeSelect",
     components:{
@@ -37,8 +40,7 @@ export default {
         
     },
     data(){
-        return{
-        }
+        return {}
     },
     computed:{
         nodesNotInSystem(){
@@ -63,9 +65,11 @@ export default {
 
 
 <style scoped>
+
 .node-list-select{
     list-style-type: none;
     padding:0;
     margin:5px 0 0 0;
 }
+
 </style>

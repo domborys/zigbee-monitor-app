@@ -11,21 +11,33 @@
 
 <script>
 
+/**
+ * A sensor reading reported by a node.
+ * 
+ * As the root element of this component is HTML li element, this component must be used inside a list.
+ */
 export default {
     name:"NodeParameter",
     props:{
+        /**
+         * The description of the sensor reading.
+         */
         readingConfig: Object,
     },
     data(){
-        return{
-            
-        }
+        return { }
     },
     methods:{
         editClick(){
+            /**
+             * Emitted when the user clicks on the item outside the garbage can icon.
+             */
             this.$emit('edit-config');
         },
         deleteClick(){
+            /**
+             * Emitted when the user clicks on the garbage can icon.
+             */
             this.$emit('delete-config');
         }
     }
@@ -34,6 +46,7 @@ export default {
 
 
 <style scoped>
+
 .node-item{
     padding:10px;
     border-bottom: 1px solid #E6E6FA;
@@ -78,6 +91,5 @@ export default {
     font-size: 15px;
     font-weight:600;
 }
-
 
 </style>

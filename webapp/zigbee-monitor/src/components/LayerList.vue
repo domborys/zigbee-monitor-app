@@ -14,10 +14,21 @@
 
 <script>
 
+/**
+ * A component which displays a list of maps which are present in the system.
+ */
 export default {
     name:"LayerList",
     props:{
-        layers: Array,
+        /**
+         * The maps to display.
+         */
+        layers: {type:Array, default:[]},
+
+        /**
+         * Currently selected map.
+         * @model
+         */
         value: { type:String, default: ''}
     },
     data(){
@@ -28,6 +39,9 @@ export default {
     methods:{
         layerClick(layer){
             this.selectedLayer = layer;
+            /**
+             * Event emitted when a layer is clicked.
+             */
             this.$emit('input', this.selectedLayer);
         }
     }

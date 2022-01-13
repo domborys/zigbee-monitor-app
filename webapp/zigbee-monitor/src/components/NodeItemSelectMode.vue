@@ -16,21 +16,30 @@
 </template>
 <script>
 
-
+/**
+ * Component used for displaying one node on the list of discovered nodes in the NodeSelect component.
+ * 
+ * As the root element of this component is HTML li element, this component must be used inside a list.
+ */
 export default {
     name:"NodeItemSelectMode",
     props:{
+        /**
+         * The node to display.
+         */
         node: Object,
     },
     data(){
-        return{
-        }
+        return {}
     },
     computed:{
         
     },
     methods:{
         nodeSelectClick(){
+            /**
+             * Emitted when the user clicks on the item.
+             */
             this.$emit('select-node');
         }
     }

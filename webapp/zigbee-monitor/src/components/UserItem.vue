@@ -9,9 +9,17 @@
 
 <script>
 
+/**
+ * Component displaying one user in the user list.
+ * 
+ * As the root element of this component is HTML li element, this component must be used inside a list.
+ */
 export default {
     name:"UserItem",
     props:{
+        /**
+         * The user to display.
+         */
         user: Object,
     },
     computed:{

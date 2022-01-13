@@ -5,9 +5,10 @@ POT_PIN_ID = "D2"
 TEMP_SEND_PERIOD = 20000
 
 def handle_packet(packet):
+    print("Received {} from {}".format(packet["payload"], packet["sender_eui64"]))
     payload = packet["payload"]
     payload_split = payload.split()
-    command_name = payload_split[0]
+    command_name = payload_split[0] if len(payload_split) > 0 else b""
     if command_name == b"ledon":
         led_on()
     elif command_name == b"ledoff":
@@ -16,8 +17,7 @@ def handle_packet(packet):
         add_and_send_result(packet)
     elif command_name ==  b"getpot":
         send_pot_value(packet)
-    print("Received {} from {}".format(packet["payload"], packet["sender_eui64"]))
-
+    
 def led_on():
     led_pin.value(0)
 
@@ -50,12 +50,8 @@ def send_temperature():
     except Exception as err:
         print(err)
 
-led_pin = machine.Pin(LED_PIN_ID, machine.Pin.OUT, value=1)
-pot_adc = machine.ADC(POT_PIN_ID)
-xbee.atcmd("AV", 2) # reference voltage VDD
-last_temp_time = time.ticks_ms()
-
-while True:
+def loop():
+    global last_temp_time
     p = xbee.receive()
     if p is not None:
         handle_packet(p)
@@ -64,6 +60,20 @@ while True:
     if time.ticks_diff(current_time, last_temp_time) > TEMP_SEND_PERIOD:
         last_temp_time = current_time
         send_temperature()
+
+
+led_pin = machine.Pin(LED_PIN_ID, machine.Pin.OUT, value=1)
+pot_adc = machine.ADC(POT_PIN_ID)
+xbee.atcmd("AV", 2) # reference voltage VDD
+last_temp_time = time.ticks_ms()
+
+while True:
+    try:
+        loop()
+    except KeyboardInterrupt:
+        break
+    except Exception as err:
+        print(err)
 
     
 

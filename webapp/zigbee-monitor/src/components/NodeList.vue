@@ -23,7 +23,6 @@ export default {
     },
     methods:{
         showMessages(node){
-            console.log("node clicked");
             this.$store.commit('setDisplayedMessagesNode', node);
             this.$store.commit('setMainDisplayMode', 'messages');
         }

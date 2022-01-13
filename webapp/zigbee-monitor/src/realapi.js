@@ -21,6 +21,7 @@ export default {
 
 import axios from 'axios';
 
+const debug = false;
 let currentToken = null;
 
 async function login(credentials){
@@ -40,7 +41,7 @@ async function getToken(credentials){
         headers: {'Content-Type': 'multipart/form-data'},
     });
     const token = response.data.access_token;
-    console.log(token);
+    log(token);
     if(typeof token !== 'string'){
         throw new Error("Invalid token.");
     }
@@ -54,7 +55,7 @@ function setToken(token){
 
 async function getCurrentUser(){
     const response = await axios.get(apiurl('/users/me'));
-    console.log(response.data);
+    log(response.data);
     return response.data;
 }
 
@@ -66,30 +67,29 @@ async function logout(){
 
 async function changePassword(passwords){
     const request = preparePasswordChangeRequest(passwords);
-    console.log(request);
+    log(request);
     const response = await axios.post(apiurl('/password-change'), request);
-    console.log(response);
+    log(response);
 }
 
 async function getLayers(){
     const response = await axios.get(apiurl('/floors'));
     let layers = response.data;
     processLayersResponse(layers);
-    console.log(layers);
+    log(layers);
     return layers;
 }
 
 async function getDiscoveryResults(){
     const response = await axios.get(apiurl('/network-discovery'));
-    console.log(response.data);
+    log(response.data);
     return response.data;
 }
 
 async function sendLayer(layer, imageFile){
     const layerToSend = prepareLayerToSend(layer);
     let returnedLayer;
-    console.log('layer sent', layerToSend);
-    //Ewentualnie dodać przetwarzanie
+    log('layer sent', layerToSend);
     if(typeof layer.id === 'number'){
         const response = await axios.put(apiurl('/floors/' + layer.id), layerToSend);
         returnedLayer = response.data;
@@ -101,12 +101,12 @@ async function sendLayer(layer, imageFile){
     if(imageFile){
         let formData = new FormData();
         formData.append('file', imageFile);
-        console.log('sending image file');
+        log('Sending image file...');
         await axios.put(apiurl('/floors/' + returnedLayer.id + '/image'), formData, {
             headers: {'Content-Type': 'multipart/form-data'},
         })
     }
-    console.log('layer returned', returnedLayer);
+    log('layer returned', returnedLayer);
     return returnedLayer;
 }
 
@@ -121,28 +121,28 @@ function makeMessageSocket(){
     var url = protocol + location.host + '/message-socket';
     //const socket = new WebSocket('ws://localhost:8000/message-socket');
     const socket = new WebSocket(url);
-    socket.onerror = (event) => console.log('WebSocket error', event);
-    socket.onclose = (event) => console.log('WebSocket closed', event);
+    socket.onerror = (event) => log('WebSocket error', event);
+    socket.onclose = (event) => log('WebSocket closed', event);
     return socket;
 }
 
 async function sendAtCommand(commandData){
     const commandToSend = prepareAtCommandToSend(commandData);
     const response = await axios.post(apiurl('/xbee-at-command'), commandToSend);
-    console.log(response);
+    log(response);
     return response.data;
 }
 
 async function sendMessage(messageData){
     const messageToSend = {address64:messageData.address64, message:messageData.message};
     const response = await axios.post(apiurl('/xbee-message'), messageToSend);
-    console.log(response);
+    log(response);
     return response.data;
 }
 
 async function getUsers(){
     const response = await axios.get(apiurl('/users'));
-    console.log(response);
+    log(response);
     return response.data;
 }
 
@@ -246,8 +246,12 @@ function preparePasswordChangeRequest(passwords){
     };
 }
 
-
 function apiurl(path){
-    //return 'http://localhost:8000' + path;
     return '' + path;
+}
+
+function log(...data){
+    if(debug){
+        console.log(...data);
+    }
 }

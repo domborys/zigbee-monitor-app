@@ -12,11 +12,6 @@
                 Hex
                 <input type="radio" v-model="displayMode" value="hex" name="radioMessageDisplayMode" id="radioModeHex">
             </label>
-            <!--
-            <div>
-                <button type="button" class="button" @click="showMap">Pokaż mapę</button>
-            </div>
-            -->
         </div>
         <div class="message-display-messages" ref="messagesContainer">
             <zigbee-message v-for="message in messagesToDisplay" :key="message.tempId" :message="message" :mode="displayMode" @size-change="scrollNextTickIfAtBottom" />
@@ -81,14 +76,17 @@
                         </label>
                     </div>
                 </div>
-                <div  class="at-command-item">
+                <div class="at-command-item">
                     <label for="atCommandData" class="at-data-label">Dane</label>
                     <input type="text" class="text-input at-data-input" :disabled="atDataMode === 'none'" v-model="atCommandData" id="atCommandData">
                 </div>
-                <div  class="at-command-item">
+                <div class="at-command-item">
                     <button type="button" class="button" @click="sendAtCommand">Wyślij</button>
                 </div>
-            </div> 
+            </div>
+            <div v-if="messageError !== null" class="error-message message-error-div">
+                {{messageError}}
+            </div>
         </div>
     </div>
 </template>
@@ -114,6 +112,7 @@ export default {
             atCommandName:'',
             atCommandData:'',
             messageToSend:'',
+            messageError:null,
         };
     },
     computed:{
@@ -136,10 +135,11 @@ export default {
                 };
                 this.messageToSend = '';
                 await this.$store.dispatch('sendMessage', message);
-                
+                this.messageError = null;
             }
             catch(error){
-                console.log(error);
+                this.messageError = error.message;
+                console.error(error);
             }
         },
         getEncodedMessage(){
@@ -155,7 +155,7 @@ export default {
             const numArray = message.split(/\s+/).map(str => parseInt(str, 16));
             const isValid = numArray.every(n => !isNaN(n) && n >= 0 && n <= 255);
             if(!isValid){
-                throw new Error("Invalid hex string");
+                throw new Error("Nieprawidłowy format danych heksadecymalnych. Poprawny format: 6e 73 6f");
             }
             const binaryString = numArray.map(n => String.fromCharCode(n)).join('');
             return btoa(binaryString);
@@ -189,8 +189,10 @@ export default {
                     format:this.atDataMode,
                 };
                 await this.$store.dispatch('sendAtCommand', commandData);
+                this.messageError = null;
             }
             catch(error){
+                this.messageError = error.message;
                 console.error(error);
             }
 
@@ -324,9 +326,7 @@ export default {
 }
 
 .at-data-mode-container{
-    
     display:flex;
-    
 }
 
 .at-command-item{
@@ -336,5 +336,10 @@ export default {
 
 .at-data-input{
     width:300px;
+}
+
+.message-error-div{
+    margin:4px 0 0 0;
+    text-align:right;
 }
 </style>

@@ -20,8 +20,8 @@ function isOneColumnMode(mode){
     return oneColumnModes.indexOf(mode) !== -1;
 }
 
-const store = new Vuex.Store({
-    state: {
+function getDefaultState(){
+    return {
         user:null,
         modeStack:['login'],
         mainDisplayMode:'map',
@@ -36,7 +36,27 @@ const store = new Vuex.Store({
         readingTimers:[],
         messages:[],
         messageSocket:null,
-    },
+    }
+}
+
+const store = new Vuex.Store({
+    // state: {
+    //     user:null,
+    //     modeStack:['login'],
+    //     mainDisplayMode:'map',
+    //     layers:[],
+    //     editedLayer:null,
+    //     editedLayerImageFile:null,
+    //     editedNode:null,
+    //     editedReadingConfig:null,
+    //     activeLayerName:null,
+    //     discoveryResults:null,
+    //     displayedMessagesNode:null,
+    //     readingTimers:[],
+    //     messages:[],
+    //     messageSocket:null,
+    // },
+    state: getDefaultState(),
     getters:{
         mode(state){
             return state.modeStack[state.modeStack.length-1];
@@ -253,7 +273,9 @@ const store = new Vuex.Store({
         },
         updateMessage(state, messageData){
             const message = state.messages.find(msg => msg.tempId === messageData.tempId);
-            Object.assign(message, messageData);
+            if(message){
+                Object.assign(message, messageData);
+            }
         },
         setDisplayedMessagesNode(state, node){
             state.displayedMessagesNode = node;
@@ -289,7 +311,10 @@ const store = new Vuex.Store({
         },
         setMessageSocket(state, socket){
             state.messageSocket = socket;
-        }
+        },
+        resetState(state){
+            Object.assign(state, getDefaultState());
+        },
         
     },
     actions: {
@@ -311,7 +336,6 @@ const store = new Vuex.Store({
             context.commit('replaceMode', 'view');
             context.dispatch('openMessageSocket');
             await context.dispatch('downloadLayers');
-            //await context.dispatch('downloadDiscoveryResults');
         },
         async login(context, credentials){
             await api.login(credentials);
@@ -325,6 +349,7 @@ const store = new Vuex.Store({
             context.commit('setUser', null);
             context.dispatch('closeMessageSocket');
             await api.logout();
+            context.commit('resetState');
         },
         async changePassword(context, passwords){
             await api.changePassword(passwords);
@@ -332,6 +357,7 @@ const store = new Vuex.Store({
         async downloadLayers(context){
             const layers = await api.getLayers();
             context.commit('setLayers', layers);
+            context.commit('writeDiscoveryStatusToNodes');
             context.commit('clearReadingTimers');
             context.dispatch('setReadingTimers');
         },

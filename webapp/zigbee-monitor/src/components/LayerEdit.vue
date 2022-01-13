@@ -138,9 +138,9 @@ export default {
                 this.$store.commit('setActiveLayer', this.layer.name);
                 this.$store.commit('previousMode');
                 this.$store.commit('setEditedLayer', null);
-                //this.$store.dispatch('downloadDiscoveryResults');
             }
             catch(e){
+                this.generalError = 'Wystąpił błąd podczas zapisywania mapy: ' + e.message;
                 console.error(e);
             }
             

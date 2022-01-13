@@ -32,8 +32,11 @@ export default {
         reselectUser(state){
             if(state.selectedUser && state.selectedUser.id !== null){
                 const stateUser = state.users.find(u => u.id === state.selectedUser.id);
-                if(stateUser)
-                    state.selectedUser = cloneDeep(stateUser);
+                if(stateUser){
+                    const newSelectedUser = cloneDeep(stateUser);
+                    newSelectedUser.password = null;
+                    state.selectedUser = newSelectedUser;
+                }
                 else
                     state.selectedUser = null;
             }

@@ -14,7 +14,7 @@ module.exports = {
 	// webpackConfig: {
 	//   // custom config goes here
 	// },
-	styleguideDir: '../docs/vue-components',
+	styleguideDir: '../../docs/vue-components',
 	exampleMode: 'hide',
 	usageMode: 'expand',
 	renderRootJsx: path.join(__dirname, 'config/styleguide.root.js')

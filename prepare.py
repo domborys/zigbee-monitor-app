@@ -66,6 +66,9 @@ def configure_logconfig(src_path : str, dest_path : str):
     """
     if not os.path.exists(dest_path):
         shutil.copy(src_path, dest_path)
+        print(f"Created file {dest_path} from {src_path}.")
+    else:
+        print(f"File {dest_path} already exists.")
 
 def create_admin(db : Session, username : str, password : str):
     """Adds an admin user into the database.

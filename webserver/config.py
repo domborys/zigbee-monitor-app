@@ -37,7 +37,13 @@ STATIC_FILES_DIR = str(Path(__file__).parent / "static")
 #: Configuration of the Uvicorn server.
 UVICORN_CONFIG = {}
 
+_UVICORN_CONFIG_DEFAULTS = {
+    'log_config' : str(PROJECT_DIR / 'webserver' / 'uvicorn_logconfig.json')
+}
+
 try:
     from .custom_config import *
 except ImportError:
     pass
+
+UVICORN_CONFIG = {**_UVICORN_CONFIG_DEFAULTS, **UVICORN_CONFIG}

@@ -103,7 +103,7 @@ if __name__ == '__main__':
     configure_custom_config(config_path=str(WEBSERVER_DIR/'custom_config.py'), contents=WEBSERVER_CUSTOM_CONFIG)
     configure_custom_config(config_path=str(RECEIVER_DIR/'custom_config.py'), contents=COORDINATOR_CUSTOM_CONFIG)
     configure_logconfig(RECEIVER_DIR/'logconfig_defaults.json', RECEIVER_DIR/'logconfig.json')
-    configure_logconfig(WEBSERVER_DIR/'uvicron_logconfig_defaults.json', WEBSERVER_DIR/'uvicorn_logconfig.json')
+    configure_logconfig(WEBSERVER_DIR/'uvicorn_logconfig_defaults.json', WEBSERVER_DIR/'uvicorn_logconfig.json')
 
     dbmodels.Base.metadata.create_all(bind=engine)
     db = SessionLocal()

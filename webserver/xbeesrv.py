@@ -187,7 +187,6 @@ class WebsocketMessageSender:
                 await self.websocket.receive_text()
         except WebSocketDisconnect as err:
             self.send_messages_task.cancel()
-            print(f"Socket disconnected ({err}).")
 
     async def _send_messages(self):
         reader, writer = await asyncio.open_connection(
@@ -195,7 +194,6 @@ class WebsocketMessageSender:
         try:
             await self._send_messages_loop(reader)
         except asyncio.CancelledError:
-            print("Sending task cancelled.")
             raise
         finally:
             writer.close()
@@ -217,6 +215,5 @@ class WebsocketMessageSender:
     
     async def _close_websocket(self):
         await self.websocket.close()
-        print("Websocket closed by server")
 
     

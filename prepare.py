@@ -9,7 +9,8 @@ The script should be called after cloning the project from the repository. The s
     The init.bat and init.sh both call the prepare.py, so you shouldn't call prepare.py after executing any of those scripts.
 """
 
-import os
+import os, shutil
+from pathlib import Path
 from webserver.database import SessionLocal, engine
 import webserver.dbmodels as dbmodels
 from webserver.pwdcontext import pwd_context
@@ -38,6 +39,10 @@ UVICORN_CONFIG = dict(
 )
 """
 
+PROJECT_DIR = Path(__file__).resolve().parent
+RECEIVER_DIR = PROJECT_DIR / 'receiver'
+WEBSERVER_DIR = PROJECT_DIR / 'webserver'
+
 def configure_custom_config(config_path : str, contents : str):
     """Creates a file with custom configuration.
     
@@ -51,6 +56,16 @@ def configure_custom_config(config_path : str, contents : str):
             print(f'Created file {config_path}')
     else:
         print(f'File {config_path} already exists.')
+
+def configure_logconfig(src_path : str, dest_path : str):
+    """Copies a log config file if the destination file does not exist.
+    
+    Args:
+        src_path: path to the file to copy. This should be the path to the existing "defaults" file.
+        dest_path: path where the file should be copied.
+    """
+    if not os.path.exists(dest_path):
+        shutil.copy(src_path, dest_path)
 
 def create_admin(db : Session, username : str, password : str):
     """Adds an admin user into the database.
@@ -85,8 +100,10 @@ def create_admin_if_not_present(db : Session):
 
 if __name__ == '__main__':
 
-    configure_custom_config(config_path='webserver/custom_config.py', contents=WEBSERVER_CUSTOM_CONFIG)
-    configure_custom_config(config_path='receiver/custom_config.py', contents=COORDINATOR_CUSTOM_CONFIG)
+    configure_custom_config(config_path=str(WEBSERVER_DIR/'custom_config.py'), contents=WEBSERVER_CUSTOM_CONFIG)
+    configure_custom_config(config_path=str(RECEIVER_DIR/'custom_config.py'), contents=COORDINATOR_CUSTOM_CONFIG)
+    configure_logconfig(RECEIVER_DIR/'logconfig_defaults.json', RECEIVER_DIR/'logconfig.json')
+    configure_logconfig(WEBSERVER_DIR/'uvicron_logconfig_defaults.json', WEBSERVER_DIR/'uvicorn_logconfig.json')
 
     dbmodels.Base.metadata.create_all(bind=engine)
     db = SessionLocal()

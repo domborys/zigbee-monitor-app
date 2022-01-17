@@ -104,7 +104,6 @@ class XBeeDeviceConnection:
         
 
     def _command_discover(self, command : ServerCommand) -> dict:
-        print("Starting discovery...")
         xnet = self._discover_network()
         result = self._format_discovery_result(xnet)
         return result
@@ -136,7 +135,6 @@ class XBeeDeviceConnection:
         data = command.description["data"]
         remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(data["address64"]))
         message = base64.b64decode(data["message"])
-        print("Sending message",message)
         self.device.send_data(remote_device, message)
         return {}
 
@@ -159,7 +157,6 @@ class XBeeDeviceConnection:
 
     def _at_related_command(self, command : ServerCommand, method : Callable) -> dict:
         data = command.description["data"]
-        #remote_device = RemoteXBeeDevice(self.device, XBee64BitAddress.from_hex_string(data["address64"]))
         at_command = data["at_command"]
         value = None if data["value"] is None else base64.b64decode(data["value"])
         apply_changes = data["apply_changes"]

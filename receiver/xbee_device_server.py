@@ -1,49 +1,19 @@
 """A module which sets up the coordinator handler. It is intended to run as main."""
 
-import base64, logging, signal, sys, time
-from pathlib import Path
-from queue import Queue
+import logging, logging.config, signal, sys, time, json
 from digi.xbee.devices import XBeeDevice   
-from . import config, xbee_device_connection
+from . import config
 from .xbee_device_connection import XBeeDeviceConnection
 from .request_response_server import SocketRequestResponseServer
 from .notify_server import SocketNotifyServer
 
-def _configure_xbee_logger(logger_name, file_name):
-    dev_logger = logging.getLogger(logger_name)
-    dev_logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(file_name)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    handler.setLevel(logging.DEBUG)
-    dev_logger.addHandler(handler)
-
-def _configure_xbee_loggers():
-    log_file_name = str(Path(__file__).parent.parent / "log" / "xbee_lib.log")
-    _configure_xbee_logger("digi.xbee.devices", log_file_name)
-    _configure_xbee_logger("digi.xbee.sender", log_file_name)
-    _configure_xbee_logger("digi.xbee.reader", log_file_name)
-    _configure_xbee_logger("digi.xbee.recovery", log_file_name)
-    _configure_xbee_logger("digi.xbee.firmware", log_file_name)
-    _configure_xbee_logger("digi.xbee.profile", log_file_name)
-    _configure_xbee_logger("digi.xbee.models.zdo", log_file_name)
-
-def _configure_custom_loggers():
-    conn_logger = logging.getLogger(xbee_device_connection.__name__)
-    conn_logger.setLevel(logging.DEBUG)
-    logger_file_path = str(Path(__file__).parent.parent / "log" / "device.log")
-    handler = logging.FileHandler(logger_file_path)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    handler.setLevel(logging.DEBUG)
-    conn_logger.addHandler(handler)
-
 def _configure_loggers():
-    _configure_xbee_loggers()
-    _configure_custom_loggers()
+    with open("receiver/logconfig.json", "r") as fp:
+        logging.config.dictConfig(json.load(fp))
 
 def _check_device_config():
     if(config.DEVICE_SERIAL_PORT is None):
+        logging.getLogger(__name__).error("Device serial port not specified in receiver/custom_config.py.")
         raise RuntimeError("Device serial port not specified")
 
 def _sigint_handler(signum, frame):
@@ -70,8 +40,9 @@ def main():
     xbee_connection.start()
     xbee_connection.connection_startup_finished.wait()
     if not xbee_connection.connection_startup_successful.is_set():
-        print("Couldn't connect to the device")
+        print("Couldn't connect to the XBee device.")
         return
+    print("Successfully connected to the XBee device.")
     request_server = SocketRequestResponseServer(config.IP_ADDRESS, config.TCP_PORT_REQUEST, xbee_connection.command_queue)
     request_server.run()
     notification_server = SocketNotifyServer(config.IP_ADDRESS, config.TCP_PORT_NOTIFY, xbee_connection.notify_queue)

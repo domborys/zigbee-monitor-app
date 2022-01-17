@@ -1,7 +1,7 @@
 """The module defining the class used for sending notifications to the client.
 """
 
-import socket, threading
+import socket, threading, logging
 from queue import Queue
 from . import socket_common
 
@@ -33,24 +33,31 @@ class SocketNotifyServer:
         self.notify_queue = notify_queue
         self._connections = []
         self._connection_list_lock = threading.Lock()
+        self._configure_logger()
 
     def run(self):
         """Starts the server. The server is run in another daemon thread."""
 
-        print("Notify server: starting")
         accepting_thread = threading.Thread(target=self._accepting_thread_func, daemon=True)
         accepting_thread.start()
     
     def _accepting_thread_func(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((self.address, self.port))
-            s.listen(5)
-            notify_thread = threading.Thread(target=self._notify_thread_func, daemon=True)
-            notify_thread.start()
-            while True:
-                print("Notify server: waiting for accept")
-                conn, addr = s.accept()
-                self._add_connection(conn)
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind((self.address, self.port))
+                s.listen(5)
+                print(f"Coordinator handler: notification server listening on {self.address}:{self.port}.")
+                self.logger.info(f"Notification server started and is listening on {self.address}:{self.port}.")
+                notify_thread = threading.Thread(target=self._notify_thread_func, daemon=True)
+                notify_thread.start()
+                while True:
+                    conn, addr = s.accept()
+                    self.logger.debug(f"Accepted connection from {addr}.")
+                    self._add_connection(conn)
+        except Exception as e:
+            print(f"Coordinator handler: Notification server stopped because of an error: {e}")
+            self.logger.error(f"Notification server stopped because of an error: {e}")
+            raise
 
     def _notify_thread_func(self):
         while True:
@@ -77,9 +84,10 @@ class SocketNotifyServer:
         for i, conn in enumerate(self._connections):
             if conn is connection:
                 self._connections.pop(i)
+                self.logger.debug(f"Removed connection {connection.getpeername()}.")
     
     def _notify_all(self, notification):
-        print(f"Sending notification {notification}")
+        self.logger.debug(f"New notification arrived.")
         with self._connection_list_lock:
             connections_to_remove = []
             for conn in self._connections:
@@ -90,10 +98,12 @@ class SocketNotifyServer:
 
     def _send_notification_to_connection(self, notification, connection) -> bool:
         try:
-            print(f"\t to {connection.getpeername()}")
             socket_common.send_json(connection, notification)
-            print(f"\t(sent successfully)")
+            self.logger.debug(f"Notification sent to {connection.getpeername()}")
             return True
         except Exception as err:
-            print(err)
+            self.logger.debug(f"Error while sending notification to {connection.getpeername()}")
             return False
+
+    def _configure_logger(self):
+        self.logger = logging.getLogger(__name__)

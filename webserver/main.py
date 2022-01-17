@@ -114,11 +114,9 @@ async def get_current_session_ws(websocket: WebSocket, sid: Optional[str] = Cook
     """
 
     if sid is None:
-        print("No SID cookie in websocket")
         return None
     db_session = dbsrv.get_session_and_refresh(db, sid)
     if db_session is None:
-        print("No valid session in websocket")
         return None
     return db_session
 

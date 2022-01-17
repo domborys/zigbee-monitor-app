@@ -1,0 +1,33 @@
+{
+    "version":1,
+    "disable_existing_loggers":false,
+    "formatters":{
+        "simple":{
+            "format":"%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        }
+    },
+    "handlers":{
+        "device":{
+            "class":"logging.FileHandler",
+            "filename":"log/device.log",
+            "formatter":"simple",
+            "level": "DEBUG"
+        },
+        "xbee_lib":{
+            "class":"logging.FileHandler",
+            "filename":"log/xbee_lib.log",
+            "formatter":"simple",
+            "level": "DEBUG"
+        }
+    },
+    "loggers":{
+        "receiver":{
+            "level":"DEBUG",
+            "handlers":["device"]
+        },
+        "digi.xbee":{
+            "level":"DEBUG",
+            "handlers":["xbee_lib"]
+        }
+    }
+}

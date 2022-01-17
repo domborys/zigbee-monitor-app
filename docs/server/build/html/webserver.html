@@ -8,38 +8,115 @@
 
     <title>webserver package &#8212; ZigBee Monitor Server  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ZigBee Monitor Server  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webserver package</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
-  <section id="webserver-package">
-<h1>webserver package<a class="headerlink" href="#webserver-package" title="Permalink to this headline">¶</a></h1>
+  <section id="module-webserver">
+<span id="webserver-package"></span><h1>webserver package<a class="headerlink" href="#module-webserver" title="Permalink to this headline">¶</a></h1>
+<p>The web server package.</p>
+<p>It provides static files from the webserver/static folder and API written using the FastApi framework.</p>
+<p>To start the Uvicorn server which runs the application run <a class="reference internal" href="#module-webserver.run_server" title="webserver.run_server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">webserver.run_server</span></code></a> as module.</p>
+<p>Windows example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span>\<span class="n">zigbee</span><span class="o">-</span><span class="n">monitor</span><span class="o">-</span><span class="n">app</span><span class="o">&gt;</span> <span class="o">.</span>\<span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span><span class="o">.</span><span class="n">bat</span>
+<span class="p">(</span><span class="n">venv</span><span class="p">)</span> <span class="n">C</span><span class="p">:</span>\<span class="n">zigbee</span><span class="o">-</span><span class="n">monitor</span><span class="o">-</span><span class="n">app</span><span class="o">&gt;</span> <span class="n">py</span> <span class="o">-</span><span class="n">m</span> <span class="n">webserver</span><span class="o">.</span><span class="n">run_server</span>
+</pre></div>
+</div>
+<p>Linux example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~/zigbee-monitor-app$ source venv/bat/activate
+(venv) ~/zigbee-monitor-app$ python3 -m webserver.run_server
+</pre></div>
+</div>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-webserver.config">
 <span id="webserver-config-module"></span><h2>webserver.config module<a class="headerlink" href="#module-webserver.config" title="Permalink to this headline">¶</a></h2>
-<p>The default configuration of the server.</p>
-<p>This module file should not be modified by users. Custom values should be provided in the custom_config.py file.</p>
+<p>A module providing the configuration for the modules of the <a class="reference internal" href="#module-webserver" title="webserver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">webserver</span></code></a> package.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All the values provided in this documentation are the default values. The defaults may be overridden by the values from <a class="reference internal" href="#module-webserver.custom_config" title="webserver.custom_config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">custom_config</span></code></a>.
+This module file should not be modified by the users. Custom values can be provided in <a class="reference internal" href="#module-webserver.custom_config" title="webserver.custom_config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">custom_config</span></code></a>.</p>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.DATABASE_URL">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">DATABASE_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sqlite:///C:\\Users\\Dominik\\Documents\\Studia\\inz\\zigbee-monitor-app\\database\\zigbee_monitor.db'</span></em><a class="headerlink" href="#webserver.config.DATABASE_URL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location of the SQLite database file</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.DEVICE_TIMEOUT">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">DEVICE_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#webserver.config.DEVICE_TIMEOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timeout for requests to the coordinator handler.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.PROJECT_DIR">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">PROJECT_DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">WindowsPath('C:/Users/Dominik/Documents/Studia/inz/zigbee-monitor-app')</span></em><a class="headerlink" href="#webserver.config.PROJECT_DIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path to the root directory of the project.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.SESSION_IDLE_TIME">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">SESSION_IDLE_TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">900</span></em><a class="headerlink" href="#webserver.config.SESSION_IDLE_TIME" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time after which the user is logged out.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.STATIC_FILES_DIR">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">STATIC_FILES_DIR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'C:\\Users\\Dominik\\Documents\\Studia\\inz\\zigbee-monitor-app\\webserver\\static'</span></em><a class="headerlink" href="#webserver.config.STATIC_FILES_DIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>The directory with static files.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.UVICORN_CONFIG">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">UVICORN_CONFIG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'host':</span> <span class="pre">'0.0.0.0',</span> <span class="pre">'reload':</span> <span class="pre">True}</span></em><a class="headerlink" href="#webserver.config.UVICORN_CONFIG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configuration of the Uvicorn server.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.XBEE_IP_ADDRESS">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">XBEE_IP_ADDRESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'127.0.0.1'</span></em><a class="headerlink" href="#webserver.config.XBEE_IP_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd><p>IP address of the coordinator handler.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.XBEE_PORT_NOTIFY">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">XBEE_PORT_NOTIFY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9021</span></em><a class="headerlink" href="#webserver.config.XBEE_PORT_NOTIFY" title="Permalink to this definition">¶</a></dt>
+<dd><p>TCP port uset for getting notifications from the coordinator handler.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="webserver.config.XBEE_PORT_REQUEST">
+<span class="sig-prename descclassname"><span class="pre">webserver.config.</span></span><span class="sig-name descname"><span class="pre">XBEE_PORT_REQUEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9020</span></em><a class="headerlink" href="#webserver.config.XBEE_PORT_REQUEST" title="Permalink to this definition">¶</a></dt>
+<dd><p>TCP port uset for making requests to the coordinator handler.</p>
+</dd></dl>
+
 </section>
 <section id="module-webserver.custom_config">
 <span id="webserver-custom-config-module"></span><h2>webserver.custom_config module<a class="headerlink" href="#module-webserver.custom_config" title="Permalink to this headline">¶</a></h2>
@@ -1852,36 +1929,40 @@ When <cite>command_type</cite> equals get_parameter and the command was successf
 </dd></dl>
 
 </section>
-<section id="module-webserver">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-webserver" title="Permalink to this headline">¶</a></h2>
-</section>
 </section>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">ZigBee Monitor Server</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">webserver package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-webserver.config">webserver.config module</a></li>
+<li><a class="reference internal" href="#module-webserver.custom_config">webserver.custom_config module</a></li>
+<li><a class="reference internal" href="#module-webserver.database">webserver.database module</a></li>
+<li><a class="reference internal" href="#module-webserver.dbmodels">webserver.dbmodels module</a></li>
+<li><a class="reference internal" href="#module-webserver.dbsrv">webserver.dbsrv module</a></li>
+<li><a class="reference internal" href="#module-webserver.main">webserver.main module</a></li>
+<li><a class="reference internal" href="#module-webserver.pwdcontext">webserver.pwdcontext module</a></li>
+<li><a class="reference internal" href="#module-webserver.pydmodels">webserver.pydmodels module</a></li>
+<li><a class="reference internal" href="#module-webserver.run_server">webserver.run_server module</a></li>
+<li><a class="reference internal" href="#module-webserver.xbeesrv">webserver.xbeesrv module</a></li>
 </ul>
-</div>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/webserver.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -1892,32 +1973,26 @@ When <cite>command_type</cite> equals get_parameter and the command was successf
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2022, Dominik Borys.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/webserver.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ZigBee Monitor Server  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webserver package</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Dominik Borys.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
   </body>
 </html>

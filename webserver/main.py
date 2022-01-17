@@ -58,7 +58,7 @@ async def get_current_session(request: Request, sid: str = Depends(cookie_sid), 
     db_session = dbsrv.get_session_and_refresh(db, sid)
     if db_session is None:
         raise credentials_exception
-    # check_csrf_token(request)
+    check_csrf_token(request)
     return db_session
 
 def check_csrf_token(request: Request) -> None:

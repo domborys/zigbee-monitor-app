@@ -491,7 +491,4 @@ const store = new Vuex.Store({
     }
 });
 
-//let socket = api.makeMessageSocket();
-//socket.onmessage = e => store.dispatch('addReceivedMessage', JSON.parse(e.data));
-
 export default store;

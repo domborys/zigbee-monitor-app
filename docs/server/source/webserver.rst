@@ -1,6 +1,11 @@
 webserver package
 =================
 
+.. automodule:: webserver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -80,14 +85,6 @@ webserver.xbeesrv module
 ------------------------
 
 .. automodule:: webserver.xbeesrv
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: webserver
    :members:
    :undoc-members:
    :show-inheritance:

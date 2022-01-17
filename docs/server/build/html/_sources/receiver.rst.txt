@@ -1,6 +1,11 @@
 receiver package
 ================
 
+.. automodule:: receiver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -60,14 +65,6 @@ receiver.socket\_common module
    :undoc-members:
    :show-inheritance:
 
-receiver.xbee\_console module
------------------------------
-
-.. automodule:: receiver.xbee_console
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 receiver.xbee\_device\_connection module
 ----------------------------------------
 
@@ -80,14 +77,6 @@ receiver.xbee\_device\_server module
 ------------------------------------
 
 .. automodule:: receiver.xbee_device_server
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: receiver
    :members:
    :undoc-members:
    :show-inheritance:

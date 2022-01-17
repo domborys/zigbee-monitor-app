@@ -8,36 +8,99 @@
 
     <title>receiver package &#8212; ZigBee Monitor Server  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ZigBee Monitor Server  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">receiver package</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
-  <section id="receiver-package">
-<h1>receiver package<a class="headerlink" href="#receiver-package" title="Permalink to this headline">¶</a></h1>
+  <section id="module-receiver">
+<span id="receiver-package"></span><h1>receiver package<a class="headerlink" href="#module-receiver" title="Permalink to this headline">¶</a></h1>
+<p>The coordinator handler package.</p>
+<p>It handles communication with the XBee device which is the coordinator of a ZigBee network.</p>
+<p>To start the coordinator handler, run <a class="reference internal" href="#module-receiver.xbee_device_server" title="receiver.xbee_device_server"><code class="xref py py-mod docutils literal notranslate"><span class="pre">receiver.xbee_device_server</span></code></a> as module.</p>
+<p>Windows example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span>\<span class="n">zigbee</span><span class="o">-</span><span class="n">monitor</span><span class="o">-</span><span class="n">app</span><span class="o">&gt;</span> <span class="o">.</span>\<span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span><span class="o">.</span><span class="n">bat</span>
+<span class="p">(</span><span class="n">venv</span><span class="p">)</span> <span class="n">C</span><span class="p">:</span>\<span class="n">zigbee</span><span class="o">-</span><span class="n">monitor</span><span class="o">-</span><span class="n">app</span><span class="o">&gt;</span> <span class="n">py</span> <span class="o">-</span><span class="n">m</span> <span class="n">receiver</span><span class="o">.</span><span class="n">xbee_device_server</span>
+</pre></div>
+</div>
+<p>Linux example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~/zigbee-monitor-app$ source venv/bat/activate
+(venv) ~/zigbee-monitor-app$ python3 -m receiver.xbee_device_server
+</pre></div>
+</div>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-receiver.config">
 <span id="receiver-config-module"></span><h2>receiver.config module<a class="headerlink" href="#module-receiver.config" title="Permalink to this headline">¶</a></h2>
+<p>A module providing the configuration for the modules of the <a class="reference internal" href="#module-receiver" title="receiver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">receiver</span></code></a> package.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All the values provided in this documentation are the default values. The defaults may be overridden by the values from <a class="reference internal" href="#module-receiver.custom_config" title="receiver.custom_config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">custom_config</span></code></a>.
+This module file should not be modified by the users. Custom values can be provided in <a class="reference internal" href="#module-receiver.custom_config" title="receiver.custom_config"><code class="xref py py-mod docutils literal notranslate"><span class="pre">custom_config</span></code></a>.</p>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="receiver.config.DEVICE_BAUD_RATE">
+<span class="sig-prename descclassname"><span class="pre">receiver.config.</span></span><span class="sig-name descname"><span class="pre">DEVICE_BAUD_RATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9600</span></em><a class="headerlink" href="#receiver.config.DEVICE_BAUD_RATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Baud rate for the serial port used for communication with the coordinator.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="receiver.config.DEVICE_SERIAL_PORT">
+<span class="sig-prename descclassname"><span class="pre">receiver.config.</span></span><span class="sig-name descname"><span class="pre">DEVICE_SERIAL_PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'COM3'</span></em><a class="headerlink" href="#receiver.config.DEVICE_SERIAL_PORT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serial port used for communication with the coordinator.
+This value must be set in the custom_config.py.
+The default value (None) will cause an error on the startup of coordinator handler.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="receiver.config.IP_ADDRESS">
+<span class="sig-prename descclassname"><span class="pre">receiver.config.</span></span><span class="sig-name descname"><span class="pre">IP_ADDRESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'127.0.0.1'</span></em><a class="headerlink" href="#receiver.config.IP_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd><p>IP address on which the sockets are listening.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="receiver.config.REQUEST_TIMEOUT">
+<span class="sig-prename descclassname"><span class="pre">receiver.config.</span></span><span class="sig-name descname"><span class="pre">REQUEST_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#receiver.config.REQUEST_TIMEOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timeout for processing requests arriving at the TCP_PORT_REQUEST port.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="receiver.config.TCP_PORT_NOTIFY">
+<span class="sig-prename descclassname"><span class="pre">receiver.config.</span></span><span class="sig-name descname"><span class="pre">TCP_PORT_NOTIFY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9021</span></em><a class="headerlink" href="#receiver.config.TCP_PORT_NOTIFY" title="Permalink to this definition">¶</a></dt>
+<dd><p>TCP port for the socket used for sending notifications from coordinator handler.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="receiver.config.TCP_PORT_REQUEST">
+<span class="sig-prename descclassname"><span class="pre">receiver.config.</span></span><span class="sig-name descname"><span class="pre">TCP_PORT_REQUEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9020</span></em><a class="headerlink" href="#receiver.config.TCP_PORT_REQUEST" title="Permalink to this definition">¶</a></dt>
+<dd><p>TCP port for the socket used for making request to the coordinator handler.</p>
+</dd></dl>
+
 </section>
 <section id="module-receiver.custom_config">
 <span id="receiver-custom-config-module"></span><h2>receiver.custom_config module<a class="headerlink" href="#module-receiver.custom_config" title="Permalink to this headline">¶</a></h2>
@@ -332,75 +395,6 @@ When receiving multiple JSONs from one socket the value from the previous call t
 </dd></dl>
 
 </section>
-<section id="module-receiver.xbee_console">
-<span id="receiver-xbee-console-module"></span><h2>receiver.xbee_console module<a class="headerlink" href="#module-receiver.xbee_console" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="receiver.xbee_console.ConsoleCommand">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">ConsoleCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.ConsoleCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="receiver.xbee_console.ConsoleCommand.get_arguments">
-<span class="sig-name descname"><span class="pre">get_arguments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.ConsoleCommand.get_arguments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="receiver.xbee_console.ConsoleCommand.get_name">
-<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.ConsoleCommand.get_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="receiver.xbee_console.ConsoleCommand.parse_arguments">
-<span class="sig-name descname"><span class="pre">parse_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.ConsoleCommand.parse_arguments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="receiver.xbee_console.ConsoleCommand.parse_command">
-<span class="sig-name descname"><span class="pre">parse_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.ConsoleCommand.parse_command" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.console_thread_func">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">console_thread_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">queue.Queue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.console_thread_func" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.data_received_callback">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">data_received_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xbee_message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.data_received_callback" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.discover_network">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">discover_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">digi.xbee.devices.XBeeDevice</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.discover_network" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.execute_discover_command">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">execute_discover_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">digi.xbee.devices.XBeeDevice</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.execute_discover_command" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.execute_send_command">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">execute_send_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">digi.xbee.devices.XBeeDevice</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.execute_send_command" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.print_network">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">print_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xnet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">digi.xbee.devices.XBeeNetwork</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.print_network" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.xbee_thread_func">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">xbee_thread_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">queue.Queue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.xbee_thread_func" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="receiver.xbee_console.xbee_thread_loop">
-<span class="sig-prename descclassname"><span class="pre">receiver.xbee_console.</span></span><span class="sig-name descname"><span class="pre">xbee_thread_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command_queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">queue.Queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">digi.xbee.devices.XBeeDevice</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#receiver.xbee_console.xbee_thread_loop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</section>
 <section id="module-receiver.xbee_device_connection">
 <span id="receiver-xbee-device-connection-module"></span><h2>receiver.xbee_device_connection module<a class="headerlink" href="#module-receiver.xbee_device_connection" title="Permalink to this headline">¶</a></h2>
 <p>Module defining the class communicating with the device.</p>
@@ -495,36 +489,39 @@ one for handling request-response communitaions and the other one for sending no
 </dd></dl>
 
 </section>
-<section id="module-receiver">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-receiver" title="Permalink to this headline">¶</a></h2>
-</section>
 </section>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">ZigBee Monitor Server</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">receiver package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-receiver.config">receiver.config module</a></li>
+<li><a class="reference internal" href="#module-receiver.custom_config">receiver.custom_config module</a></li>
+<li><a class="reference internal" href="#module-receiver.example_client">receiver.example_client module</a></li>
+<li><a class="reference internal" href="#module-receiver.notify_server">receiver.notify_server module</a></li>
+<li><a class="reference internal" href="#module-receiver.request_response_server">receiver.request_response_server module</a></li>
+<li><a class="reference internal" href="#module-receiver.server_command">receiver.server_command module</a></li>
+<li><a class="reference internal" href="#module-receiver.socket_common">receiver.socket_common module</a></li>
+<li><a class="reference internal" href="#module-receiver.xbee_device_connection">receiver.xbee_device_connection module</a></li>
+<li><a class="reference internal" href="#module-receiver.xbee_device_server">receiver.xbee_device_server module</a></li>
 </ul>
-</div>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/receiver.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -535,32 +532,26 @@ one for handling request-response communitaions and the other one for sending no
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2022, Dominik Borys.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/receiver.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ZigBee Monitor Server  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">receiver package</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Dominik Borys.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.2.
+    </div>
   </body>
 </html>

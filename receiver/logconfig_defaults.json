@@ -8,25 +8,27 @@
     },
     "handlers":{
         "device":{
-            "class":"logging.FileHandler",
+            "class":"logging.handlers.RotatingFileHandler",
             "filename":"log/device.log",
             "formatter":"simple",
-            "level": "DEBUG"
+            "maxBytes":1048576,
+            "backupCount":5
         },
         "xbee_lib":{
-            "class":"logging.FileHandler",
+            "class":"logging.handlers.RotatingFileHandler",
             "filename":"log/xbee_lib.log",
             "formatter":"simple",
-            "level": "DEBUG"
+            "maxBytes":1048576,
+            "backupCount":5
         }
     },
     "loggers":{
         "receiver":{
-            "level":"DEBUG",
+            "level":"INFO",
             "handlers":["device"]
         },
         "digi.xbee":{
-            "level":"DEBUG",
+            "level":"INFO",
             "handlers":["xbee_lib"]
         }
     }

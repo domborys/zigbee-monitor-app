@@ -8,9 +8,11 @@
     },
     "handlers":{
         "file":{
-            "class":"logging.FileHandler",
+            "class":"logging.handlers.RotatingFileHandler",
             "filename":"log/uvicorn.log",
-            "formatter":"simple"
+            "formatter":"simple",
+            "maxBytes":1048576,
+            "backupCount":5
         }
     },
     "loggers":{

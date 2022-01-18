@@ -4,6 +4,10 @@
             <h2 class="node-name-header">
                 {{node.name}}
             </h2>
+            <button class="header-button download-messages-button" @click="downloadMessages">
+                <img src="~@/assets/icons/download.svg" class="download-messages-icon" />
+                Pobierz wiadomości
+            </button>
             <label class="mode-radio-item">
                 Text
                 <input type="radio" v-model="displayMode" value="text" name="radioMessageDisplayMode" id="radioModeText">
@@ -94,6 +98,7 @@
 <script>
 
 import ZigbeeMessage from './ZigbeeMessage.vue';
+import utils from '../utils';
 
 /**
  * Component used for displaying the messages which where sent or received by the coordinator.
@@ -218,6 +223,11 @@ export default {
                     this.scrollToBottom();
                 });
             }
+        },
+        downloadMessages(){
+            const messages = this.messagesToDisplay.map(formatMessageObj);
+            const jsonFile = JSON.stringify(messages, null, 4);
+            utils.downloadTextFile(jsonFile, `messages_${this.node.name}.json`);
         }
     },
     watch:{
@@ -243,6 +253,46 @@ export default {
         this.scrollToBottom();
     }
 };
+
+function formatMessageObj(message){
+    const date = new Date(message.timestamp);
+    const dateFormatted = utils.formatDate(date);
+    const type = message.type;
+    const status = (type === 'received') ? 'received' : message.status;
+    let obj = {
+        date:dateFormatted,
+        type:type,
+        status:status
+    };
+    if(message.error !== null)
+        obj.error = message.error;
+    if(message.type === 'at'){
+        obj.atCommand = message.atCommand;
+        if(message.value !== null){
+            obj.atCommandValueText = utils.decodeMessageToText(message.value);
+            obj.atCommandValueHex = utils.decodeMessageToHex(message.value);
+        }
+        else{
+            obj.atCommandValueText = null;
+            obj.atCommandValueHex = null;
+        }
+        if(message.result !== null){
+            obj.atCommandResultText = utils.decodeMessageToText(message.result);
+            obj.atCommandResultHex = utils.decodeMessageToHex(message.result);
+        }
+        else{
+            obj.atCommandResultText = null;
+            obj.atCommandResultHex = null;
+        }
+    }
+    else{
+        obj.contentsText = utils.decodeMessageToText(message.message);
+        obj.contentsHex = utils.decodeMessageToHex(message.message);
+    }
+    return obj;
+}
+
+
 </script>
 
 <style scoped>
@@ -267,6 +317,18 @@ export default {
     justify-content: flex-end;
     padding:4px 12px;
     border-bottom:1px solid #E6E6FA;
+}
+
+.download-messages-button{
+    margin-right:10px;
+}
+
+.download-messages-icon{
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: -0.2em;
+    display:inline-block;
+    margin-right:5px;
 }
 
 .message-display-messages{

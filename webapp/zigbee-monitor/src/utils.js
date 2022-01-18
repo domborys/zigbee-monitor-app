@@ -4,7 +4,9 @@ export default {
     decodeMessageToText,
     decodeMessageToHex,
     decodeToDecBigEndian,
-    isNumeric
+    isNumeric,
+    downloadTextFile,
+    formatDate
 };
 
 function encodeTextMessage(message){
@@ -40,4 +42,21 @@ function decodeToDecBigEndian(base64Message){
 function isNumeric(val){
     const goodType = typeof val === 'string' || typeof val === 'number';
     return goodType && !isNaN(val) && !isNaN(parseFloat(val));
+}
+
+function downloadTextFile(text, filename){
+    const a = document.createElement('a');
+    a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+    a.download = filename;
+    a.click();
+}
+
+function formatDate(date){
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth()+1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    const hour = date.getHours().toString().padStart(2, '0');
+    const minute = date.getMinutes().toString().padStart(2, '0');
+    const second = date.getSeconds().toString().padStart(2, '0');
+    return `${day}.${month}.${year} ${hour}:${minute}:${second}`;
 }

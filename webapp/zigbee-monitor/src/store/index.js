@@ -40,22 +40,6 @@ function getDefaultState(){
 }
 
 const store = new Vuex.Store({
-    // state: {
-    //     user:null,
-    //     modeStack:['login'],
-    //     mainDisplayMode:'map',
-    //     layers:[],
-    //     editedLayer:null,
-    //     editedLayerImageFile:null,
-    //     editedNode:null,
-    //     editedReadingConfig:null,
-    //     activeLayerName:null,
-    //     discoveryResults:null,
-    //     displayedMessagesNode:null,
-    //     readingTimers:[],
-    //     messages:[],
-    //     messageSocket:null,
-    // },
     state: getDefaultState(),
     getters:{
         mode(state){
